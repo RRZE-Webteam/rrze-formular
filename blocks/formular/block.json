@@ -1,13 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "rrze-formular/form-wizard",
+	"name": "rrze-formular/formular",
 	"version": "0.0.2",
 	"title": "RRZE Formular",
 	"category": "widgets",
 	"description": "Create multi-step forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically.",
 	"icon": "feedback",
-	"keywords": ["form", "contact", "wizard", "mail"],
+	"keywords": ["form", "contact", "multistep", "mail"],
 	"attributes": {
 		"template": {
 			"type": "string",
@@ -51,7 +51,7 @@
 		"align": ["wide", "full"]
 	},
 	"textdomain": "rrze-formular",
-	"editorScript": "file:../../build/form-wizard.js",
+	"editorScript": "file:../../build/formular.js",
 	"editorStyle": "rrze-formular-css",
 	"viewScript": "rrze-formular-frontend",
 	"style": "rrze-formular-css",

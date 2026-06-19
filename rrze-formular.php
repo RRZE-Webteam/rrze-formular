@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Formular
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-formular
-Version:            0.0.3
+Version:            0.0.4
 Description:        Simple form wizard for the block editor with automatic design, spam protection and secure mail delivery.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -15,13 +15,13 @@ Requires at least:  6.8
 Requires PHP:       8.2
 */
 
-namespace RRZE\FormWizard;
+namespace RRZE\Formular;
 
-use RRZE\FormWizard\Common\Plugin\Plugin;
+use RRZE\Formular\Common\Plugin\Plugin;
 
 defined('ABSPATH') || exit;
 
-const RRZE_FORMWIZARD_PLUGIN = 'rrze-formular/rrze-formular.php';
+const RRZE_FORMFORMULAR_PLUGIN = 'rrze-formular/rrze-formular.php';
 
 spl_autoload_register(function ($class) {
     $prefix = __NAMESPACE__;
@@ -80,9 +80,9 @@ function load_textdomain(): void
 
 function register_blocks(): void
 {
-    register_block_type_from_metadata(__DIR__ . '/blocks/form-wizard');
+    register_block_type_from_metadata(__DIR__ . '/blocks/formular');
 
-    $handle = generate_block_asset_handle('rrze-formular/form-wizard', 'editorScript');
+    $handle = generate_block_asset_handle('rrze-formular/formular', 'editorScript');
     wp_set_script_translations($handle, 'rrze-formular', plugin_dir_path(__FILE__) . 'languages');
 }
 
