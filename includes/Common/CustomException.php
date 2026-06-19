@@ -1,5 +1,5 @@
 <?php
-namespace RRZE\FormWizard\Common;
+namespace RRZE\Formular\Common;
 
 defined('ABSPATH') || exit;
 

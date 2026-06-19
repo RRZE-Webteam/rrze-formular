@@ -5,9 +5,9 @@
 	"version": "0.0.2",
 	"title": "RRZE Formular",
 	"category": "widgets",
-	"description": "Create multi-step forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically.",
+	"description": "Create forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically.",
 	"icon": "feedback",
-	"keywords": ["form", "contact", "multistep", "mail"],
+	"keywords": ["form", "contact", "mail"],
 	"attributes": {
 		"template": {
 			"type": "string",

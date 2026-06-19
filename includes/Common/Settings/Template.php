@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides a method to include templates with variables passed to them.
  * It is used to render the settings pages of the plugin.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Template
 {

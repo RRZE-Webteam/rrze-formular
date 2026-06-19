@@ -1,10 +1,10 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
 defined('ABSPATH') || exit;
 
-use RRZE\FormWizard\Common\API\SyncAPI;
+use RRZE\Formular\Common\API\SyncAPI;
 
 ?>
 <tr>

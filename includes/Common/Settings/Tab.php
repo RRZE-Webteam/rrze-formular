@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
-use RRZE\FormWizard\Common\Settings\Section;
+use RRZE\Formular\Common\Settings\Section;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * Represents a settings tab in the plugin settings.
  * Each tab can contain multiple sections, and each section can have various options.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Tab
 {
@@ -22,7 +22,7 @@ class Tab
      * This property holds the settings object that contains all the settings
      * for this tab, allowing access to the settings values and methods.
      *
-     * @var \RRZE\FormWizard\Common\Settings\Settings
+     * @var \RRZE\Formular\Common\Settings\Settings
      */
     public $settings;
 
@@ -61,7 +61,7 @@ class Tab
      *
      * Initializes the tab with the given settings, title, and optional slug.
      *
-     * @param \RRZE\FormWizard\Common\Settings\Settings $settings The settings object for this tab.
+     * @param \RRZE\Formular\Common\Settings\Settings $settings The settings object for this tab.
      * @param string $title The title of the tab.
      * @param string|null $slug The slug of the tab (optional).
      * @return void
@@ -70,10 +70,7 @@ class Tab
     {
         $this->title = $title;
         $this->settings = $settings;
-
-        if ($this->slug === null) {
-            $this->slug = sanitize_title($title);
-        }
+        $this->slug = $slug ?? sanitize_title($title);
     }
 
     /**

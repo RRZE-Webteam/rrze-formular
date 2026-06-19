@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This class provides methods to encrypt and decrypt values using OpenSSL.
  * It uses a cipher method of 'aes-256-cbc' and requires the OpenSSL extension.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Encryption
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Form;
+namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
@@ -9,34 +9,25 @@ class FormRenderer
     public static function render(array $attributes): string
     {
         $attributes = self::normalizeAttributes($attributes);
-        $fields = FieldTypes::sanitizeFields($attributes['fields']);
-        $steps = self::groupBySteps($fields);
+        $fields = FieldTypes::localizeFieldsForDisplay(
+            FieldTypes::sanitizeFields($attributes['fields'])
+        );
+        $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
+        $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
+        $attributes['submitLabel'] = FieldTypes::localizeDisplayString($attributes['submitLabel']);
         $tokenData = SpamProtection::createToken();
         $formId = wp_unique_id('rrze-fw-');
 
         ob_start();
         ?>
         <div class="rrze-formular" id="<?php echo esc_attr($formId); ?>"
-             data-form-id="<?php echo esc_attr($formId); ?>"
-             data-steps="<?php echo esc_attr((string) count($steps)); ?>">
+             data-form-id="<?php echo esc_attr($formId); ?>">
             <?php if ($attributes['formTitle'] !== '') : ?>
                 <h2 class="rrze-formular__title"><?php echo esc_html($attributes['formTitle']); ?></h2>
             <?php endif; ?>
 
             <?php if ($attributes['formDescription'] !== '') : ?>
                 <p class="rrze-formular__description"><?php echo esc_html($attributes['formDescription']); ?></p>
-            <?php endif; ?>
-
-            <?php if (count($steps) > 1) : ?>
-                <ol class="rrze-formular__progress" aria-label="<?php esc_attr_e('Form progress', 'rrze-formular'); ?>">
-                    <?php foreach ($steps as $index => $stepFields) : ?>
-                        <?php $stepNumber = $index + 1; ?>
-                        <li class="rrze-formular__progress-item<?php echo $stepNumber === 1 ? ' is-active' : ''; ?>"
-                            data-step="<?php echo esc_attr((string) $stepNumber); ?>">
-                            <span><?php echo esc_html(sprintf(__('Step %d', 'rrze-formular'), $stepNumber)); ?></span>
-                        </li>
-                    <?php endforeach; ?>
-                </ol>
             <?php endif; ?>
 
             <form class="rrze-formular__form"
@@ -56,40 +47,17 @@ class FormRenderer
                            autocomplete="off">
                 </div>
 
-                <?php foreach ($steps as $index => $stepFields) : ?>
-                    <?php $stepNumber = $index + 1; ?>
-                    <fieldset class="rrze-formular__step<?php echo $stepNumber === 1 ? ' is-active' : ''; ?>"
-                              data-step="<?php echo esc_attr((string) $stepNumber); ?>"
-                              <?php echo $stepNumber > 1 ? ' hidden' : ''; ?>>
-                        <?php if (count($steps) > 1) : ?>
-                            <legend class="screen-reader-text">
-                                <?php echo esc_html(sprintf(__('Step %d', 'rrze-formular'), $stepNumber)); ?>
-                            </legend>
-                        <?php endif; ?>
+                <fieldset class="rrze-formular__fields">
+                    <?php foreach ($fields as $field) : ?>
+                        <?php echo self::renderField($field, $formId); ?>
+                    <?php endforeach; ?>
+                </fieldset>
 
-                        <?php foreach ($stepFields as $field) : ?>
-                            <?php echo self::renderField($field, $formId); ?>
-                        <?php endforeach; ?>
-
-                        <div class="rrze-formular__nav">
-                            <?php if ($stepNumber > 1) : ?>
-                                <button type="button" class="rrze-formular__prev">
-                                    <?php esc_html_e('Back', 'rrze-formular'); ?>
-                                </button>
-                            <?php endif; ?>
-
-                            <?php if ($stepNumber < count($steps)) : ?>
-                                <button type="button" class="rrze-formular__next">
-                                    <?php esc_html_e('Next', 'rrze-formular'); ?>
-                                </button>
-                            <?php else : ?>
-                                <button type="submit" class="rrze-formular__submit">
-                                    <?php echo esc_html($attributes['submitLabel']); ?>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </fieldset>
-                <?php endforeach; ?>
+                <div class="rrze-formular__actions">
+                    <button type="submit" class="rrze-formular__submit">
+                        <?php echo esc_html($attributes['submitLabel']); ?>
+                    </button>
+                </div>
 
                 <div class="rrze-formular__message" role="status" aria-live="polite" hidden></div>
             </form>
@@ -111,23 +79,6 @@ class FormRenderer
             'template' => sanitize_key((string) ($attributes['template'] ?? 'blank')),
             'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
         ];
-    }
-
-    private static function groupBySteps(array $fields): array
-    {
-        $steps = [];
-
-        foreach ($fields as $field) {
-            $step = max(1, (int) ($field['step'] ?? 1));
-            $steps[$step][] = $field;
-        }
-
-        if ($steps === []) {
-            return [1 => []];
-        }
-
-        ksort($steps);
-        return array_values($steps);
     }
 
     private static function renderField(array $field, string $formId): string

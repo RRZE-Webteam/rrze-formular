@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Plugin;
+namespace RRZE\Formular\Common\Plugin;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * It also includes methods for setting and getting plugin data, such as the name, version,
  * required WordPress version, and required PHP version.
  * 
- * @package RRZE\FormWizard\Common
+ * @package RRZE\Formular\Common
  * @since 0.0.2x
  */
 class Plugin

@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
-use RRZE\FormWizard\Common\Settings\{
+use RRZE\Formular\Common\Settings\{
     Option,
     Tab
 };
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
  * This class represents a section in the settings page, allowing the addition
  * of options and defining properties such as title, slug, and description.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Section
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Form;
+namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
@@ -89,7 +89,6 @@ class FieldTypes
             'placeholder' => sanitize_text_field((string) ($field['placeholder'] ?? '')),
             'required' => !empty($field['required']),
             'options' => $options,
-            'step' => max(1, (int) ($field['step'] ?? 1)),
         ];
     }
 
@@ -104,5 +103,29 @@ class FieldTypes
         }
 
         return $sanitized;
+    }
+
+    public static function localizeDisplayString(string $value): string
+    {
+        return $value === '' ? '' : __($value, 'rrze-formular');
+    }
+
+    public static function localizeFieldForDisplay(array $field): array
+    {
+        $field['label'] = self::localizeDisplayString($field['label']);
+        $field['placeholder'] = self::localizeDisplayString($field['placeholder']);
+
+        if (!empty($field['options'])) {
+            foreach ($field['options'] as $index => $option) {
+                $field['options'][$index]['label'] = self::localizeDisplayString((string) ($option['label'] ?? ''));
+            }
+        }
+
+        return $field;
+    }
+
+    public static function localizeFieldsForDisplay(array $fields): array
+    {
+        return array_map([self::class, 'localizeFieldForDisplay'], $fields);
     }
 }

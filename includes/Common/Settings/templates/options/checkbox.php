@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
 defined('ABSPATH') || exit;
 ?>
@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
     <th scope="row" class="rrze-wp-form-label">
         <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>
-    <td class="rrze-wp-form rrze-wp-form-input">
+    <td class="rrze-wp-form rrze-wp-form-input"<?php echo $option->getTourDataAttribute(); ?>>
         <label>
             <input name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo $option->getIdAttribute(); ?>" type="checkbox" value="1" <?php checked($option->isChecked()); ?> <?php echo $option->getInputClassAttribute(); ?>>
             <?php echo $option->getArg('description'); ?>

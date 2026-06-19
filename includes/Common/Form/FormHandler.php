@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Form;
+namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
@@ -23,7 +23,11 @@ class FormHandler
         }
 
         $attributes = $this->normalizeAttributes($payload['attributes'] ?? []);
-        $fields = FieldTypes::sanitizeFields($attributes['fields'] ?? []);
+        $fields = FieldTypes::localizeFieldsForDisplay(
+            FieldTypes::sanitizeFields($attributes['fields'] ?? [])
+        );
+        $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
+        $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
         $inputFields = array_values(array_filter($fields, static fn(array $field): bool => $field['type'] !== 'heading'));
 
         if ($inputFields === []) {

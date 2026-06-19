@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings\Options;
+namespace RRZE\Formular\Common\Settings\Options;
 
-use RRZE\FormWizard\Common\Settings\{
+use RRZE\Formular\Common\Settings\{
     Section,
     Template
 };
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
  * This class serves as a base for different types of options, providing common
  * functionality such as rendering, sanitization, and validation.
  *
- * @package RRZE\FormWizard\Common\Settings\Options
+ * @package RRZE\Formular\Common\Settings\Options
  */
 abstract class Type
 {
@@ -160,6 +160,27 @@ abstract class Type
     public function getIdAttribute()
     {
         return $this->getArg('id', sanitize_title(str_replace('[', '_', $this->getNameAttribute())));
+    }
+
+    public function getTourDataAttribute(): string
+    {
+        $map = [
+            'default_recipient' => 'default-recipient',
+            'sender_name' => 'sender-name',
+            'include_sso_by_default' => 'sso-default',
+            'allowed_domains' => 'allowed-domains',
+            'allowed_confirmation_domains' => 'confirmation-domains',
+            'min_submit_seconds' => 'min-submit-seconds',
+            'rate_limit_per_hour' => 'rate-limit',
+        ];
+
+        $name = $this->getName();
+
+        if (!isset($map[$name])) {
+            return '';
+        }
+
+        return ' data-rrze-tour="' . esc_attr($map[$name]) . '"';
     }
 
     /**

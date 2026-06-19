@@ -3,8 +3,8 @@
 /*
 Plugin Name:        RRZE Formular
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-formular
-Version:            0.0.4
-Description:        Simple form wizard for the block editor with automatic design, spam protection and secure mail delivery.
+Version:            1.0.0
+Description:        Simple forms for the block editor with automatic design, spam protection and secure mail delivery.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
 License:            GNU General Public License Version 3
@@ -81,7 +81,10 @@ function load_textdomain(): void
 function register_blocks(): void
 {
     register_block_type_from_metadata(__DIR__ . '/blocks/formular');
+}
 
+function set_block_script_translations(): void
+{
     $handle = generate_block_asset_handle('rrze-formular/formular', 'editorScript');
     wp_set_script_translations($handle, 'rrze-formular', plugin_dir_path(__FILE__) . 'languages');
 }
@@ -135,4 +138,5 @@ function loaded(): void
     main();
 
     add_action('init', __NAMESPACE__ . '\register_blocks');
+    add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\set_block_script_translations');
 }
