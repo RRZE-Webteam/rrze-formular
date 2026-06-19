@@ -1,0 +1,22 @@
+{
+  "name": "rrze-formular",
+  "version": "0.0.2",
+  "description": "Simple form wizard for the block editor with automatic design, spam protection and secure mail delivery.",
+  "author": "RRZE Webteam",
+  "license": "GPL-2.0-or-later",
+  "textdomain": "rrze-formular",
+  "scripts": {
+    "start": "wp-scripts start form-wizard=./blocks/form-wizard/index.js src/js/rrze-formular-frontend.js --webpack-copy-php",
+    "build": "npm-run-all build:js build:css",
+    "build:js": "wp-scripts build form-wizard=./blocks/form-wizard/index.js src/js/rrze-formular-frontend.js --webpack-copy-php",
+    "build:css": "sass src/sass:build/css --style compressed --no-source-map",
+    "format": "wp-scripts format",
+    "lint:js": "wp-scripts lint-js"
+  },
+  "devDependencies": {
+    "@wordpress/i18n": "^5.9.0",
+    "@wordpress/scripts": "^30.7.0",
+    "npm-run-all": "^4.1.5",
+    "sass": "^1.87.0"
+  }
+}
