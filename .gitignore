@@ -1,9 +1,45 @@
+# Dependencies
 node_modules/
 npm-debug.log*
+yarn-error.log*
 package-lock.json
+yarn.lock
+/vendor/
+composer.lock
+
+# OS-generated files
 .DS_Store
+**/.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# IDE and editor
 .idea/
 .vscode/
+*.sublime-workspace
+*.sublime-project
+*.iml
+*.iws
+
+# Logs and environment
 *.log
 .env
 .env.local
+.env.*.local
+
+# Build caches
+.sass-cache/
+.cache/
+.phpunit.result.cache
+coverage/
+
+# Backup and temporary files
+*~
+*.bak
+*.swp
+*.tmp
+_tmp/
+/.tmp_py
