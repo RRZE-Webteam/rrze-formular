@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-	document.querySelectorAll('.rrze-formular').forEach(initFormWizard);
+	document.querySelectorAll('.rrze-formular').forEach(initFormular);
 });
 
-function initFormWizard(root) {
+function initFormular(root) {
 	const form = root.querySelector('.rrze-formular__form');
 	if (!form) {
 		return;
@@ -39,7 +39,7 @@ function initFormWizard(root) {
 		const submitButton = form.querySelector('.rrze-formular__submit');
 		if (submitButton) {
 			submitButton.disabled = true;
-			submitButton.textContent = RRZEFormWizard.i18n.submitting;
+			submitButton.textContent = RRZEFormular.i18n.submitting;
 		}
 
 		const attributes = JSON.parse(form.dataset.attributes || '{}');
@@ -52,11 +52,11 @@ function initFormWizard(root) {
 		};
 
 		try {
-			const response = await fetch(RRZEFormWizard.restUrl, {
+			const response = await fetch(RRZEFormular.restUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': RRZEFormWizard.nonce,
+					'X-WP-Nonce': RRZEFormular.nonce,
 				},
 				body: JSON.stringify(payload),
 			});
@@ -64,7 +64,7 @@ function initFormWizard(root) {
 			const result = await response.json();
 
 			if (!response.ok || !result.success) {
-				showMessage(messageBox, result.message || RRZEFormWizard.i18n.error, 'error');
+				showMessage(messageBox, result.message || RRZEFormular.i18n.error, 'error');
 				if (result.errors) {
 					Object.entries(result.errors).forEach(([fieldId, text]) => {
 						showFieldError(root, fieldId, text);
@@ -75,9 +75,9 @@ function initFormWizard(root) {
 
 			form.reset();
 			showStep(1);
-			showMessage(messageBox, result.message || RRZEFormWizard.i18n.success, 'success');
+			showMessage(messageBox, result.message || RRZEFormular.i18n.success, 'success');
 		} catch (error) {
-			showMessage(messageBox, RRZEFormWizard.i18n.error, 'error');
+			showMessage(messageBox, RRZEFormular.i18n.error, 'error');
 		} finally {
 			if (submitButton) {
 				submitButton.disabled = false;
@@ -133,11 +133,11 @@ function validateStep(root, stepNumber) {
 		const value = field.type === 'checkbox' ? field.checked : field.value.trim();
 		if (!value) {
 			valid = false;
-			showFieldError(root, field.name, RRZEFormWizard.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.validation);
 		}
 		if (field.type === 'email' && field.value && !field.validity.valid) {
 			valid = false;
-			showFieldError(root, field.name, RRZEFormWizard.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.validation);
 		}
 	});
 

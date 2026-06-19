@@ -1,13 +1,13 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
 
 defined('ABSPATH') || exit;
 
-use RRZE\FormWizard\Common\Settings\Section;
+use RRZE\Formular\Common\Settings\Section;
 
-use RRZE\FormWizard\Common\Settings\Options\{
+use RRZE\Formular\Common\Settings\Options\{
     Checkbox,
     CheckboxMultiple,
     Password,

@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings\Options;
+namespace RRZE\Formular\Common\Settings\Options;
 
-use RRZE\FormWizard\Common\Settings\Options\Type;
+use RRZE\Formular\Common\Settings\Options\Type;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * This class represents a multiple select option in the settings section.
  * It extends the Type class and provides methods to get the value and sanitize input.
  *
- * @package RRZE\FormWizard\Common\Settings\Options
+ * @package RRZE\Formular\Common\Settings\Options
  */
 class SelectMultiple extends Type
 {

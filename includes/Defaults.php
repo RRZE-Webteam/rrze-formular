@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard;
+namespace RRZE\Formular;
 
-use function RRZE\FormWizard\plugin;
+use function RRZE\Formular\plugin;
 
 defined('ABSPATH') || exit;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace RRZE\FormWizard;
+namespace RRZE\Formular;
 
-use function RRZE\FormWizard\plugin;
+use function RRZE\Formular\plugin;
 
-use RRZE\FormWizard\Common\{
+use RRZE\Formular\Common\{
     API\FormAPI,
     Settings\Settings
 };
@@ -51,7 +51,7 @@ class Main
             true
         );
 
-        wp_localize_script('rrze-formular-frontend', 'RRZEFormWizard', [
+        wp_localize_script('rrze-formular-frontend', 'RRZEFormular', [
             'restUrl' => rest_url('rrze-formular/v1/submit'),
             'nonce' => wp_create_nonce('wp_rest'),
             'i18n' => [

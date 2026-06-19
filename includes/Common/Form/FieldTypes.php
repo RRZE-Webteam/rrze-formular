@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Form;
+namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
@@ -89,7 +89,6 @@ class FieldTypes
             'placeholder' => sanitize_text_field((string) ($field['placeholder'] ?? '')),
             'required' => !empty($field['required']),
             'options' => $options,
-            'step' => max(1, (int) ($field['step'] ?? 1)),
         ];
     }
 

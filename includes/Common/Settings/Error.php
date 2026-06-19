@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
-use RRZE\FormWizard\Common\Settings\Settings;
+use RRZE\Formular\Common\Settings\Settings;
 
 defined('ABSPATH') || exit;
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * This class manages errors related to settings options.
  * It allows adding, retrieving, and checking for errors in the settings context.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Error
 {

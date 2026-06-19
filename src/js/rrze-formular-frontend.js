@@ -1,62 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
-	document.querySelectorAll('.rrze-formular').forEach(initformular);
+	document.querySelectorAll('.rrze-formular').forEach(initFormular);
 });
 
-function initformular(root) {
+function initFormular(root) {
 	const form = root.querySelector('.rrze-formular__form');
 	if (!form) {
 		return;
 	}
 
-	const steps = Array.from(root.querySelectorAll('.rrze-formular__step'));
-	const progressItems = Array.from(root.querySelectorAll('.rrze-formular__progress-item'));
 	const messageBox = root.querySelector('.rrze-formular__message');
-	let currentStep = 1;
-
-	root.querySelectorAll('.rrze-formular__next').forEach((button) => {
-		button.addEventListener('click', () => {
-			if (!validateStep(root, currentStep)) {
-				return;
-			}
-			showStep(currentStep + 1);
-		});
-	});
-
-	root.querySelectorAll('.rrze-formular__prev').forEach((button) => {
-		button.addEventListener('click', () => {
-			showStep(currentStep - 1);
-		});
-	});
 
 	form.addEventListener('submit', async (event) => {
 		event.preventDefault();
 		clearErrors(root);
 
-		if (!validateStep(root, currentStep)) {
+		if (!validateForm(form)) {
 			return;
 		}
 
 		const submitButton = form.querySelector('.rrze-formular__submit');
+		const attributes = JSON.parse(form.dataset.attributes || '{}');
+
 		if (submitButton) {
 			submitButton.disabled = true;
-			submitButton.textContent = RRZEformular.i18n.submitting;
+			submitButton.textContent = RRZEFormular.i18n.submitting;
 		}
 
-		const attributes = JSON.parse(form.dataset.attributes || '{}');
-		const values = collectValues(form);
 		const payload = {
 			attributes,
-			values,
+			values: collectValues(form),
 			token: form.querySelector('[name="token"]')?.value || '',
 			website: form.querySelector('[name="website"]')?.value || '',
 		};
 
 		try {
-			const response = await fetch(RRZEformular.restUrl, {
+			const response = await fetch(RRZEFormular.restUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': RRZEformular.nonce,
+					'X-WP-Nonce': RRZEFormular.nonce,
 				},
 				body: JSON.stringify(payload),
 			});
@@ -64,7 +46,7 @@ function initformular(root) {
 			const result = await response.json();
 
 			if (!response.ok || !result.success) {
-				showMessage(messageBox, result.message || RRZEformular.i18n.error, 'error');
+				showMessage(messageBox, result.message || RRZEFormular.i18n.error, 'error');
 				if (result.errors) {
 					Object.entries(result.errors).forEach(([fieldId, text]) => {
 						showFieldError(root, fieldId, text);
@@ -74,10 +56,9 @@ function initformular(root) {
 			}
 
 			form.reset();
-			showStep(1);
-			showMessage(messageBox, result.message || RRZEformular.i18n.success, 'success');
+			showMessage(messageBox, result.message || RRZEFormular.i18n.success, 'success');
 		} catch (error) {
-			showMessage(messageBox, RRZEformular.i18n.error, 'error');
+			showMessage(messageBox, RRZEFormular.i18n.error, 'error');
 		} finally {
 			if (submitButton) {
 				submitButton.disabled = false;
@@ -85,19 +66,6 @@ function initformular(root) {
 			}
 		}
 	});
-
-	function showStep(stepNumber) {
-		currentStep = stepNumber;
-		steps.forEach((step) => {
-			const isActive = Number(step.dataset.step) === stepNumber;
-			step.hidden = !isActive;
-			step.classList.toggle('is-active', isActive);
-		});
-		progressItems.forEach((item) => {
-			item.classList.toggle('is-active', Number(item.dataset.step) === stepNumber);
-			item.classList.toggle('is-complete', Number(item.dataset.step) < stepNumber);
-		});
-	}
 }
 
 function collectValues(form) {
@@ -121,23 +89,18 @@ function collectValues(form) {
 	return values;
 }
 
-function validateStep(root, stepNumber) {
-	clearErrors(root);
+function validateForm(form) {
 	let valid = true;
-	const step = root.querySelector(`.rrze-formular__step[data-step="${stepNumber}"]`);
-	if (!step) {
-		return true;
-	}
 
-	step.querySelectorAll('[required]').forEach((field) => {
+	form.querySelectorAll('[required]').forEach((field) => {
 		const value = field.type === 'checkbox' ? field.checked : field.value.trim();
 		if (!value) {
 			valid = false;
-			showFieldError(root, field.name, RRZEformular.i18n.validation);
+			showFieldError(form.closest('.rrze-formular'), field.name, RRZEFormular.i18n.validation);
 		}
 		if (field.type === 'email' && field.value && !field.validity.valid) {
 			valid = false;
-			showFieldError(root, field.name, RRZEformular.i18n.validation);
+			showFieldError(form.closest('.rrze-formular'), field.name, RRZEFormular.i18n.validation);
 		}
 	});
 

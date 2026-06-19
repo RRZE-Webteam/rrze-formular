@@ -15,7 +15,7 @@ RRZE Formular lets editors create forms directly in the block editor. You only d
 - Block editor integration (no shortcodes required)
 - Limited set of form field types
 - Multi-step wizard via step numbers
-- Templates for common forms (contact, feedback, event registration, support)
+- Templates for FAU websites (contact, teaching, events, research, IT, public relations)
 - Server-controlled sender address
 - Delivery to the webmaster or another address on an allowed domain
 - Sanitized field values in operator mails only

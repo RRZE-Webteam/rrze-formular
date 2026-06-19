@@ -1,8 +1,8 @@
 <?php
 
-namespace RRZE\FormWizard\Common\API;
+namespace RRZE\Formular\Common\API;
 
-use RRZE\FormWizard\Common\Form\FormHandler;
+use RRZE\Formular\Common\Form\FormHandler;
 use WP_REST_Request;
 use WP_REST_Response;
 

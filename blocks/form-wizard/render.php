@@ -1,6 +1,6 @@
 <?php
 
-use RRZE\FormWizard\Common\Form\FormRenderer;
+use RRZE\Formular\Common\Form\FormRenderer;
 
 defined('ABSPATH') || exit;
 

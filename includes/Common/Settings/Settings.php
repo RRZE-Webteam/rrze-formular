@@ -1,10 +1,10 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Settings;
+namespace RRZE\Formular\Common\Settings;
 
-use function RRZE\FormWizard\plugin;
+use function RRZE\Formular\plugin;
 
-use RRZE\FormWizard\Common\Settings\{
+use RRZE\Formular\Common\Settings\{
     Builder,
     Error,
     Flash,
@@ -24,7 +24,7 @@ defined('ABSPATH') || exit;
  * It allows for the creation and management of settings, tabs, sections, and options.
  * It also handles saving settings, rendering the settings page, and managing errors and flash messages.
  *
- * @package RRZE\FormWizard\Common\Settings
+ * @package RRZE\Formular\Common\Settings
  */
 class Settings
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RRZE\FormWizard\Common\Blocks;
+namespace RRZE\Formular\Common\Blocks;
 
 defined('ABSPATH') || exit;
 
@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
  * 
  * This class is responsible for registering custom blocks for the plugin.
  * 
- * @package RRZE\FormWizard\Common
+ * @package RRZE\Formular\Common
  * @since 0.0.2
  */
 class Blocks
