@@ -104,4 +104,28 @@ class FieldTypes
 
         return $sanitized;
     }
+
+    public static function localizeDisplayString(string $value): string
+    {
+        return $value === '' ? '' : __($value, 'rrze-formular');
+    }
+
+    public static function localizeFieldForDisplay(array $field): array
+    {
+        $field['label'] = self::localizeDisplayString($field['label']);
+        $field['placeholder'] = self::localizeDisplayString($field['placeholder']);
+
+        if (!empty($field['options'])) {
+            foreach ($field['options'] as $index => $option) {
+                $field['options'][$index]['label'] = self::localizeDisplayString((string) ($option['label'] ?? ''));
+            }
+        }
+
+        return $field;
+    }
+
+    public static function localizeFieldsForDisplay(array $fields): array
+    {
+        return array_map([self::class, 'localizeFieldForDisplay'], $fields);
+    }
 }

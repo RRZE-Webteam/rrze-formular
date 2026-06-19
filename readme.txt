@@ -4,7 +4,7 @@ Tags: form, contact, block, wizard, mail
 Requires at least: 6.8
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 0.0.5
+Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,7 +18,7 @@ Features:
 
 * Block editor integration (no shortcodes required)
 * Limited set of form field types
-* Multi-step wizard via step numbers
+* Section headings to structure longer forms
 * Templates for FAU websites (contact, teaching, events, research, IT, public relations)
 * Server-controlled sender address
 * Delivery to the webmaster or another address on an allowed domain

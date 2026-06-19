@@ -13,9 +13,9 @@ import {
 	Button,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { TEMPLATES } from './templates';
+import { getTemplates } from './templates';
 
-const FIELD_TYPES = [
+const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
 	{ label: __('E-mail', 'rrze-formular'), value: 'email' },
 	{ label: __('Telephone', 'rrze-formular'), value: 'tel' },
@@ -68,7 +68,7 @@ function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
 			<SelectControl
 				label={__('Type', 'rrze-formular')}
 				value={field.type}
-				options={FIELD_TYPES}
+				options={getFieldTypes()}
 				onChange={(value) => onChange(index, {
 					...field,
 					type: value,
@@ -160,7 +160,8 @@ export default function Edit({ attributes, setAttributes }) {
 		if (fields && fields.length > 0) {
 			return;
 		}
-		const selected = TEMPLATES.find((item) => item.value === template) || TEMPLATES[1];
+		const templates = getTemplates();
+		const selected = templates.find((item) => item.value === template) || templates[1];
 		setAttributes({
 			formTitle: selected.formTitle,
 			formDescription: selected.formDescription,
@@ -169,7 +170,8 @@ export default function Edit({ attributes, setAttributes }) {
 	}, []);
 
 	const applyTemplate = (value) => {
-		const selected = TEMPLATES.find((item) => item.value === value) || TEMPLATES[0];
+		const templates = getTemplates();
+		const selected = templates.find((item) => item.value === value) || templates[0];
 		setAttributes({
 			template: value,
 			formTitle: selected.formTitle,
@@ -199,7 +201,7 @@ export default function Edit({ attributes, setAttributes }) {
 					<SelectControl
 						label={__('Form template', 'rrze-formular')}
 						value={template}
-						options={TEMPLATES.map((item) => ({ label: item.label, value: item.value }))}
+						options={getTemplates().map((item) => ({ label: item.label, value: item.value }))}
 						onChange={applyTemplate}
 					/>
 				</PanelBody>

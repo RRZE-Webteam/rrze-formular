@@ -15,13 +15,7 @@
 	margin-top: 0;
 }
 
-.rrze-formular__actions {
-	display: flex;
-	gap: 0.75rem;
-	margin-top: 1rem;
-}
-
-.rrze-formular__submit {
+.rrze-formular__field {
 	margin-bottom: 1rem;
 }
 
@@ -58,14 +52,21 @@
 	font-size: 1.1rem;
 }
 
-.rrze-formular__nav {
-	display: flex;
-	gap: 0.75rem;
+.rrze-formular__actions {
 	margin-top: 1rem;
 }
 
-.rrze-formular__nav button,
-.rrze-formular__field {
+.rrze-formular__submit {
+	padding: 0.65rem 1rem;
+	border: 0;
+	border-radius: 0.35rem;
+	background: var(--rrze-fw-accent);
+	color: #fff;
+	font: inherit;
+	cursor: pointer;
+}
+
+.rrze-formular__error {
 	margin: 0.35rem 0 0;
 	color: var(--rrze-fw-error);
 	font-size: 0.875rem;

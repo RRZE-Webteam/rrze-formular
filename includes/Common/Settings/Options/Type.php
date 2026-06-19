@@ -162,6 +162,27 @@ abstract class Type
         return $this->getArg('id', sanitize_title(str_replace('[', '_', $this->getNameAttribute())));
     }
 
+    public function getTourDataAttribute(): string
+    {
+        $map = [
+            'default_recipient' => 'default-recipient',
+            'sender_name' => 'sender-name',
+            'include_sso_by_default' => 'sso-default',
+            'allowed_domains' => 'allowed-domains',
+            'allowed_confirmation_domains' => 'confirmation-domains',
+            'min_submit_seconds' => 'min-submit-seconds',
+            'rate_limit_per_hour' => 'rate-limit',
+        ];
+
+        $name = $this->getName();
+
+        if (!isset($map[$name])) {
+            return '';
+        }
+
+        return ' data-rrze-tour="' . esc_attr($map[$name]) . '"';
+    }
+
     /**
      * Gets the name of the option.
      *

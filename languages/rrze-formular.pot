@@ -1,0 +1,895 @@
+# Copyright (C) 2026 RRZE Webteam
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: RRZE Formular\n"
+"Report-Msgid-Bugs-To: https://github.com/RRZE-Webteam/rrze-formular\n"
+"Last-Translator: RRZE Webteam\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Abstract"
+msgstr "Abstract"
+
+msgid "Abstract submission"
+msgstr "Abstract-Einreichung"
+
+msgid "Accessibility"
+msgstr "Barrierefreiheit"
+
+msgid "Accessibility requirements"
+msgstr "Anforderungen an Barrierefreiheit"
+
+msgid "Account / login"
+msgstr "Konto / Anmeldung"
+
+msgid "Add field"
+msgstr "Feld hinzufügen"
+
+msgid "Add option"
+msgstr "Option hinzufügen"
+
+msgid "Adjust limits for honeypot, minimum fill time and rate limiting."
+msgstr "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
+
+msgid "Advanced"
+msgstr "Fortgeschritten"
+
+msgid "Affected page URL"
+msgstr "Betroffene Seiten-URL"
+
+msgid "Affiliation"
+msgstr "Zugehörigkeit"
+
+msgid "Afternoon (12–17)"
+msgstr "Nachmittags (12–17 Uhr)"
+
+msgid "Age"
+msgstr "Alter"
+
+msgid "Allowed Domains"
+msgstr "Erlaubte Domains"
+
+msgid "Allowed confirmation domains"
+msgstr "Erlaubte Bestätigungs-Domains"
+
+msgid "Allowed recipient domains"
+msgstr "Erlaubte Empfänger-Domains"
+
+msgid "Alumni contact"
+msgstr "Alumni-Kontakt"
+
+msgid "Apply for a student assistant (HiWi) position."
+msgstr "Bewerben Sie sich auf eine studentische Hilfskraft-Stelle (HiWi)."
+
+msgid "Apply for an internship with our team."
+msgstr "Bewerben Sie sich auf ein Praktikum in unserem Team."
+
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+msgid "Available from"
+msgstr "Verfügbar ab"
+
+msgid "Average"
+msgstr "Durchschnittlich"
+
+msgid "Bachelor thesis enquiry"
+msgstr "Anfrage Bachelorarbeit"
+
+msgid "Basic"
+msgstr "Grundkenntnisse"
+
+msgid "Blank form"
+msgstr "Leeres Formular"
+
+msgid "Broken link"
+msgstr "Defekter Link"
+
+msgid "Callback request"
+msgstr "Rückrufanfrage"
+
+msgid "Category"
+msgstr "Kategorie"
+
+msgid "Checkbox"
+msgstr "Kontrollkästchen"
+
+msgid "Click Save changes after editing settings on each tab."
+msgstr "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderungen speichern“."
+
+msgid "Confirmation: %s"
+msgstr "Bestätigung: %s"
+
+msgid "Contact"
+msgstr "Kontakt"
+
+msgid "Contact form"
+msgstr "Kontaktformular"
+
+msgid "Contact our press office or communications team."
+msgstr "Kontaktieren Sie unsere Pressestelle oder das Kommunikationsteam."
+
+msgid "Contact · Callback request"
+msgstr "Kontakt · Rückrufanfrage"
+
+msgid "Contact · General enquiry"
+msgstr "Kontakt · Allgemeine Anfrage"
+
+msgid "Contact · Press enquiry"
+msgstr "Kontakt · Presseanfrage"
+
+msgid "Contact · Website feedback"
+msgstr "Kontakt · Website-Feedback"
+
+msgid "Contact · Website or technical issue"
+msgstr "Kontakt · Website- oder technisches Problem"
+
+msgid "Content issue"
+msgstr "Inhaltliches Problem"
+
+msgid "Continue to the next tab to see the highlighted field."
+msgstr "Wechseln Sie zur nächsten Registerkarte, um das hervorgehobene Feld zu sehen."
+
+msgid "Cooperation enquiry"
+msgstr "Kooperationsanfrage"
+
+msgid "Create contact and enquiry forms in the block editor — without HTML, with spam protection and secure mail delivery."
+msgstr "Erstellen Sie Kontakt- und Anfrageformulare im Block-Editor — ohne HTML, mit Spam-Schutz und sicherem Mail-Versand."
+
+msgid "Create forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically."
+msgstr "Formulare ohne HTML erstellen. Sie definieren die Felder — Design, Spam-Schutz und Mail-Versand werden automatisch übernommen."
+
+msgid "Current semester"
+msgstr "Aktuelles Fachsemester"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Days and times you are available"
+msgstr "Tage und Uhrzeiten, zu denen Sie verfügbar sind"
+
+msgid "Deadline"
+msgstr "Frist"
+
+msgid "Default recipient"
+msgstr "Standard-Empfänger"
+
+msgid "Define which e-mail domains may be used as recipients and for confirmation mails."
+msgstr "Legen Sie fest, welche E-Mail-Domains als Empfänger und für Bestätigungsmails verwendet werden dürfen."
+
+msgid "Delete selected domains"
+msgstr "Ausgewählte Domains löschen"
+
+msgid "Describe your IT problem. For account issues, please include your IdM user name."
+msgstr "Beschreiben Sie Ihr IT-Problem. Bei Kontoproblemen geben Sie bitte Ihren IdM-Benutzernamen an."
+
+msgid "Describe your issue and we will get back to you."
+msgstr "Beschreiben Sie Ihr Anliegen und wir melden uns bei Ihnen."
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Description of the issue"
+msgstr "Beschreibung des Problems"
+
+msgid "Desired internship period"
+msgstr "Gewünschter Praktikumszeitraum"
+
+msgid "Desired weekly hours"
+msgstr "Gewünschte Wochenstunden"
+
+msgid "Dietary requirements"
+msgstr "Ernährungsanforderungen"
+
+msgid "Display name shown as the mail sender. The address always comes from the server."
+msgstr "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
+
+msgid "Display name used as the mail sender. The address always comes from the server."
+msgstr "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
+
+msgid "Display or layout"
+msgstr "Darstellung oder Layout"
+
+msgid "Domains for automatic confirmation mails to submitters. Leave empty to disable all confirmations."
+msgstr "Domains für automatische Bestätigungsmails an Absender. Leer lassen, um alle Bestätigungen zu deaktivieren."
+
+msgid "Domains for which automatic confirmation mails may be sent to the submitter. Leave empty to disable all confirmations."
+msgstr "Domains, für die automatische Bestätigungsmails an Absender gesendet werden dürfen. Leer lassen, um alle Bestätigungen zu deaktivieren."
+
+msgid "E-mail"
+msgstr "E-Mail"
+
+msgid "E-mail address"
+msgstr "E-Mail-Adresse"
+
+msgid "E-mail address (optional)"
+msgstr "E-Mail-Adresse (optional)"
+
+msgid "Either"
+msgstr "Beides möglich"
+
+msgid "Enquiry"
+msgstr "Anfrage"
+
+msgid "Event details"
+msgstr "Veranstaltungsdetails"
+
+msgid "Event registration"
+msgstr "Veranstaltungsanmeldung"
+
+msgid "Events · Abstract submission"
+msgstr "Veranstaltungen · Abstract-Einreichung"
+
+msgid "Events · Event registration"
+msgstr "Veranstaltungen · Veranstaltungsanmeldung"
+
+msgid "Events · Workshop registration"
+msgstr "Veranstaltungen · Workshop-Anmeldung"
+
+msgid "Excellent"
+msgstr "Ausgezeichnet"
+
+msgid "Expectations"
+msgstr "Erwartungen"
+
+msgid "Express your interest in writing a bachelor thesis with us."
+msgstr "Bekunden Sie Ihr Interesse an einer Bachelorarbeit bei uns."
+
+msgid "Express your interest in writing a master thesis with us."
+msgstr "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
+
+msgid "Fallback address when a form block does not specify a recipient. Uses the site admin email if empty."
+msgstr "Fallback-Adresse, wenn ein Formularblock keinen Empfänger angibt. Verwendet die Admin-E-Mail der Website, wenn leer."
+
+msgid "Fallback e-mail address when a form block does not specify its own recipient."
+msgstr "Fallback-E-Mail-Adresse, wenn ein Formularblock keinen eigenen Empfänger angibt."
+
+msgid "Feedback"
+msgstr "Feedback"
+
+msgid "Feedback form"
+msgstr "Feedback-Formular"
+
+msgid "Field"
+msgstr "Feld"
+
+msgid "Fields"
+msgstr "Felder"
+
+msgid "First name"
+msgstr "Vorname"
+
+msgid "Flexible"
+msgstr "Flexibel"
+
+msgid "Form settings"
+msgstr "Formular-Einstellungen"
+
+msgid "Form submission: %s"
+msgstr "Formularübermittlung: %s"
+
+msgid "Form template"
+msgstr "Formular-Vorlage"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Get in touch with our alumni network."
+msgstr "Nehmen Sie Kontakt mit unserem Alumni-Netzwerk auf."
+
+msgid "Good"
+msgstr "Gut"
+
+msgid "Guest lecture"
+msgstr "Gastvortrag"
+
+msgid "Guided tour"
+msgstr "Geführte Tour"
+
+msgid "Hardware"
+msgstr "Hardware"
+
+msgid "Help us improve this website."
+msgstr "Helfen Sie uns, diese Website zu verbessern."
+
+msgid "I agree to receive the newsletter and have read the privacy notice."
+msgstr "Ich möchte den Newsletter erhalten und habe die Datenschutzhinweise gelesen."
+
+msgid "I confirm that I have read the participant information."
+msgstr "Ich bestätige, dass ich die Teilnehmerinformationen gelesen habe."
+
+msgid "IT support request"
+msgstr "IT-Support-Anfrage"
+
+msgid "IT · Support request"
+msgstr "IT · Support-Anfrage"
+
+msgid "IdM user name"
+msgstr "IdM-Benutzername"
+
+msgid "If applicable"
+msgstr "Falls zutreffend"
+
+msgid "In person"
+msgstr "Vor Ort"
+
+msgid "Include SSO / logged-in user data"
+msgstr "SSO- / Angemeldete-Benutzer-Daten einbeziehen"
+
+msgid "Include SSO data by default"
+msgstr "SSO-Daten standardmäßig einbeziehen"
+
+msgid "Industry partnership"
+msgstr "Industriepartnerschaft"
+
+msgid "Infrastructure · Room booking request"
+msgstr "Infrastruktur · Raumbuchungsanfrage"
+
+msgid "Insert the “RRZE Formular” block on any page, choose a template and adjust fields in the sidebar."
+msgstr "Fügen Sie den Block „RRZE Formular“ auf einer Seite ein, wählen Sie eine Vorlage und passen Sie die Felder in der Seitenleiste an."
+
+msgid "Internship application"
+msgstr "Praktikumsbewerbung"
+
+msgid "Invalid or too fast submission."
+msgstr "Ungültige oder zu schnelle Übermittlung."
+
+msgid "Issue type"
+msgstr "Art des Problems"
+
+msgid "Joint research project"
+msgstr "Gemeinsames Forschungsprojekt"
+
+msgid "Keywords"
+msgstr "Schlagwörter"
+
+msgid "Lab / equipment"
+msgstr "Labor / Gerät"
+
+msgid "Lab or equipment reservation"
+msgstr "Labor- oder Gerätereservierung"
+
+msgid "Label"
+msgstr "Beschriftung"
+
+msgid "Laboratory"
+msgstr "Labor"
+
+msgid "Last name"
+msgstr "Nachname"
+
+msgid "Leave your number and we will call you back."
+msgstr "Hinterlassen Sie Ihre Nummer und wir rufen Sie zurück."
+
+msgid "Logfile is empty."
+msgstr "Logdatei ist leer."
+
+msgid "Login"
+msgstr "Anmeldung"
+
+msgid "Master thesis enquiry"
+msgstr "Anfrage Masterarbeit"
+
+msgid "Matriculation number"
+msgstr "Matrikelnummer"
+
+msgid "Maximum number of accepted submissions from one IP address per hour."
+msgstr "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
+
+msgid "Media outlet"
+msgstr "Medium / Redaktion"
+
+msgid "Meeting room"
+msgstr "Besprechungsraum"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Minimum fill time (seconds)"
+msgstr "Mindest-Ausfüllzeit (Sekunden)"
+
+msgid "Morning (8–12)"
+msgstr "Vormittags (8–12 Uhr)"
+
+msgid "Motivation"
+msgstr "Motivation"
+
+msgid "Motivation and expectations"
+msgstr "Motivation und Erwartungen"
+
+msgid "Move down"
+msgstr "Nach unten"
+
+msgid "Move up"
+msgstr "Nach oben"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Network / VPN"
+msgstr "Netzwerk / VPN"
+
+msgid "New field"
+msgstr "Neues Feld"
+
+msgid "New option"
+msgstr "Neue Option"
+
+msgid "Newsletter signup"
+msgstr "Newsletter-Anmeldung"
+
+msgid "No"
+msgstr "Nein"
+
+msgid "No prior knowledge"
+msgstr "Keine Vorkenntnisse"
+
+msgid "No valid recipient configured."
+msgstr "Kein gültiger Empfänger konfiguriert."
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Number"
+msgstr "Zahl"
+
+msgid "Number of participants"
+msgstr "Anzahl der Teilnehmenden"
+
+msgid "Office hours appointment"
+msgstr "Sprechstundentermin"
+
+msgid "One domain per line (e.g. fau.de). Recipients must use one of these domains."
+msgstr "Eine Domain pro Zeile (z. B. fau.de). Empfänger müssen eine dieser Domains verwenden."
+
+msgid "One domain per line (e.g. fau.de, uni-erlangen.de). Recipients must use one of these domains. Confirmation mails are only sent to addresses on allowed domains."
+msgstr "Eine Domain pro Zeile (z. B. fau.de, uni-erlangen.de). Empfänger müssen eine dieser Domains verwenden. Bestätigungsmails werden nur an Adressen auf erlaubten Domains gesendet."
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Only sent when the submitter e-mail uses an allowed confirmation domain."
+msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
+
+msgid "Open the General tab to configure the default recipient and sender name."
+msgstr "Öffnen Sie die Registerkarte Allgemein, um Standard-Empfänger und Absendername zu konfigurieren."
+
+msgid "Option 1"
+msgstr "Option 1"
+
+msgid "Option label"
+msgstr "Optionsbeschriftung"
+
+msgid "Option value"
+msgstr "Optionswert"
+
+msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
+msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
+
+msgid "Organisation / company"
+msgstr "Organisation / Unternehmen"
+
+msgid "Organisation / unit"
+msgstr "Organisation / Einrichtung"
+
+msgid "Other"
+msgstr "Sonstiges"
+
+msgid "Outdated or incorrect content"
+msgstr "Veralteter oder fehlerhafter Inhalt"
+
+msgid "Overall rating"
+msgstr "Gesamtbewertung"
+
+msgid "Page URL"
+msgstr "Seiten-URL"
+
+msgid "Paper title"
+msgstr "Titel des Beitrags"
+
+msgid "Participation"
+msgstr "Teilnahme"
+
+msgid "Personal details"
+msgstr "Persönliche Angaben"
+
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+msgid "Please choose…"
+msgstr "Bitte wählen…"
+
+msgid "Please enter a valid e-mail address."
+msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+
+msgid "Please fill in all required fields correctly."
+msgstr "Bitte füllen Sie alle Pflichtfelder korrekt aus."
+
+msgid "Please note: \"Delete selected domains\" will DELETE every FAQ and glossary entry on this website that has been fetched from the selected domains."
+msgstr "Hinweis: „Ausgewählte Domains löschen“ löscht alle FAQ- und Glossar-Einträge auf dieser Website, die von den ausgewählten Domains abgerufen wurden."
+
+msgid "Plugins: %1$s: %2$s"
+msgstr "Plugins: %1$s: %2$s"
+
+msgid "Poor"
+msgstr "Schlecht"
+
+msgid "Poster"
+msgstr "Poster"
+
+msgid "Preferred date"
+msgstr "Wunschtermin"
+
+msgid "Preferred format"
+msgstr "Bevorzugtes Format"
+
+msgid "Preferred start date"
+msgstr "Gewünschtes Startdatum"
+
+msgid "Preferred supervisor"
+msgstr "Bevorzugte Betreuungsperson"
+
+msgid "Preferred time"
+msgstr "Bevorzugte Uhrzeit"
+
+msgid "Press enquiry"
+msgstr "Presseanfrage"
+
+msgid "Prior knowledge"
+msgstr "Vorkenntnisse"
+
+msgid "Problem description"
+msgstr "Problembeschreibung"
+
+msgid "Project description"
+msgstr "Projektbeschreibung"
+
+msgid "Propose a research or industry cooperation."
+msgstr "Schlagen Sie eine Forschungs- oder Industriekooperation vor."
+
+msgid "Public relations · Alumni contact"
+msgstr "Öffentlichkeitsarbeit · Alumni-Kontakt"
+
+msgid "Public relations · Newsletter signup"
+msgstr "Öffentlichkeitsarbeit · Newsletter-Anmeldung"
+
+msgid "Purpose"
+msgstr "Zweck"
+
+msgid "Purpose of use"
+msgstr "Verwendungszweck"
+
+msgid "RRZE Formular"
+msgstr "RRZE Formular"
+
+msgid "RRZE Formular Settings"
+msgstr "RRZE Formular Einstellungen"
+
+msgid "RRZE Formular guided tour"
+msgstr "RRZE Formular – Geführte Tour"
+
+msgid "Radio"
+msgstr "Optionsfeld"
+
+msgid "Recipient e-mail"
+msgstr "Empfänger-E-Mail"
+
+msgid "Register as a participant in our research study."
+msgstr "Registrieren Sie sich als Teilnehmer an unserer Studie."
+
+msgid "Register for the event."
+msgstr "Melden Sie sich für die Veranstaltung an."
+
+msgid "Register for the workshop."
+msgstr "Melden Sie sich für den Workshop an."
+
+msgid "Reject submissions that arrive faster than this threshold."
+msgstr "Übermittlungen ablehnen, die schneller als dieser Schwellenwert eingehen."
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Report a technical problem or an error on this website."
+msgstr "Melden Sie ein technisches Problem oder einen Fehler auf dieser Website."
+
+msgid "Report an issue"
+msgstr "Problem melden"
+
+msgid "Request a lab space or research equipment."
+msgstr "Fordern Sie einen Laborplatz oder Forschungsgeräte an."
+
+msgid "Request a room or meeting space."
+msgstr "Fordern Sie einen Raum oder Besprechungsraum an."
+
+msgid "Request an appointment during office hours."
+msgstr "Vereinbaren Sie einen Termin in der Sprechstunde."
+
+msgid "Required"
+msgstr "Pflichtfeld"
+
+msgid "Research · Cooperation enquiry"
+msgstr "Forschung · Kooperationsanfrage"
+
+msgid "Research · Lab or equipment reservation"
+msgstr "Forschung · Labor- oder Gerätereservierung"
+
+msgid "Research · Study participant registration"
+msgstr "Forschung · Studienteilnehmer-Anmeldung"
+
+msgid "Room booking request"
+msgstr "Raumbuchungsanfrage"
+
+msgid "Room type"
+msgstr "Raumtyp"
+
+msgid "SSO / logged-in user"
+msgstr "SSO / angemeldeter Benutzer"
+
+msgid "Section heading"
+msgstr "Abschnittsüberschrift"
+
+msgid "Select"
+msgstr "Auswahlfeld"
+
+msgid "Seminar room"
+msgstr "Seminarraum"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "Send confirmation to submitter"
+msgstr "Bestätigung an Absender senden"
+
+msgid "Send us a message."
+msgstr "Senden Sie uns eine Nachricht."
+
+msgid "Send us a message. We will reply as soon as possible."
+msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
+
+msgid "Sender name"
+msgstr "Absendername"
+
+msgid "Sending…"
+msgstr "Wird gesendet…"
+
+msgid "Settings issues detected."
+msgstr "Probleme in den Einstellungen erkannt."
+
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+msgid "Setup tour"
+msgstr "Einrichtungs-Tour"
+
+msgid "Skills and experience"
+msgstr "Kenntnisse und Erfahrung"
+
+msgid "Software"
+msgstr "Software"
+
+msgid "Source"
+msgstr "Quelle"
+
+msgid "Spam Protection"
+msgstr "Spam-Schutz"
+
+msgid "Spam detected."
+msgstr "Spam erkannt."
+
+msgid "Step"
+msgstr "Schritt"
+
+msgid "Student assistant application"
+msgstr "HiWi-Bewerbung"
+
+msgid "Study participant registration"
+msgstr "Studienteilnehmer-Anmeldung"
+
+msgid "Study programme"
+msgstr "Studiengang"
+
+msgid "Subject"
+msgstr "Betreff"
+
+msgid "Submissions per IP per hour"
+msgstr "Übermittlungen pro IP pro Stunde"
+
+msgid "Submit an abstract for the conference or symposium."
+msgstr "Reichen Sie ein Abstract für die Konferenz oder das Symposium ein."
+
+msgid "Submit button label"
+msgstr "Beschriftung des Senden-Buttons"
+
+msgid "Submitted from"
+msgstr "Eingereicht von"
+
+msgid "Subscribe to our newsletter."
+msgstr "Abonnieren Sie unseren Newsletter."
+
+msgid "Success message"
+msgstr "Erfolgsmeldung"
+
+msgid "Support request"
+msgstr "Support-Anfrage"
+
+msgid "Talk"
+msgstr "Vortrag"
+
+msgid "Teaching · Bachelor thesis enquiry"
+msgstr "Lehre · Anfrage Bachelorarbeit"
+
+msgid "Teaching · Internship application"
+msgstr "Lehre · Praktikumsbewerbung"
+
+msgid "Teaching · Master thesis enquiry"
+msgstr "Lehre · Anfrage Masterarbeit"
+
+msgid "Teaching · Office hours appointment"
+msgstr "Lehre · Sprechstundentermin"
+
+msgid "Teaching · Student assistant application"
+msgstr "Lehre · HiWi-Bewerbung"
+
+msgid "Technical issue"
+msgstr "Technisches Problem"
+
+msgid "Telephone"
+msgstr "Telefon"
+
+msgid "Telephone number"
+msgstr "Telefonnummer"
+
+msgid "Template"
+msgstr "Vorlage"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Textarea"
+msgstr "Textbereich"
+
+msgid "Thank you. Your message has been sent."
+msgstr "Vielen Dank. Ihre Nachricht wurde gesendet."
+
+msgid "The form could not be sent. Please try again later."
+msgstr "Das Formular konnte nicht gesendet werden. Bitte versuchen Sie es später erneut."
+
+msgid "The message could not be sent."
+msgstr "Die Nachricht konnte nicht gesendet werden."
+
+msgid "The server is running PHP version %1$s. The plugin requires at least PHP version %2$s."
+msgstr "Der Server verwendet PHP-Version %1$s. Das Plugin benötigt mindestens PHP-Version %2$s."
+
+msgid "The server is running WordPress version %1$s. The plugin requires at least WordPress version %2$s."
+msgstr "Der Server verwendet WordPress-Version %1$s. Das Plugin benötigt mindestens WordPress-Version %2$s."
+
+msgid "The setup tour walks you through the recommended settings step by step — start it any time with the button above."
+msgstr "Die Einrichtungs-Tour führt Sie Schritt für Schritt durch die empfohlenen Einstellungen — starten Sie sie jederzeit über die Schaltfläche oben."
+
+msgid "Thesis with external partner"
+msgstr "Abschlussarbeit mit externem Partner"
+
+msgid "This field is required."
+msgstr "Dieses Feld ist erforderlich."
+
+msgid "This form has no fields."
+msgstr "Dieses Formular hat keine Felder."
+
+msgid "Time"
+msgstr "Uhrzeit"
+
+msgid "Time slot"
+msgstr "Zeitfenster"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Too many submissions. Please try again later."
+msgstr "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut."
+
+msgid "Topic / reason for appointment"
+msgstr "Thema / Grund für den Termin"
+
+msgid "Topic ideas or areas of interest"
+msgstr "Themenideen oder Interessensgebiete"
+
+msgid "Topic ideas or research area"
+msgstr "Themenideen oder Forschungsgebiet"
+
+msgid "Topic of the call"
+msgstr "Thema des Rückrufs"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Type of cooperation"
+msgstr "Art der Kooperation"
+
+msgid "Under Settings → RRZE Formular you define the default recipient, allowed domains and spam protection limits."
+msgstr "Unter Einstellungen → RRZE Formular legen Sie den Standard-Empfänger, erlaubte Domains und Spam-Schutz-Limits fest."
+
+msgid "Unnamed tab"
+msgstr "Unbenannter Tab"
+
+msgid "Up to 10 hours"
+msgstr "Bis zu 10 Stunden"
+
+msgid "Up to 15 hours"
+msgstr "Bis zu 15 Stunden"
+
+msgid "Up to 5 hours"
+msgstr "Bis zu 5 Stunden"
+
+msgid "Vegan"
+msgstr "Vegan"
+
+msgid "Vegetarian"
+msgstr "Vegetarisch"
+
+msgid "Very poor"
+msgstr "Sehr schlecht"
+
+msgid "We appreciate your feedback."
+msgstr "Wir freuen uns über Ihr Feedback."
+
+msgid "We received your submission."
+msgstr "Wir haben Ihre Übermittlung erhalten."
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Website / CMS"
+msgstr "Website / CMS"
+
+msgid "Website feedback"
+msgstr "Website-Feedback"
+
+msgid "When a logged-in user submits a form, include name and email in the operator mail."
+msgstr "Name und E-Mail in die Betreiber-Mail aufnehmen, wenn ein angemeldeter Benutzer ein Formular absendet."
+
+msgid "When enabled, name and e-mail of logged-in users are appended to operator mails."
+msgstr "Wenn aktiviert, werden Name und E-Mail angemeldeter Benutzer an Betreiber-Mails angehängt."
+
+msgid "Workshop registration"
+msgstr "Workshop-Anmeldung"
+
+msgid "Year of graduation"
+msgstr "Abschlussjahr"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "You do not have enough permissions to do that."
+msgstr "Sie haben nicht die erforderlichen Berechtigungen dafür."
+
+msgid "Your feedback"
+msgstr "Ihr Feedback"
+
+msgid "contact"
+msgstr "Kontakt"
+
+msgid "e.g. 01.03.–31.08."
+msgstr "z. B. 01.03.–31.08."
+
+msgid "e.g. DD.MM.YYYY"
+msgstr "z. B. TT.MM.JJJJ"
+
+msgid "e.g. chair, institute, company"
+msgstr "z. B. Lehrstuhl, Institut, Unternehmen"
+
+msgid "e.g. chair, office, institution"
+msgstr "z. B. Lehrstuhl, Einrichtung, Institution"
+
+msgid "e.g. date and time"
+msgstr "z. B. Datum und Uhrzeit"
+
+msgid "form"
+msgstr "Formular"
+
+msgid "mail"
+msgstr "E-Mail"

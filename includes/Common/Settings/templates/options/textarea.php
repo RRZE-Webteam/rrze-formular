@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
     <th scope="row" class="rrze-wp-form-label">
         <label for="<?php echo $option->getIdAttribute(); ?> <?php echo $option->getLabelClassAttribute(); ?>"><?php echo $option->getLabel(); ?></label>
     </th>
-    <td class="rrze-wp-form rrze-wp-form-input">
+    <td class="rrze-wp-form rrze-wp-form-input"<?php echo $option->getTourDataAttribute(); ?>>
         <textarea name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getInputClassAttribute(); ?>><?php echo $option->getValueAttribute(); ?></textarea>
         <?php if ($description = $option->getArg('description')) { ?>
             <p class="description"><?php echo $description; ?></p>

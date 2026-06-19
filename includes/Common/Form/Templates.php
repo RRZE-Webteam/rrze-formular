@@ -255,7 +255,7 @@ class Templates
                 'fields' => array_merge(
                     self::personalFields(),
                     [
-                        self::heading('event_heading', __('Event details', 'rrze-formular'), 2),
+                        self::heading('event_heading', __('Event details', 'rrze-formular')),
                         self::field('attendance', 'radio', __('Participation', 'rrze-formular'), [
                             'required' => true,
                                                         'options' => [

@@ -9,7 +9,12 @@ class FormRenderer
     public static function render(array $attributes): string
     {
         $attributes = self::normalizeAttributes($attributes);
-        $fields = FieldTypes::sanitizeFields($attributes['fields']);
+        $fields = FieldTypes::localizeFieldsForDisplay(
+            FieldTypes::sanitizeFields($attributes['fields'])
+        );
+        $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
+        $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
+        $attributes['submitLabel'] = FieldTypes::localizeDisplayString($attributes['submitLabel']);
         $tokenData = SpamProtection::createToken();
         $formId = wp_unique_id('rrze-fw-');
 

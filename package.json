@@ -1,16 +1,17 @@
 {
   "name": "rrze-formular",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Simple forms for the block editor with automatic design, spam protection and secure mail delivery.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
   "textdomain": "rrze-formular",
   "scripts": {
-    "start": "wp-scripts start formular=./blocks/formular/index.js src/js/rrze-formular-frontend.js --webpack-copy-php",
+    "start": "wp-scripts start formular=./blocks/formular/index.js rrze-formular-guided-tour=./src/js/rrze-formular-guided-tour.js src/js/rrze-formular-frontend.js --webpack-copy-php",
     "build": "npm-run-all build:js build:css increment-version",
-    "build:js": "wp-scripts build formular=./blocks/formular/index.js src/js/rrze-formular-frontend.js --webpack-copy-php",
+    "build:js": "wp-scripts build formular=./blocks/formular/index.js rrze-formular-guided-tour=./src/js/rrze-formular-guided-tour.js src/js/rrze-formular-frontend.js --webpack-copy-php",
     "build:css": "sass src/sass:build/css --style compressed --no-source-map",
     "increment-version": "node increment-version.js patch",
+    "i18n:build": "node scripts/build-languages.js",
     "format": "wp-scripts format",
     "lint:js": "wp-scripts lint-js"
   },

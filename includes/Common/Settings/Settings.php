@@ -290,8 +290,8 @@ class Settings
         add_action('admin_menu', [$this, 'addToMenu'], 20);
         add_action('admin_head', [$this, 'styling'], 20);
         add_action('admin_enqueue_scripts', [$this, 'enqueueGuidedTour']);
-        add_action('wp_ajax_rrze_answers_dismiss_guided_tour', [$this, 'dismissGuidedTour']);
-        add_action('wp_ajax_rrze_answers_dismiss_setup_tour', [$this, 'dismissSetupTour']);
+        add_action('wp_ajax_rrze_formular_dismiss_guided_tour', [$this, 'dismissGuidedTour']);
+        add_action('wp_ajax_rrze_formular_dismiss_setup_tour', [$this, 'dismissSetupTour']);
     }
 
     /**
@@ -347,39 +347,39 @@ class Settings
             $setupTourStepId = sanitize_key((string) wp_unslash($_GET['rrze_setup_tour_step']));
         }
 
-        wp_localize_script('rrze-formular-guided-tour', 'rrzeAnswersGuide', [
-            'autoStart' => !get_user_meta(get_current_user_id(), 'rrze_answers_guided_tour_dismissed', true),
+        wp_localize_script('rrze-formular-guided-tour', 'rrzeFormularGuide', [
+            'autoStart' => !get_user_meta(get_current_user_id(), 'rrze_formular_guided_tour_dismissed', true),
             'autoStartSetup' => isset($_GET['rrze_setup_tour']),
             'setupTourStepId' => $setupTourStepId,
             'settingsUrl' => $this->getUrl(),
             'activeTab' => $this->getActiveTab()->slug,
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('rrze_answers_guided_tour'),
-            'setupTourNonce' => wp_create_nonce('rrze_answers_setup_tour'),
+            'nonce' => wp_create_nonce('rrze_formular_guided_tour'),
+            'setupTourNonce' => wp_create_nonce('rrze_formular_setup_tour'),
         ]);
     }
 
     public function dismissSetupTour(): void
     {
-        check_ajax_referer('rrze_answers_setup_tour', 'nonce');
+        check_ajax_referer('rrze_formular_setup_tour', 'nonce');
 
         if (!current_user_can($this->capability)) {
             wp_send_json_error(null, 403);
         }
 
-        update_user_meta(get_current_user_id(), 'rrze_answers_setup_tour_dismissed', 1);
+        update_user_meta(get_current_user_id(), 'rrze_formular_setup_tour_dismissed', 1);
         wp_send_json_success();
     }
 
     public function dismissGuidedTour(): void
     {
-        check_ajax_referer('rrze_answers_guided_tour', 'nonce');
+        check_ajax_referer('rrze_formular_guided_tour', 'nonce');
 
         if (!current_user_can($this->capability)) {
             wp_send_json_error(null, 403);
         }
 
-        update_user_meta(get_current_user_id(), 'rrze_answers_guided_tour_dismissed', 1);
+        update_user_meta(get_current_user_id(), 'rrze_formular_guided_tour_dismissed', 1);
         wp_send_json_success();
     }
 

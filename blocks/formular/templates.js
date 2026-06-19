@@ -41,7 +41,8 @@ const studentFields = () => [
 	} ),
 ];
 
-export const TEMPLATES = [
+export function getTemplates() {
+	return [
 	{
 		label: __( 'Blank form', 'rrze-formular' ),
 		value: 'blank',
@@ -547,4 +548,5 @@ export const TEMPLATES = [
 							} ),
 		],
 	},
-];
+	];
+}
