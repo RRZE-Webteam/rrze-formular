@@ -4,7 +4,7 @@ Tags: form, contact, block, wizard, mail
 Requires at least: 6.8
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 0.0.2
+Stable tag: 0.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,7 +53,7 @@ Only when enabled on the block and the submitter e-mail uses a domain listed und
 
 = How does SSO integration work? =
 
-If a user is logged in, name and e-mail are appended to the operator mail. External SSO systems can supply data via the `rrze_formwizard_sso_user_data` filter.
+If a user is logged in, name and e-mail are appended to the operator mail. External SSO systems can supply data via the `rrze_formular_sso_user_data` filter.
 
 == Changelog ==
 
