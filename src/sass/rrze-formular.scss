@@ -526,6 +526,14 @@ body .block-editor-block-list__block .rrze-formular {
 
 .rrze-formular__radio-group {
 	margin: 0;
+	border: 0;
+	padding: 0;
+	min-width: 0;
+
+	> .rrze-formular__field-label {
+		margin-bottom: 0.35rem;
+		padding: 0;
+	}
 }
 
 // Submit button

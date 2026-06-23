@@ -102,9 +102,32 @@ class FieldTypes
             'type' => $type,
             'label' => sanitize_text_field((string) ($field['label'] ?? '')),
             'placeholder' => sanitize_text_field((string) ($field['placeholder'] ?? '')),
-            'required' => !empty($field['required']),
+            'required' => self::isFieldRequired($field),
             'options' => $options,
         ];
+    }
+
+    public static function isFieldRequired(array $field): bool
+    {
+        if (!array_key_exists('required', $field)) {
+            return false;
+        }
+
+        $required = $field['required'];
+
+        if (is_bool($required)) {
+            return $required;
+        }
+
+        if (is_int($required) || is_float($required)) {
+            return (int) $required === 1;
+        }
+
+        if (is_string($required)) {
+            return in_array(strtolower(trim($required)), ['1', 'true', 'yes', 'on'], true);
+        }
+
+        return false;
     }
 
     public static function sanitizeFields(array $fields): array
@@ -142,5 +165,62 @@ class FieldTypes
     public static function localizeFieldsForDisplay(array $fields): array
     {
         return array_map([self::class, 'localizeFieldForDisplay'], $fields);
+    }
+
+    /**
+     * HTML autocomplete token for a field (https://html.spec.whatwg.org/#autofill).
+     */
+    public static function getAutocomplete(array $field): string
+    {
+        $id = sanitize_key((string) ($field['id'] ?? ''));
+        $type = (string) ($field['type'] ?? 'text');
+
+        $byId = [
+            'firstname' => 'given-name',
+            'first_name' => 'given-name',
+            'vorname' => 'given-name',
+            'lastname' => 'family-name',
+            'last_name' => 'family-name',
+            'nachname' => 'family-name',
+            'name' => 'name',
+            'email' => 'email',
+            'e_mail' => 'email',
+            'phone' => 'tel',
+            'telephone' => 'tel',
+            'tel' => 'tel',
+            'mobile' => 'tel',
+            'organisation' => 'organization',
+            'organization' => 'organization',
+            'company' => 'organization',
+            'street' => 'street-address',
+            'address' => 'street-address',
+            'postal_code' => 'postal-code',
+            'zip' => 'postal-code',
+            'plz' => 'postal-code',
+            'city' => 'address-level2',
+            'country' => 'country-name',
+            'url' => 'url',
+            'website' => 'url',
+            'username' => 'username',
+        ];
+
+        if (isset($byId[$id])) {
+            return $byId[$id];
+        }
+
+        $byType = [
+            'email' => 'email',
+            'tel' => 'tel',
+        ];
+
+        if (isset($byType[$type])) {
+            return $byType[$type];
+        }
+
+        if (in_array($id, ['message', 'comment', 'subject', 'topic', 'abstract', 'motivation', 'skills'], true)) {
+            return 'off';
+        }
+
+        return '';
     }
 }

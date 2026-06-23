@@ -177,7 +177,7 @@ class FormHandler
             $id = $field['id'];
             $value = $values[$id] ?? '';
 
-            if (!empty($field['required'])) {
+            if (FieldTypes::isFieldRequired($field)) {
                 $isEmpty = is_array($value) ? $value === [] : ($value === '' || $value === null);
                 if ($isEmpty) {
                     $errors[$id] = __('This field is required.', 'rrze-formular');
