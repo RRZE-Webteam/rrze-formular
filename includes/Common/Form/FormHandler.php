@@ -8,6 +8,11 @@ class FormHandler
 {
     public function handle(array $payload): array
     {
+        return FormLocale::withSiteLocale(fn (): array => $this->processSubmission($payload), $payload);
+    }
+
+    private function processSubmission(array $payload): array
+    {
         if (!SpamProtection::checkRateLimit()) {
             return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
@@ -58,10 +63,12 @@ class FormHandler
             : !empty($options['include_sso_by_default']);
 
         $ssoData = $includeSso ? SSO::getUserData() : null;
-        $mailBody = $this->buildMailBody($attributes, $inputFields, $sanitized, $ssoData);
-        $subject = $this->buildSubject($attributes, $inputFields, $sanitized);
+        $submissionUrl = Mailer::resolveSubmissionUrl((string) ($payload['pageUrl'] ?? ''));
+        $websiteHeaders = Mailer::websiteHeaders($submissionUrl);
+        $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
+        $subject = $this->buildSubject($attributes, $sanitized);
 
-        $sent = Mailer::sendOperatorMail($recipient, $subject, $mailBody);
+        $sent = Mailer::sendOperatorMail($recipient, $subject, $mailBody, $websiteHeaders);
         if (!$sent) {
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
@@ -73,13 +80,18 @@ class FormHandler
                 true,
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
-                $this->buildConfirmationBody($attributes, $inputFields, $sanitized)
+                $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
+                $websiteHeaders
             );
         }
 
+        $successMessage = $attributes['successMessage'] !== ''
+            ? $attributes['successMessage']
+            : __('Thank you. Your message has been sent.', 'rrze-formular');
+
         return [
             'success' => true,
-            'message' => sanitize_text_field((string) ($attributes['successMessage'] ?? __('Thank you. Your message has been sent.', 'rrze-formular'))),
+            'message' => sanitize_text_field($successMessage),
             'status' => 200,
         ];
     }
@@ -156,85 +168,102 @@ class FormHandler
         return $errors;
     }
 
-    private function buildSubject(array $attributes, array $fields, array $values): string
+    private function buildSubject(array $attributes, array $values): string
     {
+        if (($values['subject'] ?? '') !== '') {
+            return sanitize_text_field((string) $values['subject']);
+        }
+
         $title = $attributes['formTitle'] !== ''
             ? $attributes['formTitle']
             : get_bloginfo('name');
 
-        foreach ($fields as $field) {
-            if ($field['id'] === 'subject' && !empty($values['subject'])) {
-                return sprintf('%s: %s', $title, $values['subject']);
-            }
-        }
-
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
     }
 
-    private function buildMailBody(array $attributes, array $fields, array $values, ?array $ssoData): string
+    private function buildMailBody(array $fields, array $values, ?array $ssoData): string
     {
         $lines = [];
+        $messageFieldId = $this->findLeadingMessageFieldId($fields, $values);
 
-        if ($attributes['formTitle'] !== '') {
-            $lines[] = $attributes['formTitle'];
-            $lines[] = str_repeat('-', min(40, strlen($attributes['formTitle'])));
-        }
-
-        if ($attributes['formDescription'] !== '') {
-            $lines[] = $attributes['formDescription'];
-            $lines[] = '';
-        }
-
-        foreach ($fields as $field) {
-            $label = $field['label'] !== '' ? $field['label'] : $field['id'];
-            $value = $values[$field['id']] ?? '';
-
-            if ($field['type'] === 'checkbox') {
-                $value = $value !== '' ? __('Yes', 'rrze-formular') : __('No', 'rrze-formular');
-            } elseif ($field['type'] === 'select' || $field['type'] === 'radio') {
-                foreach ($field['options'] as $option) {
-                    if ($option['value'] === $value) {
-                        $value = $option['label'];
-                        break;
-                    }
-                }
-            }
-
-            $lines[] = $label . ': ' . $value;
-        }
-
-        if ($ssoData !== null) {
-            $lines[] = '';
-            $lines[] = SSO::formatForMail($ssoData);
+        if ($messageFieldId !== null) {
+            $lines[] = $values[$messageFieldId];
         }
 
         $lines[] = '';
-        $lines[] = __('Submitted from', 'rrze-formular') . ': ' . esc_url_raw((string) (wp_get_referer() ?: home_url('/')));
-        $lines[] = __('Date', 'rrze-formular') . ': ' . wp_date('Y-m-d H:i:s');
+
+        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
+        if ($fullName !== '') {
+            $lines[] = $fullName;
+        }
+
+        foreach (['email', 'phone', 'organisation'] as $fieldId) {
+            $value = $this->valueForFieldId($fields, $values, $fieldId);
+            if ($value !== '') {
+                $lines[] = $value;
+            }
+        }
+
+        $reservedIds = ['message', 'subject', 'firstname', 'lastname', 'email', 'phone', 'organisation'];
+        foreach ($fields as $field) {
+            if (in_array($field['id'], $reservedIds, true) || $field['id'] === $messageFieldId) {
+                continue;
+            }
+
+            $value = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
+            if ($value === '') {
+                continue;
+            }
+
+            $label = $field['label'] !== '' ? $field['label'] : $field['id'];
+            $lines[] = $label . ': ' . $value;
+        }
+
+        $lines[] = '';
+
+        if ($ssoData !== null) {
+            $lines[] = SSO::formatCompactLine($ssoData);
+        }
+
+        $lines[] = Mailer::formatSiteLinkLine();
+        $lines[] = Mailer::formatMailDateLine();
 
         return implode("\n", $lines);
     }
 
-    private function buildConfirmationBody(array $attributes, array $fields, array $values): string
+    private function buildConfirmationBody(array $fields, array $values, ?array $ssoData): string
     {
         $lines = [
             __('We received your submission.', 'rrze-formular'),
             '',
         ];
 
-        if ($attributes['formTitle'] !== '') {
-            $lines[] = $attributes['formTitle'];
+        $messageFieldId = $this->findLeadingMessageFieldId($fields, $values);
+        if ($messageFieldId !== null) {
+            $lines[] = $values[$messageFieldId];
             $lines[] = '';
         }
 
-        foreach ($fields as $field) {
-            if ($field['type'] === 'textarea') {
-                continue;
-            }
-
-            $label = $field['label'] !== '' ? $field['label'] : $field['id'];
-            $lines[] = $label . ': ' . ($values[$field['id']] ?? '');
+        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
+        if ($fullName !== '') {
+            $lines[] = $fullName;
         }
+
+        foreach (['email', 'phone', 'organisation'] as $fieldId) {
+            $value = $this->valueForFieldId($fields, $values, $fieldId);
+            if ($value !== '') {
+                $lines[] = $value;
+            }
+        }
+
+        $lines[] = '';
+
+        if ($ssoData !== null) {
+            $lines[] = SSO::formatCompactLine($ssoData);
+        }
+
+        $lines[] = Mailer::formatSiteLinkLine();
+        $lines[] = Mailer::formatMailDateLine();
 
         return implode("\n", $lines);
     }
@@ -248,6 +277,57 @@ class FormHandler
         }
 
         return '';
+    }
+
+    private function findLeadingMessageFieldId(array $fields, array $values): ?string
+    {
+        foreach ($fields as $field) {
+            if ($field['id'] === 'message' && ($values['message'] ?? '') !== '') {
+                return 'message';
+            }
+        }
+
+        foreach ($fields as $field) {
+            if ($field['type'] === 'textarea' && ($values[$field['id']] ?? '') !== '') {
+                return $field['id'];
+            }
+        }
+
+        return null;
+    }
+
+    private function valueForFieldId(array $fields, array $values, string $fieldId): string
+    {
+        if (($values[$fieldId] ?? '') === '') {
+            return '';
+        }
+
+        foreach ($fields as $field) {
+            if ($field['id'] !== $fieldId) {
+                continue;
+            }
+
+            return $this->formatFieldValueForMail($field, $values[$fieldId]);
+        }
+
+        return sanitize_text_field((string) $values[$fieldId]);
+    }
+
+    private function formatFieldValueForMail(array $field, string $value): string
+    {
+        if ($field['type'] === 'checkbox') {
+            return $value !== '' ? __('Yes', 'rrze-formular') : __('No', 'rrze-formular');
+        }
+
+        if ($field['type'] === 'select' || $field['type'] === 'radio') {
+            foreach ($field['options'] as $option) {
+                if ($option['value'] === $value) {
+                    return $option['label'];
+                }
+            }
+        }
+
+        return $value;
     }
 
     private function error(string $message, int $status): array

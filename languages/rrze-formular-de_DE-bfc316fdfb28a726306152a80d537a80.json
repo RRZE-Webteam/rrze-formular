@@ -330,8 +330,8 @@
       "Logfile is empty.": [
         "Logdatei ist leer."
       ],
-      "Login": [
-        "Anmeldung"
+      "Mail subject prefix": [
+        "Betreff-Präfix"
       ],
       "Master thesis enquiry": [
         "Anfrage Masterarbeit"
@@ -422,6 +422,9 @@
       ],
       "Option value": [
         "Optionswert"
+      ],
+      "Optional text prepended to every form mail subject in square brackets, e.g. [FAU].": [
+        "Optionaler Text, der jedem Formular-Mail-Betreff in eckigen Klammern vorangestellt wird, z. B. [FAU]."
       ],
       "Optional. Must use an allowed domain. Otherwise the default recipient is used.": [
         "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
@@ -582,8 +585,8 @@
       "Room type": [
         "Raumtyp"
       ],
-      "SSO / logged-in user": [
-        "SSO / angemeldeter Benutzer"
+      "SSO": [
+        "SSO"
       ],
       "Section heading": [
         "Abschnittsüberschrift"
@@ -627,9 +630,6 @@
       "Software": [
         "Software"
       ],
-      "Source": [
-        "Quelle"
-      ],
       "Spam Protection": [
         "Spam-Schutz"
       ],
@@ -659,9 +659,6 @@
       ],
       "Submit button label": [
         "Beschriftung des Senden-Buttons"
-      ],
-      "Submitted from": [
-        "Eingereicht von"
       ],
       "Subscribe to our newsletter.": [
         "Abonnieren Sie unseren Newsletter."

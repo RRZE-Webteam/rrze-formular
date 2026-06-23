@@ -336,8 +336,8 @@ msgstr "Hinterlassen Sie Ihre Nummer und wir rufen Sie zurück."
 msgid "Logfile is empty."
 msgstr "Logdatei ist leer."
 
-msgid "Login"
-msgstr "Anmeldung"
+msgid "Mail subject prefix"
+msgstr "Betreff-Präfix"
 
 msgid "Master thesis enquiry"
 msgstr "Anfrage Masterarbeit"
@@ -428,6 +428,9 @@ msgstr "Optionsbeschriftung"
 
 msgid "Option value"
 msgstr "Optionswert"
+
+msgid "Optional text prepended to every form mail subject in square brackets, e.g. [FAU]."
+msgstr "Optionaler Text, der jedem Formular-Mail-Betreff in eckigen Klammern vorangestellt wird, z. B. [FAU]."
 
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
@@ -588,8 +591,8 @@ msgstr "Raumbuchungsanfrage"
 msgid "Room type"
 msgstr "Raumtyp"
 
-msgid "SSO / logged-in user"
-msgstr "SSO / angemeldeter Benutzer"
+msgid "SSO"
+msgstr "SSO"
 
 msgid "Section heading"
 msgstr "Abschnittsüberschrift"
@@ -633,9 +636,6 @@ msgstr "Kenntnisse und Erfahrung"
 msgid "Software"
 msgstr "Software"
 
-msgid "Source"
-msgstr "Quelle"
-
 msgid "Spam Protection"
 msgstr "Spam-Schutz"
 
@@ -665,9 +665,6 @@ msgstr "Reichen Sie ein Abstract für die Konferenz oder das Symposium ein."
 
 msgid "Submit button label"
 msgstr "Beschriftung des Senden-Buttons"
-
-msgid "Submitted from"
-msgstr "Eingereicht von"
 
 msgid "Subscribe to our newsletter."
 msgstr "Abonnieren Sie unseren Newsletter."

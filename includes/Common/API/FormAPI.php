@@ -31,6 +31,8 @@ class FormAPI
             'values' => $request->get_param('values'),
             'website' => $request->get_param('website'),
             'token' => $request->get_param('token'),
+            'pageUrl' => $request->get_param('pageUrl'),
+            'locale' => $request->get_param('locale'),
         ];
 
         $handler = new FormHandler();

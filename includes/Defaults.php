@@ -31,6 +31,13 @@ class Defaults
             'fields' => [
                 'general' => [
                     [
+                        'name' => 'mail_subject_prefix',
+                        'label' => __('Mail subject prefix', 'rrze-formular'),
+                        'description' => __('Optional text prepended to every form mail subject in square brackets, e.g. [FAU].', 'rrze-formular'),
+                        'type' => 'text',
+                        'default' => '',
+                    ],
+                    [
                         'name' => 'include_sso_by_default',
                         'label' => __('Include SSO data by default', 'rrze-formular'),
                         'description' => __('When a logged-in user submits a form, include name and email in the operator mail.', 'rrze-formular'),

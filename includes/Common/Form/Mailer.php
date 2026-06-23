@@ -50,6 +50,113 @@ class Mailer
         return sanitize_email((string) $recipient);
     }
 
+    public static function getSubjectPrefix(): string
+    {
+        $options = self::getOptions();
+        $prefix = sanitize_text_field((string) ($options['mail_subject_prefix'] ?? ''));
+        $prefix = trim($prefix);
+        $prefix = trim($prefix, "[]");
+
+        return trim($prefix);
+    }
+
+    public static function formatSubject(string $subject): string
+    {
+        $subject = trim($subject);
+        $prefix = self::getSubjectPrefix();
+
+        if ($prefix === '') {
+            return $subject;
+        }
+
+        $prefix = sanitize_text_field((string) apply_filters('rrze_formular_mail_subject_prefix', $prefix));
+
+        if ($prefix === '') {
+            return $subject;
+        }
+
+        return sprintf('[%s] %s', $prefix, $subject);
+    }
+
+    public static function getHomepageUrl(): string
+    {
+        return esc_url_raw(home_url('/'));
+    }
+
+    public static function formatSiteLinkLine(): string
+    {
+        $title = sanitize_text_field(get_bloginfo('name'));
+        $url = self::getHomepageUrl();
+
+        if ($title === '') {
+            return $url;
+        }
+
+        return $title . ': ' . $url;
+    }
+
+    public static function formatMailDateLine(): string
+    {
+        return __('Date', 'rrze-formular') . ': ' . wp_date(self::getMailDateTimeFormat());
+    }
+
+    private static function getMailDateTimeFormat(): string
+    {
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+
+        if (str_starts_with(strtolower((string) $locale), 'de')) {
+            return 'd.m.Y H:i';
+        }
+
+        return 'Y-m-d H:i';
+    }
+
+    public static function resolveSubmissionUrl(string $pageUrl = ''): string
+    {
+        $pageUrl = esc_url_raw(trim($pageUrl));
+
+        if ($pageUrl !== '' && self::isAllowedSubmissionUrl($pageUrl)) {
+            return $pageUrl;
+        }
+
+        $referer = wp_get_referer(false);
+        if (is_string($referer) && $referer !== '' && self::isAllowedSubmissionUrl($referer)) {
+            return esc_url_raw($referer);
+        }
+
+        return '';
+    }
+
+    public static function websiteHeaders(string $submissionUrl): array
+    {
+        $submissionUrl = esc_url_raw(trim($submissionUrl));
+
+        if ($submissionUrl === '') {
+            return [];
+        }
+
+        return [sprintf('X-Website: %s', $submissionUrl)];
+    }
+
+    private static function isAllowedSubmissionUrl(string $url): bool
+    {
+        if (!wp_http_validate_url($url)) {
+            return false;
+        }
+
+        $parsed = wp_parse_url($url);
+        $site = wp_parse_url(home_url('/'));
+
+        if (!is_array($parsed) || !is_array($site)) {
+            return false;
+        }
+
+        $urlHost = strtolower((string) ($parsed['host'] ?? ''));
+        $siteHost = strtolower((string) ($site['host'] ?? ''));
+
+        return $urlHost !== '' && $urlHost === $siteHost;
+    }
+
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
@@ -62,6 +169,8 @@ class Mailer
         if (!is_email($fromEmail) || !is_email($recipient)) {
             return false;
         }
+
+        $subject = self::formatSubject($subject);
 
         $defaultHeaders = [
             'Content-Type: text/plain; charset=UTF-8',
@@ -77,7 +186,8 @@ class Mailer
         bool $enabled,
         string $submitterEmail,
         string $subject,
-        string $body
+        string $body,
+        array $headers = []
     ): bool {
         if (!$enabled) {
             return false;
@@ -91,7 +201,8 @@ class Mailer
         return self::sendOperatorMail(
             $submitterEmail,
             $subject,
-            $body
+            $body,
+            $headers
         );
     }
 }
