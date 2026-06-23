@@ -95,16 +95,27 @@ class FormRenderer
         }
 
         $fieldId = $formId . '-' . $field['id'];
-        $required = !empty($field['required']);
+        $required = FieldTypes::isFieldRequired($field);
         $requiredAttr = $required ? ' required' : '';
-        $requiredMark = $required ? ' <span class="rrze-formular__required" aria-hidden="true">*</span>' : '';
+        $ariaRequired = $required ? ' aria-required="true"' : '';
+        $requiredMark = self::requiredIndicator($required);
+        $autocomplete = FieldTypes::getAutocomplete($field);
+        $autocompleteAttr = $autocomplete !== '' ? ' autocomplete="' . esc_attr($autocomplete) . '"' : '';
         $usesChoiceLabel = in_array($field['type'], ['checkbox'], true);
+        $isDropdown = in_array($field['type'], ['select', 'multiselect'], true);
+        $labelFor = $isDropdown ? $fieldId . '-toggle' : $fieldId;
+        $errorId = $fieldId . '-error';
 
         ob_start();
         ?>
-        <div class="rrze-formular__field rrze-formular__field--<?php echo esc_attr($field['type']); ?>">
-            <?php if (!$usesChoiceLabel) : ?>
-                <label class="rrze-formular__field-label" for="<?php echo esc_attr($fieldId); ?>">
+        <div class="rrze-formular__field rrze-formular__field--<?php echo esc_attr($field['type']); ?>"
+             id="<?php echo esc_attr($fieldId); ?>-field"
+             data-field-id="<?php echo esc_attr($field['id']); ?>"
+             data-field-label="<?php echo esc_attr($field['label']); ?>">
+            <?php if (!$usesChoiceLabel && $field['type'] !== 'radio') : ?>
+                <label class="rrze-formular__field-label"
+                       id="<?php echo esc_attr($fieldId); ?>-label"
+                       for="<?php echo esc_attr($labelFor); ?>">
                     <?php echo esc_html($field['label']); ?><?php echo wp_kses_post($requiredMark); ?>
                 </label>
             <?php endif; ?>
@@ -114,14 +125,16 @@ class FormRenderer
                           id="<?php echo esc_attr($fieldId); ?>"
                           name="<?php echo esc_attr($field['id']); ?>"
                           placeholder="<?php echo esc_attr($field['placeholder']); ?>"
-                          rows="5"<?php echo $requiredAttr; ?>></textarea>
+                          rows="5"<?php echo $requiredAttr; ?><?php echo $ariaRequired; ?><?php echo $autocompleteAttr; ?>></textarea>
             <?php elseif ($field['type'] === 'select') : ?>
                 <?php echo self::renderDropdown($field, $fieldId, false, $required); ?>
             <?php elseif ($field['type'] === 'multiselect') : ?>
                 <?php echo self::renderDropdown($field, $fieldId, true, $required); ?>
             <?php elseif ($field['type'] === 'radio') : ?>
-                <div class="rrze-formular__radio-group" role="radiogroup" aria-labelledby="<?php echo esc_attr($fieldId); ?>-legend">
-                    <span class="screen-reader-text" id="<?php echo esc_attr($fieldId); ?>-legend"><?php echo esc_html($field['label']); ?></span>
+                <fieldset class="rrze-formular__radio-group"<?php echo $ariaRequired; ?>>
+                    <legend class="rrze-formular__field-label">
+                        <?php echo esc_html($field['label']); ?><?php echo wp_kses_post($requiredMark); ?>
+                    </legend>
                     <?php foreach ($field['options'] as $optionIndex => $option) : ?>
                         <?php
                         $optionId = $fieldId . '-' . $optionIndex;
@@ -140,7 +153,7 @@ class FormRenderer
                             </span>
                         </label>
                     <?php endforeach; ?>
-                </div>
+                </fieldset>
             <?php elseif ($field['type'] === 'checkbox') : ?>
                 <label class="rrze-formular__checkbox" for="<?php echo esc_attr($fieldId); ?>">
                     <span class="rrze-formular__choice-control">
@@ -148,7 +161,7 @@ class FormRenderer
                                class="rrze-formular__input"
                                id="<?php echo esc_attr($fieldId); ?>"
                                name="<?php echo esc_attr($field['id']); ?>"
-                               value="1"<?php echo $requiredAttr; ?>>
+                               value="1"<?php echo $requiredAttr; ?><?php echo $ariaRequired; ?>>
                         <span class="rrze-formular__choice-mark" aria-hidden="true"></span>
                     </span>
                     <span class="rrze-formular__choice-text">
@@ -166,10 +179,13 @@ class FormRenderer
                        id="<?php echo esc_attr($fieldId); ?>"
                        name="<?php echo esc_attr($field['id']); ?>"
                        placeholder="<?php echo esc_attr($field['placeholder']); ?>"
-                       <?php echo $requiredAttr; ?>>
+                       <?php echo $requiredAttr; ?><?php echo $ariaRequired; ?><?php echo $autocompleteAttr; ?>>
             <?php endif; ?>
 
-            <p class="rrze-formular__error" data-field="<?php echo esc_attr($field['id']); ?>" hidden></p>
+            <p class="rrze-formular__error"
+               id="<?php echo esc_attr($errorId); ?>"
+               data-field="<?php echo esc_attr($field['id']); ?>"
+               hidden></p>
         </div>
         <?php
         return (string) ob_get_clean();
@@ -181,6 +197,7 @@ class FormRenderer
         $confirmLabel = __('Confirm selection', 'rrze-formular');
         $multipleAttr = $multiple ? '1' : '0';
         $requiredAttr = $required ? ' required' : '';
+        $ariaRequired = $required ? ' aria-required="true"' : '';
 
         ob_start();
         ?>
@@ -193,7 +210,8 @@ class FormRenderer
                     aria-expanded="false"
                     aria-haspopup="listbox"
                     aria-controls="<?php echo esc_attr($fieldId); ?>-panel"
-                    id="<?php echo esc_attr($fieldId); ?>-toggle">
+                    aria-labelledby="<?php echo esc_attr($fieldId); ?>-label"
+                    id="<?php echo esc_attr($fieldId); ?>-toggle"<?php echo $ariaRequired; ?>>
                 <span class="rrze-formular__dropdown-value is-placeholder"><?php echo esc_html($placeholder); ?></span>
                 <span class="rrze-formular__dropdown-chevron" aria-hidden="true"></span>
             </button>
@@ -247,5 +265,17 @@ class FormRenderer
         </div>
         <?php
         return (string) ob_get_clean();
+    }
+
+    private static function requiredIndicator(bool $required): string
+    {
+        if (!$required) {
+            return '';
+        }
+
+        return sprintf(
+            ' <span class="rrze-formular__required" aria-hidden="true">*</span><span class="screen-reader-text"> %s</span>',
+            esc_html__('(required)', 'rrze-formular')
+        );
     }
 }

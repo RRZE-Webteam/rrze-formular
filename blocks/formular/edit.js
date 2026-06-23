@@ -97,7 +97,7 @@ function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
 				<ToggleControl
 					label={__('Required', 'rrze-formular')}
 					checked={!!field.required}
-					onChange={(value) => onChange(index, { ...field, required: value })}
+					onChange={(value) => onChange(index, { ...field, required: !!value })}
 				/>
 			)}
 			{hasOptions && field.options.map((option, optionIndex) => (
@@ -159,6 +159,16 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
 	const previewRef = useRef(null);
+	const previewKey = JSON.stringify(
+		(fields || []).map((field) => ({
+			id: field.id,
+			type: field.type,
+			label: field.label,
+			placeholder: field.placeholder,
+			required: !!field.required,
+			options: field.options,
+		}))
+	);
 
 	useEffect(() => {
 		if (fields && fields.length > 0) {
@@ -279,7 +289,11 @@ export default function Edit({ attributes, setAttributes }) {
 				</PanelBody>
 			</InspectorControls>
 			<div {...blockProps} ref={previewRef}>
-				<ServerSideRender block="rrze-formular/formular" attributes={attributes} />
+				<ServerSideRender
+					key={previewKey}
+					block="rrze-formular/formular"
+					attributes={attributes}
+				/>
 			</div>
 		</>
 	);

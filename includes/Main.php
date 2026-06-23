@@ -61,6 +61,8 @@ class Main
                 'success' => __('Thank you. Your message has been sent.', 'rrze-formular'),
                 'error' => __('The form could not be sent. Please try again later.', 'rrze-formular'),
                 'validation' => __('Please fill in all required fields correctly.', 'rrze-formular'),
+                'fieldRequired' => __('This field is required.', 'rrze-formular'),
+                'fieldInvalidEmail' => __('Please enter a valid e-mail address.', 'rrze-formular'),
                 'chooseOption' => __('Please choose…', 'rrze-formular'),
                 'confirmSelection' => __('Confirm selection', 'rrze-formular'),
             ],

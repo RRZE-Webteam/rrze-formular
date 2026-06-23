@@ -123,8 +123,14 @@ function collectValues(form) {
 function validateForm(form) {
 	let valid = true;
 	const root = form.closest('.rrze-formular');
+	const seen = new Set();
 
 	form.querySelectorAll('[required]').forEach((field) => {
+		if (seen.has(field.name)) {
+			return;
+		}
+		seen.add(field.name);
+
 		let value = field.type === 'checkbox' ? field.checked : String(field.value).trim();
 
 		if (field.classList.contains('rrze-formular__dropdown-input')) {
@@ -133,12 +139,13 @@ function validateForm(form) {
 
 		if (!value) {
 			valid = false;
-			showFieldError(root, field.name, RRZEFormular.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.fieldRequired);
+			return;
 		}
 
 		if (field.type === 'email' && field.value && !field.validity.valid) {
 			valid = false;
-			showFieldError(root, field.name, RRZEFormular.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.fieldInvalidEmail);
 		}
 	});
 
@@ -150,21 +157,56 @@ function clearErrors(root) {
 		error.hidden = true;
 		error.textContent = '';
 	});
+
 	root.querySelectorAll('.is-invalid').forEach((field) => {
 		field.classList.remove('is-invalid');
 	});
+
 	root.querySelectorAll('.rrze-formular__dropdown.is-invalid').forEach((dropdown) => {
 		dropdown.classList.remove('is-invalid');
 	});
+
+	getDescribedByTargets(root).forEach((control) => {
+		control.removeAttribute('aria-describedby');
+		control.removeAttribute('aria-invalid');
+	});
+}
+
+function getDescribedByTargets(root) {
+	return [
+		...root.querySelectorAll('.rrze-formular__input[aria-describedby]'),
+		...root.querySelectorAll('.rrze-formular__dropdown-toggle[aria-describedby]'),
+		...root.querySelectorAll('.rrze-formular__radio-group[aria-describedby]'),
+	];
+}
+
+function getFieldControls(root, fieldId) {
+	const namedField = root.querySelector(`[name="${fieldId}"]`);
+	if (!namedField) {
+		return [];
+	}
+
+	const dropdown = namedField.closest('.rrze-formular__dropdown');
+	if (dropdown) {
+		const toggle = dropdown.querySelector('.rrze-formular__dropdown-toggle');
+		return toggle ? [toggle] : [];
+	}
+
+	if (namedField.type === 'radio') {
+		const group = namedField.closest('.rrze-formular__radio-group');
+		return group ? [group] : [];
+	}
+
+	return [namedField];
 }
 
 function showFieldError(root, fieldId, text) {
 	const error = root.querySelector(`.rrze-formular__error[data-field="${fieldId}"]`);
-	const field = root.querySelector(`[name="${fieldId}"]`);
-	const dropdown = field?.closest('.rrze-formular__dropdown');
+	const namedField = root.querySelector(`[name="${fieldId}"]`);
+	const dropdown = namedField?.closest('.rrze-formular__dropdown');
 
-	if (field) {
-		field.classList.add('is-invalid');
+	if (namedField) {
+		namedField.classList.add('is-invalid');
 	}
 
 	if (dropdown) {
@@ -174,6 +216,13 @@ function showFieldError(root, fieldId, text) {
 	if (error) {
 		error.hidden = false;
 		error.textContent = text;
+
+		getFieldControls(root, fieldId).forEach((control) => {
+			control.setAttribute('aria-invalid', 'true');
+			if (error.id) {
+				control.setAttribute('aria-describedby', error.id);
+			}
+		});
 	}
 }
 
