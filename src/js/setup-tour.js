@@ -13,27 +13,7 @@ function getSetupSteps() {
 			target: '[data-rrze-tour="tab-general"]',
 			title: __( 'General tab', 'rrze-formular' ),
 			text: __(
-				'Open the General tab to configure the default recipient and sender name.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'default-recipient',
-			tab: 'general',
-			target: '[data-rrze-tour="default-recipient"]',
-			title: __( 'Default recipient', 'rrze-formular' ),
-			text: __(
-				'Fallback e-mail address when a form block does not specify its own recipient.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'sender-name',
-			tab: 'general',
-			target: '[data-rrze-tour="sender-name"]',
-			title: __( 'Sender name', 'rrze-formular' ),
-			text: __(
-				'Display name shown as the mail sender. The address always comes from the server.',
+				'Open the General tab to configure default form behaviour.',
 				'rrze-formular'
 			),
 		},
@@ -51,46 +31,6 @@ function getSetupSteps() {
 		{
 			id: 'save-general',
 			tab: 'general',
-			target: '[data-rrze-tour="save-settings"]',
-			title: __( 'Save your settings', 'rrze-formular' ),
-			text: __(
-				'Click Save changes after editing settings on each tab.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'tab-domains',
-			tab: 'domains',
-			target: '[data-rrze-tour="tab-domains"]',
-			title: __( 'Allowed Domains tab', 'rrze-formular' ),
-			text: __(
-				'Define which e-mail domains may be used as recipients and for confirmation mails.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'allowed-domains',
-			tab: 'domains',
-			target: '[data-rrze-tour="allowed-domains"]',
-			title: __( 'Allowed recipient domains', 'rrze-formular' ),
-			text: __(
-				'One domain per line (e.g. fau.de). Recipients must use one of these domains.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'confirmation-domains',
-			tab: 'domains',
-			target: '[data-rrze-tour="confirmation-domains"]',
-			title: __( 'Allowed confirmation domains', 'rrze-formular' ),
-			text: __(
-				'Domains for automatic confirmation mails to submitters. Leave empty to disable all confirmations.',
-				'rrze-formular'
-			),
-		},
-		{
-			id: 'save-domains',
-			tab: 'domains',
 			target: '[data-rrze-tour="save-settings"]',
 			title: __( 'Save your settings', 'rrze-formular' ),
 			text: __(
@@ -505,10 +445,7 @@ export function SetupTour( { initialStepId = '', onClose } ) {
 		}
 
 		if ( isTabStep( currentStep ) && ! isStepOnActiveTab( currentStep ) ) {
-			if (
-				currentStep.id === 'tab-domains' ||
-				currentStep.id === 'tab-spam'
-			) {
+			if ( currentStep.id === 'tab-spam' ) {
 				goToGlobalStep(
 					findNextStepIndex( allSteps, globalStepIndex ),
 					{ switchTab: true }

@@ -47,7 +47,7 @@ class FormHandler
             ];
         }
 
-        $recipient = Mailer::resolveRecipient((string) ($attributes['recipientEmail'] ?? ''));
+        $recipient = Mailer::getRecipient();
         if ($recipient === '') {
             return $this->error(__('No valid recipient configured.', 'rrze-formular'), 500);
         }
@@ -89,7 +89,6 @@ class FormHandler
         return [
             'formTitle' => sanitize_text_field((string) ($attributes['formTitle'] ?? '')),
             'formDescription' => sanitize_textarea_field((string) ($attributes['formDescription'] ?? '')),
-            'recipientEmail' => sanitize_email((string) ($attributes['recipientEmail'] ?? '')),
             'submitLabel' => sanitize_text_field((string) ($attributes['submitLabel'] ?? __('Send', 'rrze-formular'))),
             'successMessage' => sanitize_text_field((string) ($attributes['successMessage'] ?? '')),
             'includeSsoInfo' => !empty($attributes['includeSsoInfo']),

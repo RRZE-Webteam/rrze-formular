@@ -146,7 +146,6 @@ export default function Edit({ attributes, setAttributes }) {
 		template,
 		formTitle,
 		formDescription,
-		recipientEmail,
 		submitLabel,
 		successMessage,
 		includeSsoInfo,
@@ -217,12 +216,6 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(value) => setAttributes({ formDescription: value })}
 					/>
 					<TextControl
-						label={__('Recipient e-mail', 'rrze-formular')}
-						help={__('Optional. Must use an allowed domain. Otherwise the default recipient is used.', 'rrze-formular')}
-						value={recipientEmail}
-						onChange={(value) => setAttributes({ recipientEmail: value })}
-					/>
-					<TextControl
 						label={__('Submit button label', 'rrze-formular')}
 						value={submitLabel}
 						onChange={(value) => setAttributes({ submitLabel: value })}
@@ -239,7 +232,7 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<ToggleControl
 						label={__('Send confirmation to submitter', 'rrze-formular')}
-						help={__('Only sent when the submitter e-mail uses an allowed confirmation domain.', 'rrze-formular')}
+						help={__('Sends a copy of the submission to the e-mail address entered in the form.', 'rrze-formular')}
 						checked={!!sendConfirmation}
 						onChange={(value) => setAttributes({ sendConfirmation: value })}
 					/>

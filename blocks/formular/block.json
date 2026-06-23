@@ -21,10 +21,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"recipientEmail": {
-			"type": "string",
-			"default": ""
-		},
 		"submitLabel": {
 			"type": "string",
 			"default": "Senden"

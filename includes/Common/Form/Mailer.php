@@ -12,107 +12,42 @@ class Mailer
         return is_array($options) ? $options : [];
     }
 
+    public static function getAdministratorEmail(): string
+    {
+        return sanitize_email((string) get_option('admin_email'));
+    }
+
+    public static function getAdministratorName(): string
+    {
+        $email = self::getAdministratorEmail();
+        $user = $email !== '' ? get_user_by('email', $email) : false;
+
+        if ($user instanceof \WP_User && $user->display_name !== '') {
+            return sanitize_text_field($user->display_name);
+        }
+
+        return sanitize_text_field(get_bloginfo('name'));
+    }
+
     public static function getSenderAddress(): string
     {
-        /**
-         * The sender address always comes from the server configuration.
-         */
-        $address = apply_filters('rrze_formwizard_sender_email', get_option('admin_email'));
+        $address = apply_filters('rrze_formwizard_sender_email', self::getAdministratorEmail());
 
         return sanitize_email((string) $address);
     }
 
     public static function getSenderName(): string
     {
-        $options = self::getOptions();
-        $name = $options['sender_name'] ?? get_bloginfo('name');
+        $name = apply_filters('rrze_formular_sender_name', self::getAdministratorName());
 
         return sanitize_text_field((string) $name);
     }
 
-    public static function getDefaultRecipient(): string
+    public static function getRecipient(): string
     {
-        $options = self::getOptions();
-        $recipient = $options['default_recipient'] ?? '';
-
-        if ($recipient === '') {
-            $recipient = get_option('admin_email');
-        }
+        $recipient = apply_filters('rrze_formular_recipient_email', self::getAdministratorEmail());
 
         return sanitize_email((string) $recipient);
-    }
-
-    public static function getAllowedDomains(): array
-    {
-        $options = self::getOptions();
-        $raw = (string) ($options['allowed_domains'] ?? '');
-
-        return self::parseDomainList($raw);
-    }
-
-    public static function getAllowedConfirmationDomains(): array
-    {
-        $options = self::getOptions();
-        $raw = (string) ($options['allowed_confirmation_domains'] ?? '');
-
-        return self::parseDomainList($raw);
-    }
-
-    public static function parseDomainList(string $raw): array
-    {
-        $domains = [];
-        foreach (preg_split('/\R/', strtolower($raw)) ?: [] as $line) {
-            $line = trim($line);
-            $line = ltrim($line, '@');
-            if ($line !== '') {
-                $domains[] = $line;
-            }
-        }
-
-        return array_values(array_unique($domains));
-    }
-
-    public static function emailMatchesDomain(string $email, array $domains): bool
-    {
-        $email = strtolower(trim($email));
-        if ($email === '' || !is_email($email)) {
-            return false;
-        }
-
-        $at = strrpos($email, '@');
-        if ($at === false) {
-            return false;
-        }
-
-        $domain = substr($email, $at + 1);
-
-        foreach ($domains as $allowed) {
-            if ($domain === $allowed || str_ends_with($domain, '.' . $allowed)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static function resolveRecipient(string $requestedRecipient = ''): string
-    {
-        $recipient = sanitize_email($requestedRecipient);
-        $allowedDomains = self::getAllowedDomains();
-
-        if ($recipient === '' || !is_email($recipient)) {
-            $recipient = self::getDefaultRecipient();
-        }
-
-        if (!empty($allowedDomains) && !self::emailMatchesDomain($recipient, $allowedDomains)) {
-            $recipient = self::getDefaultRecipient();
-        }
-
-        if (!is_email($recipient)) {
-            return '';
-        }
-
-        return $recipient;
     }
 
     public static function sendOperatorMail(
@@ -150,11 +85,6 @@ class Mailer
 
         $submitterEmail = sanitize_email($submitterEmail);
         if (!is_email($submitterEmail)) {
-            return false;
-        }
-
-        $allowed = self::getAllowedConfirmationDomains();
-        if (empty($allowed) || !self::emailMatchesDomain($submitterEmail, $allowed)) {
             return false;
         }
 

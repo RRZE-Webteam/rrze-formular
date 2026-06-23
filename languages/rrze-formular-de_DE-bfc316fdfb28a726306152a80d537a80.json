@@ -45,15 +45,6 @@
       "Age": [
         "Alter"
       ],
-      "Allowed Domains": [
-        "Erlaubte Domains"
-      ],
-      "Allowed confirmation domains": [
-        "Erlaubte Bestätigungs-Domains"
-      ],
-      "Allowed recipient domains": [
-        "Erlaubte Empfänger-Domains"
-      ],
       "Alumni contact": [
         "Alumni-Kontakt"
       ],
@@ -150,12 +141,6 @@
       "Deadline": [
         "Frist"
       ],
-      "Default recipient": [
-        "Standard-Empfänger"
-      ],
-      "Define which e-mail domains may be used as recipients and for confirmation mails.": [
-        "Legen Sie fest, welche E-Mail-Domains als Empfänger und für Bestätigungsmails verwendet werden dürfen."
-      ],
       "Delete selected domains": [
         "Ausgewählte Domains löschen"
       ],
@@ -180,20 +165,8 @@
       "Dietary requirements": [
         "Ernährungsanforderungen"
       ],
-      "Display name shown as the mail sender. The address always comes from the server.": [
-        "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
-      ],
-      "Display name used as the mail sender. The address always comes from the server.": [
-        "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
-      ],
       "Display or layout": [
         "Darstellung oder Layout"
-      ],
-      "Domains for automatic confirmation mails to submitters. Leave empty to disable all confirmations.": [
-        "Domains für automatische Bestätigungsmails an Absender. Leer lassen, um alle Bestätigungen zu deaktivieren."
-      ],
-      "Domains for which automatic confirmation mails may be sent to the submitter. Leave empty to disable all confirmations.": [
-        "Domains, für die automatische Bestätigungsmails an Absender gesendet werden dürfen. Leer lassen, um alle Bestätigungen zu deaktivieren."
       ],
       "E-mail": [
         "E-Mail"
@@ -236,12 +209,6 @@
       ],
       "Express your interest in writing a master thesis with us.": [
         "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
-      ],
-      "Fallback address when a form block does not specify a recipient. Uses the site admin email if empty.": [
-        "Fallback-Adresse, wenn ein Formularblock keinen Empfänger angibt. Verwendet die Admin-E-Mail der Website, wenn leer."
-      ],
-      "Fallback e-mail address when a form block does not specify its own recipient.": [
-        "Fallback-E-Mail-Adresse, wenn ein Formularblock keinen eigenen Empfänger angibt."
       ],
       "Feedback": [
         "Feedback"
@@ -438,20 +405,14 @@
       "Office hours appointment": [
         "Sprechstundentermin"
       ],
-      "One domain per line (e.g. fau.de). Recipients must use one of these domains.": [
-        "Eine Domain pro Zeile (z. B. fau.de). Empfänger müssen eine dieser Domains verwenden."
-      ],
-      "One domain per line (e.g. fau.de, uni-erlangen.de). Recipients must use one of these domains. Confirmation mails are only sent to addresses on allowed domains.": [
-        "Eine Domain pro Zeile (z. B. fau.de, uni-erlangen.de). Empfänger müssen eine dieser Domains verwenden. Bestätigungsmails werden nur an Adressen auf erlaubten Domains gesendet."
-      ],
       "Online": [
         "Online"
       ],
       "Only sent when the submitter e-mail uses an allowed confirmation domain.": [
         "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
       ],
-      "Open the General tab to configure the default recipient and sender name.": [
-        "Öffnen Sie die Registerkarte Allgemein, um Standard-Empfänger und Absendername zu konfigurieren."
+      "Open the General tab to configure default form behaviour.": [
+        "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
       ],
       "Option 1": [
         "Option 1"
@@ -645,11 +606,11 @@
       "Send us a message. We will reply as soon as possible.": [
         "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
       ],
-      "Sender name": [
-        "Absendername"
-      ],
       "Sending…": [
         "Wird gesendet…"
+      ],
+      "Sends a copy of the submission to the e-mail address entered in the form.": [
+        "Sendet eine Kopie der Eingabe an die im Formular angegebene E-Mail-Adresse."
       ],
       "Settings issues detected.": [
         "Probleme in den Einstellungen erkannt."
@@ -804,8 +765,8 @@
       "Type of cooperation": [
         "Art der Kooperation"
       ],
-      "Under Settings → RRZE Formular you define the default recipient, allowed domains and spam protection limits.": [
-        "Unter Einstellungen → RRZE Formular legen Sie den Standard-Empfänger, erlaubte Domains und Spam-Schutz-Limits fest."
+      "Under Settings → RRZE Formular you configure spam protection limits. Form mails are always sent from and to the website administrator.": [
+        "Unter Einstellungen → RRZE Formular konfigurieren Sie die Spam-Schutz-Limits. Formular-E-Mails werden immer vom und an den Website-Administrator gesendet."
       ],
       "Unnamed tab": [
         "Unbenannter Tab"

@@ -26,47 +26,16 @@ class Defaults
             ],
             'sections' => [
                 ['id' => 'general', 'title' => __('General', 'rrze-formular')],
-                ['id' => 'domains', 'title' => __('Allowed Domains', 'rrze-formular')],
                 ['id' => 'spam', 'title' => __('Spam Protection', 'rrze-formular')],
             ],
             'fields' => [
                 'general' => [
-                    [
-                        'name' => 'default_recipient',
-                        'label' => __('Default recipient', 'rrze-formular'),
-                        'description' => __('Fallback address when a form block does not specify a recipient. Uses the site admin email if empty.', 'rrze-formular'),
-                        'type' => 'text',
-                        'default' => '',
-                    ],
-                    [
-                        'name' => 'sender_name',
-                        'label' => __('Sender name', 'rrze-formular'),
-                        'description' => __('Display name used as the mail sender. The address always comes from the server.', 'rrze-formular'),
-                        'type' => 'text',
-                        'default' => get_bloginfo('name'),
-                    ],
                     [
                         'name' => 'include_sso_by_default',
                         'label' => __('Include SSO data by default', 'rrze-formular'),
                         'description' => __('When a logged-in user submits a form, include name and email in the operator mail.', 'rrze-formular'),
                         'type' => 'checkbox',
                         'default' => '1',
-                    ],
-                ],
-                'domains' => [
-                    [
-                        'name' => 'allowed_domains',
-                        'label' => __('Allowed recipient domains', 'rrze-formular'),
-                        'description' => __('One domain per line (e.g. fau.de, uni-erlangen.de). Recipients must use one of these domains. Confirmation mails are only sent to addresses on allowed domains.', 'rrze-formular'),
-                        'type' => 'textarea',
-                        'default' => "fau.de\nuni-erlangen.de",
-                    ],
-                    [
-                        'name' => 'allowed_confirmation_domains',
-                        'label' => __('Allowed confirmation domains', 'rrze-formular'),
-                        'description' => __('Domains for which automatic confirmation mails may be sent to the submitter. Leave empty to disable all confirmations.', 'rrze-formular'),
-                        'type' => 'textarea',
-                        'default' => '',
                     ],
                 ],
                 'spam' => [

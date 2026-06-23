@@ -100,7 +100,7 @@ function ToursApp( { autoStartGuide, autoStartSetup, setupTourStepId } ) {
 					</h1>
 					<p className="rrze-formular-guided-tour__text">
 						{ __(
-							'Under Settings → RRZE Formular you define the default recipient, allowed domains and spam protection limits.',
+							'Under Settings → RRZE Formular you configure spam protection limits. Form mails are always sent from and to the website administrator.',
 							'rrze-formular'
 						) }
 					</p>
