@@ -1,3 +1,5 @@
+import { initDropdowns, resetDropdowns } from './dropdowns';
+
 document.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('.rrze-formular').forEach(initFormular);
 });
@@ -7,6 +9,8 @@ function initFormular(root) {
 	if (!form) {
 		return;
 	}
+
+	initDropdowns(root);
 
 	const messageBox = root.querySelector('.rrze-formular__message');
 
@@ -19,11 +23,14 @@ function initFormular(root) {
 		}
 
 		const submitButton = form.querySelector('.rrze-formular__submit');
+		const submitLabel = submitButton?.querySelector('.rrze-formular__submit-text');
 		const attributes = JSON.parse(form.dataset.attributes || '{}');
 
 		if (submitButton) {
 			submitButton.disabled = true;
-			submitButton.textContent = RRZEFormular.i18n.submitting;
+			if (submitLabel) {
+				submitLabel.textContent = RRZEFormular.i18n.submitting;
+			}
 		}
 
 		const payload = {
@@ -58,13 +65,16 @@ function initFormular(root) {
 			}
 
 			form.reset();
+			resetDropdowns(root);
 			showMessage(messageBox, result.message || RRZEFormular.i18n.success, 'success');
 		} catch (error) {
 			showMessage(messageBox, RRZEFormular.i18n.error, 'error');
 		} finally {
 			if (submitButton) {
 				submitButton.disabled = false;
-				submitButton.textContent = attributes.submitLabel || 'Send';
+				if (submitLabel) {
+					submitLabel.textContent = attributes.submitLabel || 'Send';
+				}
 			}
 		}
 	});
@@ -72,37 +82,63 @@ function initFormular(root) {
 
 function collectValues(form) {
 	const values = {};
+
 	form.querySelectorAll('input[name], textarea[name], select[name]').forEach((field) => {
-		if (field.type === 'hidden' || field.name === 'website') {
+		if (field.type === 'hidden' && field.classList.contains('rrze-formular__dropdown-input')) {
+			const name = field.name;
+			if (field.value.includes(',')) {
+				values[name] = field.value.split(',').map((part) => part.trim()).filter(Boolean);
+			} else {
+				values[name] = field.value;
+			}
 			return;
 		}
+
+		if (field.type === 'hidden' || field.name === 'website' || field.name === 'token' || field.name === 'issuedAt') {
+			return;
+		}
+
+		if (field.dataset.optionCheckbox !== undefined) {
+			return;
+		}
+
 		if (field.type === 'checkbox') {
 			values[field.name] = field.checked ? '1' : '';
 			return;
 		}
+
 		if (field.type === 'radio') {
 			if (field.checked) {
 				values[field.name] = field.value;
 			}
 			return;
 		}
+
 		values[field.name] = field.value;
 	});
+
 	return values;
 }
 
 function validateForm(form) {
 	let valid = true;
+	const root = form.closest('.rrze-formular');
 
 	form.querySelectorAll('[required]').forEach((field) => {
-		const value = field.type === 'checkbox' ? field.checked : field.value.trim();
+		let value = field.type === 'checkbox' ? field.checked : String(field.value).trim();
+
+		if (field.classList.contains('rrze-formular__dropdown-input')) {
+			value = String(field.value).trim();
+		}
+
 		if (!value) {
 			valid = false;
-			showFieldError(form.closest('.rrze-formular'), field.name, RRZEFormular.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.validation);
 		}
+
 		if (field.type === 'email' && field.value && !field.validity.valid) {
 			valid = false;
-			showFieldError(form.closest('.rrze-formular'), field.name, RRZEFormular.i18n.validation);
+			showFieldError(root, field.name, RRZEFormular.i18n.validation);
 		}
 	});
 
@@ -114,10 +150,27 @@ function clearErrors(root) {
 		error.hidden = true;
 		error.textContent = '';
 	});
+	root.querySelectorAll('.is-invalid').forEach((field) => {
+		field.classList.remove('is-invalid');
+	});
+	root.querySelectorAll('.rrze-formular__dropdown.is-invalid').forEach((dropdown) => {
+		dropdown.classList.remove('is-invalid');
+	});
 }
 
 function showFieldError(root, fieldId, text) {
 	const error = root.querySelector(`.rrze-formular__error[data-field="${fieldId}"]`);
+	const field = root.querySelector(`[name="${fieldId}"]`);
+	const dropdown = field?.closest('.rrze-formular__dropdown');
+
+	if (field) {
+		field.classList.add('is-invalid');
+	}
+
+	if (dropdown) {
+		dropdown.classList.add('is-invalid');
+	}
+
 	if (error) {
 		error.hidden = false;
 		error.textContent = text;

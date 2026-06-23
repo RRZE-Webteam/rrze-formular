@@ -4,7 +4,7 @@
 	"name": "rrze-formular/formular",
 	"version": "0.0.2",
 	"title": "RRZE Formular",
-	"category": "widgets",
+	"category": "rrze",
 	"description": "Create forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically.",
 	"icon": "feedback",
 	"keywords": ["form", "contact", "mail"],

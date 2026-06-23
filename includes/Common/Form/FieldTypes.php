@@ -27,6 +27,16 @@ class FieldTypes
             'hasOptions' => false,
             'inputType' => 'number',
         ],
+        'date' => [
+            'label' => 'Date',
+            'hasOptions' => false,
+            'inputType' => 'date',
+        ],
+        'time' => [
+            'label' => 'Time',
+            'hasOptions' => false,
+            'inputType' => 'time',
+        ],
         'textarea' => [
             'label' => 'Textarea',
             'hasOptions' => false,
@@ -36,6 +46,11 @@ class FieldTypes
             'label' => 'Select',
             'hasOptions' => true,
             'inputType' => 'select',
+        ],
+        'multiselect' => [
+            'label' => 'Multiselect',
+            'hasOptions' => true,
+            'inputType' => 'multiselect',
         ],
         'radio' => [
             'label' => 'Radio',
