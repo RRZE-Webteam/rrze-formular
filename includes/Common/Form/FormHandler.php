@@ -130,6 +130,14 @@ class FormHandler
                 case 'tel':
                     $sanitized[$id] = preg_replace('/[^0-9+()\-\s]/', '', (string) $raw) ?? '';
                     break;
+                case 'date':
+                    $value = sanitize_text_field((string) $raw);
+                    $sanitized[$id] = preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value : '';
+                    break;
+                case 'time':
+                    $value = sanitize_text_field((string) $raw);
+                    $sanitized[$id] = preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $value) ? $value : '';
+                    break;
                 case 'checkbox':
                     $sanitized[$id] = !empty($raw) ? '1' : '';
                     break;
@@ -138,6 +146,20 @@ class FormHandler
                     $allowed = array_column($field['options'], 'value');
                     $value = sanitize_text_field((string) $raw);
                     $sanitized[$id] = in_array($value, $allowed, true) ? $value : '';
+                    break;
+                case 'multiselect':
+                    $allowed = array_column($field['options'], 'value');
+                    $rawValues = is_array($raw)
+                        ? $raw
+                        : array_filter(array_map('trim', explode(',', (string) $raw)));
+                    $filtered = [];
+                    foreach ($rawValues as $rawValue) {
+                        $value = sanitize_text_field((string) $rawValue);
+                        if ($value !== '' && in_array($value, $allowed, true)) {
+                            $filtered[] = $value;
+                        }
+                    }
+                    $sanitized[$id] = $filtered;
                     break;
                 default:
                     $sanitized[$id] = sanitize_text_field((string) $raw);
@@ -155,9 +177,12 @@ class FormHandler
             $id = $field['id'];
             $value = $values[$id] ?? '';
 
-            if (!empty($field['required']) && ($value === '' || $value === null)) {
-                $errors[$id] = __('This field is required.', 'rrze-formular');
-                continue;
+            if (!empty($field['required'])) {
+                $isEmpty = is_array($value) ? $value === [] : ($value === '' || $value === null);
+                if ($isEmpty) {
+                    $errors[$id] = __('This field is required.', 'rrze-formular');
+                    continue;
+                }
             }
 
             if ($field['type'] === 'email' && $value !== '' && !is_email($value)) {
@@ -313,21 +338,33 @@ class FormHandler
         return sanitize_text_field((string) $values[$fieldId]);
     }
 
-    private function formatFieldValueForMail(array $field, string $value): string
+    private function formatFieldValueForMail(array $field, string|array $value): string
     {
         if ($field['type'] === 'checkbox') {
+            $value = is_array($value) ? '' : (string) $value;
             return $value !== '' ? __('Yes', 'rrze-formular') : __('No', 'rrze-formular');
         }
 
-        if ($field['type'] === 'select' || $field['type'] === 'radio') {
+        if ($field['type'] === 'select' || $field['type'] === 'radio' || $field['type'] === 'multiselect') {
+            if ($field['type'] === 'multiselect') {
+                $selected = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)));
+                $labels = [];
+                foreach ($field['options'] as $option) {
+                    if (in_array($option['value'], $selected, true)) {
+                        $labels[] = $option['label'];
+                    }
+                }
+                return implode(', ', $labels);
+            }
+
             foreach ($field['options'] as $option) {
-                if ($option['value'] === $value) {
+                if ($option['value'] === (string) $value) {
                     return $option['label'];
                 }
             }
         }
 
-        return $value;
+        return is_array($value) ? implode(', ', $value) : (string) $value;
     }
 
     private function error(string $message, int $status): array

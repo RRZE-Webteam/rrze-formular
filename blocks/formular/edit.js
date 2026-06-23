@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import {
 	InspectorControls,
 	useBlockProps,
@@ -14,14 +14,18 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
+import { reinitDropdowns } from '../../src/js/dropdowns';
 
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
 	{ label: __('E-mail', 'rrze-formular'), value: 'email' },
 	{ label: __('Telephone', 'rrze-formular'), value: 'tel' },
 	{ label: __('Number', 'rrze-formular'), value: 'number' },
+	{ label: __('Date', 'rrze-formular'), value: 'date' },
+	{ label: __('Time', 'rrze-formular'), value: 'time' },
 	{ label: __('Textarea', 'rrze-formular'), value: 'textarea' },
 	{ label: __('Select', 'rrze-formular'), value: 'select' },
+	{ label: __('Multiselect', 'rrze-formular'), value: 'multiselect' },
 	{ label: __('Radio', 'rrze-formular'), value: 'radio' },
 	{ label: __('Checkbox', 'rrze-formular'), value: 'checkbox' },
 	{ label: __('Section heading', 'rrze-formular'), value: 'heading' },
@@ -42,7 +46,7 @@ function createField(type = 'text') {
 		label: __('New field', 'rrze-formular'),
 		placeholder: '',
 		required: false,
-		options: ['select', 'radio'].includes(type)
+		options: ['select', 'multiselect', 'radio'].includes(type)
 			? [{ value: 'option_1', label: __('Option 1', 'rrze-formular') }]
 			: [],
 	};
@@ -60,7 +64,7 @@ function moveField(fields, index, direction) {
 }
 
 function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
-	const hasOptions = field.type === 'select' || field.type === 'radio';
+	const hasOptions = field.type === 'select' || field.type === 'multiselect' || field.type === 'radio';
 
 	return (
 		<div className="rrze-formular-field-editor">
@@ -72,7 +76,7 @@ function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
 				onChange={(value) => onChange(index, {
 					...field,
 					type: value,
-					options: ['select', 'radio'].includes(value) && (!field.options || field.options.length === 0)
+					options: ['select', 'multiselect', 'radio'].includes(value) && (!field.options || field.options.length === 0)
 						? [{ value: 'option_1', label: __('Option 1', 'rrze-formular') }]
 						: field.options,
 				})}
@@ -154,6 +158,7 @@ export default function Edit({ attributes, setAttributes }) {
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
+	const previewRef = useRef(null);
 
 	useEffect(() => {
 		if (fields && fields.length > 0) {
@@ -167,6 +172,25 @@ export default function Edit({ attributes, setAttributes }) {
 			fields: cloneFields(selected.fields),
 		});
 	}, []);
+
+	useEffect(() => {
+		const timer = window.setTimeout(() => {
+			if (!window.RRZEFormular) {
+				window.RRZEFormular = {
+					i18n: {
+						chooseOption: __('Please choose…', 'rrze-formular'),
+						confirmSelection: __('Confirm selection', 'rrze-formular'),
+					},
+				};
+			}
+			const root = previewRef.current?.querySelector('.rrze-formular');
+			if (root) {
+				reinitDropdowns(root);
+			}
+		}, 100);
+
+		return () => window.clearTimeout(timer);
+	}, [fields, formTitle, formDescription, submitLabel, template]);
 
 	const applyTemplate = (value) => {
 		const templates = getTemplates();
@@ -254,7 +278,7 @@ export default function Edit({ attributes, setAttributes }) {
 					</Button>
 				</PanelBody>
 			</InspectorControls>
-			<div {...blockProps}>
+			<div {...blockProps} ref={previewRef}>
 				<ServerSideRender block="rrze-formular/formular" attributes={attributes} />
 			</div>
 		</>

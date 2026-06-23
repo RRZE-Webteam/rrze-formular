@@ -4,7 +4,7 @@
 	"name": "rrze-formular/form-wizard",
 	"version": "0.0.2",
 	"title": "RRZE Formular",
-	"category": "widgets",
+	"category": "rrze",
 	"description": "Create a simple multi-step form wizard without HTML knowledge.",
 	"icon": "feedback",
 	"keywords": ["form", "contact", "wizard", "mail"],
