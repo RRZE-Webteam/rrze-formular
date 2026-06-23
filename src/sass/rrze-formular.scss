@@ -5,6 +5,7 @@ $rrze-formular-text: #222;
 $rrze-formular-label: #666;
 $rrze-formular-border: #9e9e9e;
 $rrze-formular-error: #b00020;
+$rrze-formular-valid: #2e7d32;
 $rrze-formular-max-width: 870px;
 $rrze-formular-stripe: 3rem;
 
@@ -45,6 +46,39 @@ $rrze-formular-stripe: 3rem;
 	&.is-invalid:focus {
 		border-color: $rrze-formular-error;
 		color: $rrze-formular-error;
+	}
+}
+
+// Native constraint validation (:valid / :invalid) for typed inputs.
+// Uses :user-invalid / :user-valid where supported so empty required fields
+// are not styled as errors before the user interacts (see MDN form validation).
+@mixin rrze-formular-constraint-validation {
+	&:focus:invalid,
+	&:user-invalid {
+		border-color: $rrze-formular-error;
+		color: $rrze-formular-error;
+		border-width: 2px;
+		padding: calc(0.75rem - 1px) calc(1rem - 1px);
+	}
+
+	&:invalid:not(:focus):not(:user-invalid) {
+		@supports selector(:user-invalid) {
+			border-color: $rrze-formular-border;
+			color: $rrze-formular-text;
+			border-width: 1px;
+			padding: 0.75rem 1rem;
+		}
+	}
+
+	&:focus:valid {
+		border-color: $rrze-formular-accent;
+		color: $rrze-formular-text;
+	}
+
+	&:valid:not(:focus):not(.is-invalid),
+	&:user-valid:not(:focus):not(.is-invalid) {
+		border-color: $rrze-formular-valid;
+		color: $rrze-formular-text;
 	}
 }
 
@@ -125,8 +159,10 @@ $rrze-formular-stripe: 3rem;
 .rrze-formular__field input[type='number'],
 .rrze-formular__field input[type='date'],
 .rrze-formular__field input[type='time'],
+.rrze-formular__field input[type='url'],
 .rrze-formular__field textarea {
 	@include rrze-formular-field-base;
+	@include rrze-formular-constraint-validation;
 }
 
 .rrze-formular__field textarea {
