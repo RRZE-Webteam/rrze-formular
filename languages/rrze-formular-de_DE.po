@@ -51,15 +51,6 @@ msgstr "Nachmittags (12–17 Uhr)"
 msgid "Age"
 msgstr "Alter"
 
-msgid "Allowed Domains"
-msgstr "Erlaubte Domains"
-
-msgid "Allowed confirmation domains"
-msgstr "Erlaubte Bestätigungs-Domains"
-
-msgid "Allowed recipient domains"
-msgstr "Erlaubte Empfänger-Domains"
-
 msgid "Alumni contact"
 msgstr "Alumni-Kontakt"
 
@@ -156,12 +147,6 @@ msgstr "Tage und Uhrzeiten, zu denen Sie verfügbar sind"
 msgid "Deadline"
 msgstr "Frist"
 
-msgid "Default recipient"
-msgstr "Standard-Empfänger"
-
-msgid "Define which e-mail domains may be used as recipients and for confirmation mails."
-msgstr "Legen Sie fest, welche E-Mail-Domains als Empfänger und für Bestätigungsmails verwendet werden dürfen."
-
 msgid "Delete selected domains"
 msgstr "Ausgewählte Domains löschen"
 
@@ -186,20 +171,8 @@ msgstr "Gewünschte Wochenstunden"
 msgid "Dietary requirements"
 msgstr "Ernährungsanforderungen"
 
-msgid "Display name shown as the mail sender. The address always comes from the server."
-msgstr "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
-
-msgid "Display name used as the mail sender. The address always comes from the server."
-msgstr "Anzeigename des Absenders. Die Adresse stammt immer vom Server."
-
 msgid "Display or layout"
 msgstr "Darstellung oder Layout"
-
-msgid "Domains for automatic confirmation mails to submitters. Leave empty to disable all confirmations."
-msgstr "Domains für automatische Bestätigungsmails an Absender. Leer lassen, um alle Bestätigungen zu deaktivieren."
-
-msgid "Domains for which automatic confirmation mails may be sent to the submitter. Leave empty to disable all confirmations."
-msgstr "Domains, für die automatische Bestätigungsmails an Absender gesendet werden dürfen. Leer lassen, um alle Bestätigungen zu deaktivieren."
 
 msgid "E-mail"
 msgstr "E-Mail"
@@ -242,12 +215,6 @@ msgstr "Bekunden Sie Ihr Interesse an einer Bachelorarbeit bei uns."
 
 msgid "Express your interest in writing a master thesis with us."
 msgstr "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
-
-msgid "Fallback address when a form block does not specify a recipient. Uses the site admin email if empty."
-msgstr "Fallback-Adresse, wenn ein Formularblock keinen Empfänger angibt. Verwendet die Admin-E-Mail der Website, wenn leer."
-
-msgid "Fallback e-mail address when a form block does not specify its own recipient."
-msgstr "Fallback-E-Mail-Adresse, wenn ein Formularblock keinen eigenen Empfänger angibt."
 
 msgid "Feedback"
 msgstr "Feedback"
@@ -369,8 +336,8 @@ msgstr "Hinterlassen Sie Ihre Nummer und wir rufen Sie zurück."
 msgid "Logfile is empty."
 msgstr "Logdatei ist leer."
 
-msgid "Login"
-msgstr "Anmeldung"
+msgid "Mail subject prefix"
+msgstr "Betreff-Präfix"
 
 msgid "Master thesis enquiry"
 msgstr "Anfrage Masterarbeit"
@@ -444,20 +411,14 @@ msgstr "Anzahl der Teilnehmenden"
 msgid "Office hours appointment"
 msgstr "Sprechstundentermin"
 
-msgid "One domain per line (e.g. fau.de). Recipients must use one of these domains."
-msgstr "Eine Domain pro Zeile (z. B. fau.de). Empfänger müssen eine dieser Domains verwenden."
-
-msgid "One domain per line (e.g. fau.de, uni-erlangen.de). Recipients must use one of these domains. Confirmation mails are only sent to addresses on allowed domains."
-msgstr "Eine Domain pro Zeile (z. B. fau.de, uni-erlangen.de). Empfänger müssen eine dieser Domains verwenden. Bestätigungsmails werden nur an Adressen auf erlaubten Domains gesendet."
-
 msgid "Online"
 msgstr "Online"
 
 msgid "Only sent when the submitter e-mail uses an allowed confirmation domain."
 msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
 
-msgid "Open the General tab to configure the default recipient and sender name."
-msgstr "Öffnen Sie die Registerkarte Allgemein, um Standard-Empfänger und Absendername zu konfigurieren."
+msgid "Open the General tab to configure default form behaviour."
+msgstr "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
 
 msgid "Option 1"
 msgstr "Option 1"
@@ -467,6 +428,9 @@ msgstr "Optionsbeschriftung"
 
 msgid "Option value"
 msgstr "Optionswert"
+
+msgid "Optional text prepended to every form mail subject in square brackets, e.g. [FAU]."
+msgstr "Optionaler Text, der jedem Formular-Mail-Betreff in eckigen Klammern vorangestellt wird, z. B. [FAU]."
 
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
@@ -627,8 +591,8 @@ msgstr "Raumbuchungsanfrage"
 msgid "Room type"
 msgstr "Raumtyp"
 
-msgid "SSO / logged-in user"
-msgstr "SSO / angemeldeter Benutzer"
+msgid "SSO"
+msgstr "SSO"
 
 msgid "Section heading"
 msgstr "Abschnittsüberschrift"
@@ -651,11 +615,11 @@ msgstr "Senden Sie uns eine Nachricht."
 msgid "Send us a message. We will reply as soon as possible."
 msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 
-msgid "Sender name"
-msgstr "Absendername"
-
 msgid "Sending…"
 msgstr "Wird gesendet…"
+
+msgid "Sends a copy of the submission to the e-mail address entered in the form."
+msgstr "Sendet eine Kopie der Eingabe an die im Formular angegebene E-Mail-Adresse."
 
 msgid "Settings issues detected."
 msgstr "Probleme in den Einstellungen erkannt."
@@ -671,9 +635,6 @@ msgstr "Kenntnisse und Erfahrung"
 
 msgid "Software"
 msgstr "Software"
-
-msgid "Source"
-msgstr "Quelle"
 
 msgid "Spam Protection"
 msgstr "Spam-Schutz"
@@ -704,9 +665,6 @@ msgstr "Reichen Sie ein Abstract für die Konferenz oder das Symposium ein."
 
 msgid "Submit button label"
 msgstr "Beschriftung des Senden-Buttons"
-
-msgid "Submitted from"
-msgstr "Eingereicht von"
 
 msgid "Subscribe to our newsletter."
 msgstr "Abonnieren Sie unseren Newsletter."
@@ -810,8 +768,8 @@ msgstr "Typ"
 msgid "Type of cooperation"
 msgstr "Art der Kooperation"
 
-msgid "Under Settings → RRZE Formular you define the default recipient, allowed domains and spam protection limits."
-msgstr "Unter Einstellungen → RRZE Formular legen Sie den Standard-Empfänger, erlaubte Domains und Spam-Schutz-Limits fest."
+msgid "Under Settings → RRZE Formular you configure spam protection limits. Form mails are always sent from and to the website administrator."
+msgstr "Unter Einstellungen → RRZE Formular konfigurieren Sie die Spam-Schutz-Limits. Formular-E-Mails werden immer vom und an den Website-Administrator gesendet."
 
 msgid "Unnamed tab"
 msgstr "Unbenannter Tab"

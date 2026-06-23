@@ -71,7 +71,6 @@ class FormRenderer
         return [
             'formTitle' => sanitize_text_field((string) ($attributes['formTitle'] ?? '')),
             'formDescription' => sanitize_textarea_field((string) ($attributes['formDescription'] ?? '')),
-            'recipientEmail' => sanitize_email((string) ($attributes['recipientEmail'] ?? '')),
             'submitLabel' => sanitize_text_field((string) ($attributes['submitLabel'] ?? __('Send', 'rrze-formular'))),
             'successMessage' => sanitize_text_field((string) ($attributes['successMessage'] ?? __('Thank you. Your message has been sent.', 'rrze-formular'))),
             'includeSsoInfo' => !empty($attributes['includeSsoInfo']),

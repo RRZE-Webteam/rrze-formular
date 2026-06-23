@@ -165,11 +165,8 @@ abstract class Type
     public function getTourDataAttribute(): string
     {
         $map = [
-            'default_recipient' => 'default-recipient',
-            'sender_name' => 'sender-name',
+            'mail_subject_prefix' => 'mail-subject-prefix',
             'include_sso_by_default' => 'sso-default',
-            'allowed_domains' => 'allowed-domains',
-            'allowed_confirmation_domains' => 'confirmation-domains',
             'min_submit_seconds' => 'min-submit-seconds',
             'rate_limit_per_hour' => 'rate-limit',
         ];

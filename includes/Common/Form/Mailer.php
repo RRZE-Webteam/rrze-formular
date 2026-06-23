@@ -12,107 +12,149 @@ class Mailer
         return is_array($options) ? $options : [];
     }
 
+    public static function getAdministratorEmail(): string
+    {
+        return sanitize_email((string) get_option('admin_email'));
+    }
+
+    public static function getAdministratorName(): string
+    {
+        $email = self::getAdministratorEmail();
+        $user = $email !== '' ? get_user_by('email', $email) : false;
+
+        if ($user instanceof \WP_User && $user->display_name !== '') {
+            return sanitize_text_field($user->display_name);
+        }
+
+        return sanitize_text_field(get_bloginfo('name'));
+    }
+
     public static function getSenderAddress(): string
     {
-        /**
-         * The sender address always comes from the server configuration.
-         */
-        $address = apply_filters('rrze_formwizard_sender_email', get_option('admin_email'));
+        $address = apply_filters('rrze_formwizard_sender_email', self::getAdministratorEmail());
 
         return sanitize_email((string) $address);
     }
 
     public static function getSenderName(): string
     {
-        $options = self::getOptions();
-        $name = $options['sender_name'] ?? get_bloginfo('name');
+        $name = apply_filters('rrze_formular_sender_name', self::getAdministratorName());
 
         return sanitize_text_field((string) $name);
     }
 
-    public static function getDefaultRecipient(): string
+    public static function getRecipient(): string
     {
-        $options = self::getOptions();
-        $recipient = $options['default_recipient'] ?? '';
-
-        if ($recipient === '') {
-            $recipient = get_option('admin_email');
-        }
+        $recipient = apply_filters('rrze_formular_recipient_email', self::getAdministratorEmail());
 
         return sanitize_email((string) $recipient);
     }
 
-    public static function getAllowedDomains(): array
+    public static function getSubjectPrefix(): string
     {
         $options = self::getOptions();
-        $raw = (string) ($options['allowed_domains'] ?? '');
+        $prefix = sanitize_text_field((string) ($options['mail_subject_prefix'] ?? ''));
+        $prefix = trim($prefix);
+        $prefix = trim($prefix, "[]");
 
-        return self::parseDomainList($raw);
+        return trim($prefix);
     }
 
-    public static function getAllowedConfirmationDomains(): array
+    public static function formatSubject(string $subject): string
     {
-        $options = self::getOptions();
-        $raw = (string) ($options['allowed_confirmation_domains'] ?? '');
+        $subject = trim($subject);
+        $prefix = self::getSubjectPrefix();
 
-        return self::parseDomainList($raw);
-    }
-
-    public static function parseDomainList(string $raw): array
-    {
-        $domains = [];
-        foreach (preg_split('/\R/', strtolower($raw)) ?: [] as $line) {
-            $line = trim($line);
-            $line = ltrim($line, '@');
-            if ($line !== '') {
-                $domains[] = $line;
-            }
+        if ($prefix === '') {
+            return $subject;
         }
 
-        return array_values(array_unique($domains));
+        $prefix = sanitize_text_field((string) apply_filters('rrze_formular_mail_subject_prefix', $prefix));
+
+        if ($prefix === '') {
+            return $subject;
+        }
+
+        return sprintf('[%s] %s', $prefix, $subject);
     }
 
-    public static function emailMatchesDomain(string $email, array $domains): bool
+    public static function getHomepageUrl(): string
     {
-        $email = strtolower(trim($email));
-        if ($email === '' || !is_email($email)) {
+        return esc_url_raw(home_url('/'));
+    }
+
+    public static function formatSiteLinkLine(): string
+    {
+        $title = sanitize_text_field(get_bloginfo('name'));
+        $url = self::getHomepageUrl();
+
+        if ($title === '') {
+            return $url;
+        }
+
+        return $title . ': ' . $url;
+    }
+
+    public static function formatMailDateLine(): string
+    {
+        return __('Date', 'rrze-formular') . ': ' . wp_date(self::getMailDateTimeFormat());
+    }
+
+    private static function getMailDateTimeFormat(): string
+    {
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+
+        if (str_starts_with(strtolower((string) $locale), 'de')) {
+            return 'd.m.Y H:i';
+        }
+
+        return 'Y-m-d H:i';
+    }
+
+    public static function resolveSubmissionUrl(string $pageUrl = ''): string
+    {
+        $pageUrl = esc_url_raw(trim($pageUrl));
+
+        if ($pageUrl !== '' && self::isAllowedSubmissionUrl($pageUrl)) {
+            return $pageUrl;
+        }
+
+        $referer = wp_get_referer(false);
+        if (is_string($referer) && $referer !== '' && self::isAllowedSubmissionUrl($referer)) {
+            return esc_url_raw($referer);
+        }
+
+        return '';
+    }
+
+    public static function websiteHeaders(string $submissionUrl): array
+    {
+        $submissionUrl = esc_url_raw(trim($submissionUrl));
+
+        if ($submissionUrl === '') {
+            return [];
+        }
+
+        return [sprintf('X-Website: %s', $submissionUrl)];
+    }
+
+    private static function isAllowedSubmissionUrl(string $url): bool
+    {
+        if (!wp_http_validate_url($url)) {
             return false;
         }
 
-        $at = strrpos($email, '@');
-        if ($at === false) {
+        $parsed = wp_parse_url($url);
+        $site = wp_parse_url(home_url('/'));
+
+        if (!is_array($parsed) || !is_array($site)) {
             return false;
         }
 
-        $domain = substr($email, $at + 1);
+        $urlHost = strtolower((string) ($parsed['host'] ?? ''));
+        $siteHost = strtolower((string) ($site['host'] ?? ''));
 
-        foreach ($domains as $allowed) {
-            if ($domain === $allowed || str_ends_with($domain, '.' . $allowed)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static function resolveRecipient(string $requestedRecipient = ''): string
-    {
-        $recipient = sanitize_email($requestedRecipient);
-        $allowedDomains = self::getAllowedDomains();
-
-        if ($recipient === '' || !is_email($recipient)) {
-            $recipient = self::getDefaultRecipient();
-        }
-
-        if (!empty($allowedDomains) && !self::emailMatchesDomain($recipient, $allowedDomains)) {
-            $recipient = self::getDefaultRecipient();
-        }
-
-        if (!is_email($recipient)) {
-            return '';
-        }
-
-        return $recipient;
+        return $urlHost !== '' && $urlHost === $siteHost;
     }
 
     public static function sendOperatorMail(
@@ -128,6 +170,8 @@ class Mailer
             return false;
         }
 
+        $subject = self::formatSubject($subject);
+
         $defaultHeaders = [
             'Content-Type: text/plain; charset=UTF-8',
             sprintf('From: %s <%s>', $fromName, $fromEmail),
@@ -142,7 +186,8 @@ class Mailer
         bool $enabled,
         string $submitterEmail,
         string $subject,
-        string $body
+        string $body,
+        array $headers = []
     ): bool {
         if (!$enabled) {
             return false;
@@ -153,15 +198,11 @@ class Mailer
             return false;
         }
 
-        $allowed = self::getAllowedConfirmationDomains();
-        if (empty($allowed) || !self::emailMatchesDomain($submitterEmail, $allowed)) {
-            return false;
-        }
-
         return self::sendOperatorMail(
             $submitterEmail,
             $subject,
-            $body
+            $body,
+            $headers
         );
     }
 }

@@ -41,9 +41,21 @@ class SSO
         return [
             'name' => $name,
             'email' => $email,
-            'login' => sanitize_user((string) ($data['login'] ?? ''), true),
-            'source' => sanitize_key((string) ($data['source'] ?? 'unknown')),
         ];
+    }
+
+    public static function formatCompactLine(array $data): string
+    {
+        $parts = array_filter([
+            $data['name'] ?? '',
+            $data['email'] ?? '',
+        ]);
+
+        if ($parts === []) {
+            return '';
+        }
+
+        return __('SSO', 'rrze-formular') . ': ' . implode(', ', $parts);
     }
 
     public static function formatForMail(?array $data): string
@@ -52,20 +64,6 @@ class SSO
             return '';
         }
 
-        $lines = [
-            __('SSO / logged-in user', 'rrze-formular'),
-            __('Name', 'rrze-formular') . ': ' . $data['name'],
-            __('E-mail', 'rrze-formular') . ': ' . $data['email'],
-        ];
-
-        if (!empty($data['login'])) {
-            $lines[] = __('Login', 'rrze-formular') . ': ' . $data['login'];
-        }
-
-        if (!empty($data['source'])) {
-            $lines[] = __('Source', 'rrze-formular') . ': ' . $data['source'];
-        }
-
-        return implode("\n", $lines);
+        return self::formatCompactLine($data);
     }
 }

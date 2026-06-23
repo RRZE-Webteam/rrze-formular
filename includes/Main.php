@@ -6,6 +6,7 @@ use function RRZE\Formular\plugin;
 
 use RRZE\Formular\Common\{
     API\FormAPI,
+    Form\FormLocale,
     Settings\Settings
 };
 
@@ -54,6 +55,7 @@ class Main
         wp_localize_script('rrze-formular-frontend', 'RRZEFormular', [
             'restUrl' => rest_url('rrze-formular/v1/submit'),
             'nonce' => wp_create_nonce('wp_rest'),
+            'siteLocale' => FormLocale::getSiteLocale(),
             'i18n' => [
                 'submitting' => __('Sending…', 'rrze-formular'),
                 'success' => __('Thank you. Your message has been sent.', 'rrze-formular'),

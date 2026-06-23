@@ -31,6 +31,8 @@ function initFormular(root) {
 			values: collectValues(form),
 			token: form.querySelector('[name="token"]')?.value || '',
 			website: form.querySelector('[name="website"]')?.value || '',
+			pageUrl: window.location.href,
+			locale: RRZEFormular.siteLocale || document.documentElement.lang || '',
 		};
 
 		try {
