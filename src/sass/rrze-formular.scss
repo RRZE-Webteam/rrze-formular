@@ -1,14 +1,14 @@
 .rrze-formular {
-	--rrze-fw-border: #c5c5c5;
-	--rrze-fw-accent: #004a7f;
-	--rrze-fw-bg: #fff;
-	--rrze-fw-error: #b00020;
+	--rrze-formular-border: #c5c5c5;
+	--rrze-formular-accent: #004a7f;
+	--rrze-formular-bg: #fff;
+	--rrze-formular-error: #b00020;
 	max-width: 42rem;
 	margin: 0 auto;
 	padding: 1.5rem;
-	border: 1px solid var(--rrze-fw-border);
+	border: 1px solid var(--rrze-formular-border);
 	border-radius: 0.5rem;
-	background: var(--rrze-fw-bg);
+	background: var(--rrze-formular-bg);
 }
 
 .rrze-formular__title {
@@ -33,7 +33,7 @@
 .rrze-formular__field select {
 	width: 100%;
 	padding: 0.65rem 0.75rem;
-	border: 1px solid var(--rrze-fw-border);
+	border: 1px solid var(--rrze-formular-border);
 	border-radius: 0.35rem;
 	font: inherit;
 }
@@ -60,7 +60,7 @@
 	padding: 0.65rem 1rem;
 	border: 0;
 	border-radius: 0.35rem;
-	background: var(--rrze-fw-accent);
+	background: var(--rrze-formular-accent);
 	color: #fff;
 	font: inherit;
 	cursor: pointer;
@@ -68,7 +68,7 @@
 
 .rrze-formular__error {
 	margin: 0.35rem 0 0;
-	color: var(--rrze-fw-error);
+	color: var(--rrze-formular-error);
 	font-size: 0.875rem;
 }
 
@@ -85,7 +85,7 @@
 
 .rrze-formular__message.is-error {
 	background: #ffebee;
-	color: var(--rrze-fw-error);
+	color: var(--rrze-formular-error);
 }
 
 .rrze-formular__hp {
