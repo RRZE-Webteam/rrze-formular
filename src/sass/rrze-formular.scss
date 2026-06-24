@@ -666,6 +666,13 @@ body .block-editor-block-list__block .rrze-formular {
 }
 
 // Block editor: field configuration panel
+.rrze-formular-block-editor > .components-disabled {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+
 .rrze-formular-block-editor .rrze-formular-field-editor {
 	padding: 0.75rem;
 	margin-bottom: 1rem;
