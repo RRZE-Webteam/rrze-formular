@@ -11,6 +11,7 @@ import {
 	ToggleControl,
 	SelectControl,
 	Button,
+	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 
@@ -238,8 +239,20 @@ function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
 				</Button>
 			)}
 			<div className="rrze-formular-field-editor__actions">
-				<Button disabled={index === 0} onClick={() => onMove(index, -1)}>{__('Move up', 'rrze-formular')}</Button>
-				<Button disabled={index === total - 1} onClick={() => onMove(index, 1)}>{__('Move down', 'rrze-formular')}</Button>
+				<Button
+					disabled={index === 0}
+					onClick={() => onMove(index, -1)}
+					label={__('Move up', 'rrze-formular')}
+					icon={<span className="dashicons dashicons-arrow-up-alt2" aria-hidden="true" />}
+					showTooltip
+				/>
+				<Button
+					disabled={index === total - 1}
+					onClick={() => onMove(index, 1)}
+					label={__('Move down', 'rrze-formular')}
+					icon={<span className="dashicons dashicons-arrow-down-alt2" aria-hidden="true" />}
+					showTooltip
+				/>
 				<Button isDestructive onClick={() => onRemove(index)}>{__('Remove', 'rrze-formular')}</Button>
 			</div>
 		</div>
@@ -365,7 +378,9 @@ export default function Edit({ attributes, setAttributes }) {
 				</PanelBody>
 			</InspectorControls>
 			<div {...blockProps}>
-				<ServerSideRender block="rrze-formular/form-wizard" attributes={attributes} />
+				<Disabled>
+					<ServerSideRender block="rrze-formular/form-wizard" attributes={attributes} />
+				</Disabled>
 			</div>
 		</>
 	);

@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import {
 	InspectorControls,
 	useBlockProps,
@@ -11,10 +11,10 @@ import {
 	ToggleControl,
 	SelectControl,
 	Button,
+	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
-import { reinitDropdowns } from '../../src/js/dropdowns';
 
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
@@ -137,8 +137,20 @@ function FieldEditor({ field, index, total, onChange, onRemove, onMove }) {
 				</Button>
 			)}
 			<div className="rrze-formular-field-editor__actions">
-				<Button disabled={index === 0} onClick={() => onMove(index, -1)}>{__('Move up', 'rrze-formular')}</Button>
-				<Button disabled={index === total - 1} onClick={() => onMove(index, 1)}>{__('Move down', 'rrze-formular')}</Button>
+				<Button
+					disabled={index === 0}
+					onClick={() => onMove(index, -1)}
+					label={__('Move up', 'rrze-formular')}
+					icon={<span className="dashicons dashicons-arrow-up-alt2" aria-hidden="true" />}
+					showTooltip
+				/>
+				<Button
+					disabled={index === total - 1}
+					onClick={() => onMove(index, 1)}
+					label={__('Move down', 'rrze-formular')}
+					icon={<span className="dashicons dashicons-arrow-down-alt2" aria-hidden="true" />}
+					showTooltip
+				/>
 				<Button isDestructive onClick={() => onRemove(index)}>{__('Remove', 'rrze-formular')}</Button>
 			</div>
 		</div>
@@ -158,7 +170,6 @@ export default function Edit({ attributes, setAttributes }) {
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
-	const previewRef = useRef(null);
 	const previewKey = JSON.stringify(
 		(fields || []).map((field) => ({
 			id: field.id,
@@ -182,25 +193,6 @@ export default function Edit({ attributes, setAttributes }) {
 			fields: cloneFields(selected.fields),
 		});
 	}, []);
-
-	useEffect(() => {
-		const timer = window.setTimeout(() => {
-			if (!window.RRZEFormular) {
-				window.RRZEFormular = {
-					i18n: {
-						chooseOption: __('Please choose…', 'rrze-formular'),
-						confirmSelection: __('Confirm selection', 'rrze-formular'),
-					},
-				};
-			}
-			const root = previewRef.current?.querySelector('.rrze-formular');
-			if (root) {
-				reinitDropdowns(root);
-			}
-		}, 100);
-
-		return () => window.clearTimeout(timer);
-	}, [fields, formTitle, formDescription, submitLabel, template]);
 
 	const applyTemplate = (value) => {
 		const templates = getTemplates();
@@ -288,12 +280,14 @@ export default function Edit({ attributes, setAttributes }) {
 					</Button>
 				</PanelBody>
 			</InspectorControls>
-			<div {...blockProps} ref={previewRef}>
-				<ServerSideRender
-					key={previewKey}
-					block="rrze-formular/formular"
-					attributes={attributes}
-				/>
+			<div {...blockProps}>
+				<Disabled>
+					<ServerSideRender
+						key={previewKey}
+						block="rrze-formular/formular"
+						attributes={attributes}
+					/>
+				</Disabled>
 			</div>
 		</>
 	);
