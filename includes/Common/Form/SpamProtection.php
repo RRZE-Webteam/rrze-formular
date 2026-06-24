@@ -61,23 +61,24 @@ class SpamProtection
         return trim($value) === '';
     }
 
-    public static function checkRateLimit(): bool
+    public static function isWithinRateLimit(): bool
     {
         $options = get_option('rrze-formular', []);
         $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
-        $ip = self::getClientIp();
-        $key = 'rrze_fw_rate_' . md5($ip);
+        $key = self::getRateLimitKey();
         $count = (int) get_transient($key);
 
-        if ($count >= $limit) {
-            return false;
-        }
-
-        set_transient($key, $count + 1, HOUR_IN_SECONDS);
-        return true;
+        return $count < $limit;
     }
 
-    public static function checkConfirmationRateLimit(string $email): bool
+    public static function recordSubmission(): void
+    {
+        $key = self::getRateLimitKey();
+        $count = (int) get_transient($key);
+        set_transient($key, $count + 1, HOUR_IN_SECONDS);
+    }
+
+    public static function isWithinConfirmationRateLimit(string $email): bool
     {
         $email = sanitize_email($email);
         if (!is_email($email)) {
@@ -86,16 +87,32 @@ class SpamProtection
 
         $options = get_option('rrze-formular', []);
         $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 5));
-        $key = 'rrze_fw_confirm_' . md5(strtolower($email));
+        $key = self::getConfirmationRateLimitKey($email);
         $count = (int) get_transient($key);
 
-        if ($count >= $limit) {
-            return false;
+        return $count < $limit;
+    }
+
+    public static function recordConfirmationSend(string $email): void
+    {
+        $email = sanitize_email($email);
+        if (!is_email($email)) {
+            return;
         }
 
+        $key = self::getConfirmationRateLimitKey($email);
+        $count = (int) get_transient($key);
         set_transient($key, $count + 1, HOUR_IN_SECONDS);
+    }
 
-        return true;
+    private static function getRateLimitKey(): string
+    {
+        return 'rrze_fw_rate_' . md5(self::getClientIp());
+    }
+
+    private static function getConfirmationRateLimitKey(string $email): string
+    {
+        return 'rrze_fw_confirm_' . md5(strtolower($email));
     }
 
     private static function getClientIp(): string

@@ -13,10 +13,6 @@ class FormHandler
 
     private function processSubmission(array $payload): array
     {
-        if (!SpamProtection::checkRateLimit()) {
-            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
-        }
-
         $honeypot = (string) ($payload['website'] ?? '');
         if (!SpamProtection::checkHoneypot($honeypot)) {
             return $this->error(__('Spam detected.', 'rrze-formular'), 400);
@@ -35,6 +31,10 @@ class FormHandler
         $configHash = FormConfigAuth::configHash($trustedConfig);
         if (!SpamProtection::verifyToken($token, $configHash)) {
             return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
+        }
+
+        if (!SpamProtection::isWithinRateLimit()) {
+            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
 
         $attributes = $this->attributesFromTrustedConfig($trustedConfig);
@@ -81,20 +81,26 @@ class FormHandler
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
 
+        SpamProtection::recordSubmission();
+
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
         if ($sendConfirmation && $submitterEmail !== '') {
-            if (!SpamProtection::checkConfirmationRateLimit($submitterEmail)) {
+            if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
             }
 
-            Mailer::maybeSendConfirmation(
+            $confirmationSent = Mailer::maybeSendConfirmation(
                 true,
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
                 $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
                 $websiteHeaders
             );
+
+            if ($confirmationSent) {
+                SpamProtection::recordConfirmationSend($submitterEmail);
+            }
         }
 
         $successMessage = $attributes['successMessage'] !== ''
