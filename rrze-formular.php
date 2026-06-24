@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Formular
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-formular
-Version:            1.0.6
+Version:            1.0.7
 Description:        Simple forms for the block editor with automatic design, spam protection and secure mail delivery.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/

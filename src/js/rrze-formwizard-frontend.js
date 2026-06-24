@@ -37,18 +37,21 @@ function initFormular(root) {
 		}
 
 		const submitButton = form.querySelector('.rrze-formular__submit');
+		const defaultSubmitLabel = submitButton?.textContent || '';
 		if (submitButton) {
 			submitButton.disabled = true;
 			submitButton.textContent = RRZEFormular.i18n.submitting;
 		}
 
-		const attributes = JSON.parse(form.dataset.attributes || '{}');
 		const values = collectValues(form);
 		const payload = {
-			attributes,
+			formConfig: form.querySelector('[name="formConfig"]')?.value || '',
+			formConfigSig: form.querySelector('[name="formConfigSig"]')?.value || '',
 			values,
 			token: form.querySelector('[name="token"]')?.value || '',
 			website: form.querySelector('[name="website"]')?.value || '',
+			pageUrl: window.location.href,
+			locale: RRZEFormular.siteLocale || document.documentElement.lang || '',
 		};
 
 		try {
@@ -81,7 +84,7 @@ function initFormular(root) {
 		} finally {
 			if (submitButton) {
 				submitButton.disabled = false;
-				submitButton.textContent = attributes.submitLabel || 'Send';
+				submitButton.textContent = defaultSubmitLabel;
 			}
 		}
 	});

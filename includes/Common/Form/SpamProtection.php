@@ -6,10 +6,16 @@ defined('ABSPATH') || exit;
 
 class SpamProtection
 {
-    public static function createToken(): array
+    public static function createToken(string $configHash = ''): array
     {
         $issuedAt = time();
-        $payload = wp_json_encode(['t' => $issuedAt]);
+        $data = ['t' => $issuedAt];
+
+        if ($configHash !== '') {
+            $data['c'] = $configHash;
+        }
+
+        $payload = wp_json_encode($data);
         $signature = hash_hmac('sha256', (string) $payload, wp_salt('auth'));
 
         return [
@@ -18,7 +24,7 @@ class SpamProtection
         ];
     }
 
-    public static function verifyToken(string $token): bool
+    public static function verifyToken(string $token, string $configHash = ''): bool
     {
         $decoded = base64_decode($token, true);
         if ($decoded === false || !str_contains($decoded, '.')) {
@@ -35,6 +41,13 @@ class SpamProtection
         $data = json_decode($payload, true);
         if (!is_array($data) || empty($data['t'])) {
             return false;
+        }
+
+        if ($configHash !== '') {
+            $tokenConfigHash = (string) ($data['c'] ?? '');
+            if ($tokenConfigHash === '' || !hash_equals($configHash, $tokenConfigHash)) {
+                return false;
+            }
         }
 
         $options = get_option('rrze-formular', []);
@@ -61,6 +74,27 @@ class SpamProtection
         }
 
         set_transient($key, $count + 1, HOUR_IN_SECONDS);
+        return true;
+    }
+
+    public static function checkConfirmationRateLimit(string $email): bool
+    {
+        $email = sanitize_email($email);
+        if (!is_email($email)) {
+            return false;
+        }
+
+        $options = get_option('rrze-formular', []);
+        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 5));
+        $key = 'rrze_fw_confirm_' . md5(strtolower($email));
+        $count = (int) get_transient($key);
+
+        if ($count >= $limit) {
+            return false;
+        }
+
+        set_transient($key, $count + 1, HOUR_IN_SECONDS);
+
         return true;
     }
 

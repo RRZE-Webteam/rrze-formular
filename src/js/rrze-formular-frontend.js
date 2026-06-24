@@ -24,7 +24,7 @@ function initFormular(root) {
 
 		const submitButton = form.querySelector('.rrze-formular__submit');
 		const submitLabel = submitButton?.querySelector('.rrze-formular__submit-text');
-		const attributes = JSON.parse(form.dataset.attributes || '{}');
+		const defaultSubmitLabel = submitLabel?.textContent || '';
 
 		if (submitButton) {
 			submitButton.disabled = true;
@@ -34,7 +34,8 @@ function initFormular(root) {
 		}
 
 		const payload = {
-			attributes,
+			formConfig: form.querySelector('[name="formConfig"]')?.value || '',
+			formConfigSig: form.querySelector('[name="formConfigSig"]')?.value || '',
 			values: collectValues(form),
 			token: form.querySelector('[name="token"]')?.value || '',
 			website: form.querySelector('[name="website"]')?.value || '',
@@ -73,7 +74,7 @@ function initFormular(root) {
 			if (submitButton) {
 				submitButton.disabled = false;
 				if (submitLabel) {
-					submitLabel.textContent = attributes.submitLabel || 'Send';
+					submitLabel.textContent = defaultSubmitLabel;
 				}
 			}
 		}

@@ -27,7 +27,8 @@ class FormAPI
     public function submit(WP_REST_Request $request): WP_REST_Response
     {
         $payload = [
-            'attributes' => $request->get_param('attributes'),
+            'formConfig' => $request->get_param('formConfig'),
+            'formConfigSig' => $request->get_param('formConfigSig'),
             'values' => $request->get_param('values'),
             'website' => $request->get_param('website'),
             'token' => $request->get_param('token'),
