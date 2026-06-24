@@ -157,6 +157,18 @@ class Mailer
         return $urlHost !== '' && $urlHost === $siteHost;
     }
 
+    private static function isAllowedConfirmationRecipient(string $email): bool
+    {
+        /**
+         * Filter whether a confirmation mail may be sent to the given address.
+         * Return false to block the recipient (e.g. domain allowlists).
+         *
+         * @param bool $allowed Default true.
+         * @param string $email Sanitized recipient address.
+         */
+        return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
+    }
+
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
@@ -195,6 +207,10 @@ class Mailer
 
         $submitterEmail = sanitize_email($submitterEmail);
         if (!is_email($submitterEmail)) {
+            return false;
+        }
+
+        if (!self::isAllowedConfirmationRecipient($submitterEmail)) {
             return false;
         }
 

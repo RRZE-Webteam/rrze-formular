@@ -9,14 +9,16 @@ class FormRenderer
     public static function render(array $attributes): string
     {
         $attributes = self::normalizeAttributes($attributes);
-        $fields = FieldTypes::localizeFieldsForDisplay(
-            FieldTypes::sanitizeFields($attributes['fields'])
-        );
+        $trustedConfig = FormConfigAuth::buildTrustedConfig($attributes);
+        $configHash = FormConfigAuth::configHash($trustedConfig);
+        $signedConfig = FormConfigAuth::sign($trustedConfig);
+        $fields = FieldTypes::localizeFieldsForDisplay($trustedConfig['fields']);
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
         $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
         $attributes['submitLabel'] = FieldTypes::localizeDisplayString($attributes['submitLabel']);
-        $tokenData = SpamProtection::createToken();
         $formId = wp_unique_id('rrze-fw-');
+        $postId = get_the_ID() ? (int) get_the_ID() : 0;
+        $tokenData = SpamProtection::createToken($formId, $configHash, $postId);
 
         ob_start();
         ?>
@@ -33,10 +35,10 @@ class FormRenderer
             <form class="rrze-formular__form"
                   method="post"
                   action="#"
-                  novalidate
-                  data-attributes="<?php echo esc_attr(wp_json_encode($attributes)); ?>">
+                  novalidate>
                 <input type="hidden" name="token" value="<?php echo esc_attr($tokenData['token']); ?>">
-                <input type="hidden" name="issuedAt" value="<?php echo esc_attr((string) $tokenData['issuedAt']); ?>">
+                <input type="hidden" name="formConfig" value="<?php echo esc_attr($signedConfig['payload']); ?>">
+                <input type="hidden" name="formConfigSig" value="<?php echo esc_attr($signedConfig['signature']); ?>">
 
                 <div class="rrze-formular__hp" aria-hidden="true">
                     <label for="<?php echo esc_attr($formId); ?>-website"><?php esc_html_e('Website', 'rrze-formular'); ?></label>

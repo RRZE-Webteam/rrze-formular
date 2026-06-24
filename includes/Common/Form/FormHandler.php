@@ -13,24 +13,37 @@ class FormHandler
 
     private function processSubmission(array $payload): array
     {
-        if (!SpamProtection::checkRateLimit()) {
-            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
-        }
-
         $honeypot = (string) ($payload['website'] ?? '');
         if (!SpamProtection::checkHoneypot($honeypot)) {
             return $this->error(__('Spam detected.', 'rrze-formular'), 400);
         }
 
         $token = (string) ($payload['token'] ?? '');
-        if (!SpamProtection::verifyToken($token)) {
+        $trustedConfig = FormConfigAuth::verify(
+            (string) ($payload['formConfig'] ?? ''),
+            (string) ($payload['formConfigSig'] ?? '')
+        );
+
+        if ($trustedConfig === null) {
+            return $this->error(__('Invalid form configuration.', 'rrze-formular'), 400);
+        }
+
+        $configHash = FormConfigAuth::configHash($trustedConfig);
+        $tokenData = SpamProtection::verifyToken(
+            $token,
+            $configHash,
+            (string) ($payload['pageUrl'] ?? '')
+        );
+        if ($tokenData === null) {
             return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
         }
 
-        $attributes = $this->normalizeAttributes($payload['attributes'] ?? []);
-        $fields = FieldTypes::localizeFieldsForDisplay(
-            FieldTypes::sanitizeFields($attributes['fields'] ?? [])
-        );
+        if (!SpamProtection::isWithinRateLimit()) {
+            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
+        }
+
+        $attributes = $this->attributesFromTrustedConfig($trustedConfig);
+        $fields = FieldTypes::localizeFieldsForDisplay($trustedConfig['fields']);
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
         $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
         $inputFields = array_values(array_filter($fields, static fn(array $field): bool => $field['type'] !== 'heading'));
@@ -73,16 +86,27 @@ class FormHandler
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
 
+        SpamProtection::recordSubmission();
+        SpamProtection::consumeToken($tokenData);
+
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
         if ($sendConfirmation && $submitterEmail !== '') {
-            Mailer::maybeSendConfirmation(
+            if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
+                return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
+            }
+
+            $confirmationSent = Mailer::maybeSendConfirmation(
                 true,
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
                 $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
                 $websiteHeaders
             );
+
+            if ($confirmationSent) {
+                SpamProtection::recordConfirmationSend($submitterEmail);
+            }
         }
 
         $successMessage = $attributes['successMessage'] !== ''
@@ -96,16 +120,15 @@ class FormHandler
         ];
     }
 
-    private function normalizeAttributes(array $attributes): array
+    private function attributesFromTrustedConfig(array $trustedConfig): array
     {
         return [
-            'formTitle' => sanitize_text_field((string) ($attributes['formTitle'] ?? '')),
-            'formDescription' => sanitize_textarea_field((string) ($attributes['formDescription'] ?? '')),
-            'submitLabel' => sanitize_text_field((string) ($attributes['submitLabel'] ?? __('Send', 'rrze-formular'))),
-            'successMessage' => sanitize_text_field((string) ($attributes['successMessage'] ?? '')),
-            'includeSsoInfo' => !empty($attributes['includeSsoInfo']),
-            'sendConfirmation' => !empty($attributes['sendConfirmation']),
-            'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
+            'formTitle' => sanitize_text_field((string) ($trustedConfig['formTitle'] ?? '')),
+            'formDescription' => sanitize_textarea_field((string) ($trustedConfig['formDescription'] ?? '')),
+            'successMessage' => sanitize_text_field((string) ($trustedConfig['successMessage'] ?? '')),
+            'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
+            'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
+            'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
 
