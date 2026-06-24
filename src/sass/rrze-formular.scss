@@ -673,9 +673,10 @@ body .block-editor-block-list__block .rrze-formular {
 	min-width: 0;
 }
 
-.rrze-formular-block-editor .rrze-formular-field-editor {
+// Block editor: field configuration panel (InspectorControls sidebar)
+.rrze-formular-field-editor {
 	padding: 0.75rem;
-	margin-bottom: 1rem;
+	margin-bottom: 1.25rem;
 	border: 1px solid #ddd;
 	border-radius: 0;
 	background: #fafafa;
@@ -686,6 +687,7 @@ body .block-editor-block-list__block .rrze-formular {
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	margin-top: 0.75rem;
+	margin-bottom: 0;
 }
 
 .rrze-formular-field-editor__option {
