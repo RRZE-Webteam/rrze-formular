@@ -16,8 +16,9 @@ class FormRenderer
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
         $attributes['formDescription'] = FieldTypes::localizeDisplayString($attributes['formDescription']);
         $attributes['submitLabel'] = FieldTypes::localizeDisplayString($attributes['submitLabel']);
-        $tokenData = SpamProtection::createToken($configHash);
         $formId = wp_unique_id('rrze-fw-');
+        $postId = get_the_ID() ? (int) get_the_ID() : 0;
+        $tokenData = SpamProtection::createToken($formId, $configHash, $postId);
 
         ob_start();
         ?>
@@ -36,7 +37,6 @@ class FormRenderer
                   action="#"
                   novalidate>
                 <input type="hidden" name="token" value="<?php echo esc_attr($tokenData['token']); ?>">
-                <input type="hidden" name="issuedAt" value="<?php echo esc_attr((string) $tokenData['issuedAt']); ?>">
                 <input type="hidden" name="formConfig" value="<?php echo esc_attr($signedConfig['payload']); ?>">
                 <input type="hidden" name="formConfigSig" value="<?php echo esc_attr($signedConfig['signature']); ?>">
 

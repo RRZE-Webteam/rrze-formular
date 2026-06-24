@@ -29,7 +29,12 @@ class FormHandler
         }
 
         $configHash = FormConfigAuth::configHash($trustedConfig);
-        if (!SpamProtection::verifyToken($token, $configHash)) {
+        $tokenData = SpamProtection::verifyToken(
+            $token,
+            $configHash,
+            (string) ($payload['pageUrl'] ?? '')
+        );
+        if ($tokenData === null) {
             return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
         }
 
@@ -82,6 +87,7 @@ class FormHandler
         }
 
         SpamProtection::recordSubmission();
+        SpamProtection::consumeToken($tokenData);
 
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);

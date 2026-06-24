@@ -6,17 +6,32 @@ defined('ABSPATH') || exit;
 
 class SpamProtection
 {
-    public static function createToken(string $configHash = ''): array
+    private const DEFAULT_TOKEN_TTL = 1800;
+
+    /**
+     * @return array{token: string, issuedAt: int}
+     */
+    public static function createToken(string $formId, string $configHash, int $postId = 0): array
     {
         $issuedAt = time();
-        $data = ['t' => $issuedAt];
+        $ttl = (int) apply_filters('rrze_formular_token_ttl', self::DEFAULT_TOKEN_TTL);
+        $ttl = max(60, min($ttl, 7200));
+        $expiresAt = $issuedAt + $ttl;
+        $nonce = wp_generate_uuid4();
 
-        if ($configHash !== '') {
-            $data['c'] = $configHash;
-        }
+        $data = [
+            'issued_at' => $issuedAt,
+            'expires_at' => $expiresAt,
+            'form_id' => sanitize_key($formId),
+            'post_id' => max(0, $postId),
+            'config' => $configHash,
+            'nonce' => $nonce,
+        ];
 
-        $payload = wp_json_encode($data);
-        $signature = hash_hmac('sha256', (string) $payload, wp_salt('auth'));
+        $payload = wp_json_encode($data, JSON_UNESCAPED_SLASHES);
+        $signature = hash_hmac('sha256', (string) $payload, wp_salt('rrze-formular-token'));
+
+        self::storeNonce($nonce, $expiresAt);
 
         return [
             'token' => base64_encode($payload . '.' . $signature),
@@ -24,36 +39,87 @@ class SpamProtection
         ];
     }
 
-    public static function verifyToken(string $token, string $configHash = ''): bool
+    /**
+     * @return array<string, mixed>|null Decoded token payload when valid.
+     */
+    public static function verifyToken(string $token, string $configHash, string $pageUrl = ''): ?array
     {
+        $token = trim($token);
+        if ($token === '') {
+            return null;
+        }
+
         $decoded = base64_decode($token, true);
         if ($decoded === false || !str_contains($decoded, '.')) {
-            return false;
+            return null;
         }
 
         [$payload, $signature] = explode('.', $decoded, 2);
-        $expected = hash_hmac('sha256', $payload, wp_salt('auth'));
+        $expected = hash_hmac('sha256', $payload, wp_salt('rrze-formular-token'));
 
         if (!hash_equals($expected, $signature)) {
-            return false;
+            return null;
         }
 
         $data = json_decode($payload, true);
-        if (!is_array($data) || empty($data['t'])) {
-            return false;
+        if (!is_array($data)) {
+            return null;
         }
 
-        if ($configHash !== '') {
-            $tokenConfigHash = (string) ($data['c'] ?? '');
-            if ($tokenConfigHash === '' || !hash_equals($configHash, $tokenConfigHash)) {
-                return false;
-            }
+        $issuedAt = (int) ($data['issued_at'] ?? 0);
+        $expiresAt = (int) ($data['expires_at'] ?? 0);
+        $nonce = (string) ($data['nonce'] ?? '');
+        $tokenConfigHash = (string) ($data['config'] ?? '');
+        $formId = sanitize_key((string) ($data['form_id'] ?? ''));
+        $tokenPostId = (int) ($data['post_id'] ?? 0);
+
+        if ($issuedAt <= 0 || $expiresAt <= 0 || $nonce === '' || $formId === '') {
+            return null;
+        }
+
+        if ($configHash === '' || !hash_equals($configHash, $tokenConfigHash)) {
+            return null;
+        }
+
+        $now = time();
+        if ($now < $issuedAt || $now > $expiresAt) {
+            return null;
         }
 
         $options = get_option('rrze-formular', []);
         $minSeconds = max(1, (int) ($options['min_submit_seconds'] ?? 3));
+        if (($now - $issuedAt) < $minSeconds) {
+            return null;
+        }
 
-        return (time() - (int) $data['t']) >= $minSeconds;
+        if (!self::isNonceValid($nonce)) {
+            return null;
+        }
+
+        if ($tokenPostId > 0) {
+            $submissionUrl = Mailer::resolveSubmissionUrl($pageUrl);
+            if ($submissionUrl !== '') {
+                $submitPostId = (int) url_to_postid($submissionUrl);
+                if ($submitPostId > 0 && $submitPostId !== $tokenPostId) {
+                    return null;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array<string, mixed> $tokenData
+     */
+    public static function consumeToken(array $tokenData): void
+    {
+        $nonce = (string) ($tokenData['nonce'] ?? '');
+        if ($nonce === '') {
+            return;
+        }
+
+        delete_transient(self::getNonceKey($nonce));
     }
 
     public static function checkHoneypot(string $value): bool
@@ -103,6 +169,22 @@ class SpamProtection
         $key = self::getConfirmationRateLimitKey($email);
         $count = (int) get_transient($key);
         set_transient($key, $count + 1, HOUR_IN_SECONDS);
+    }
+
+    private static function storeNonce(string $nonce, int $expiresAt): void
+    {
+        $ttl = max(60, $expiresAt - time());
+        set_transient(self::getNonceKey($nonce), 1, $ttl);
+    }
+
+    private static function isNonceValid(string $nonce): bool
+    {
+        return get_transient(self::getNonceKey($nonce)) !== false;
+    }
+
+    private static function getNonceKey(string $nonce): string
+    {
+        return 'rrze_fw_nonce_' . hash('sha256', $nonce);
     }
 
     private static function getRateLimitKey(): string
