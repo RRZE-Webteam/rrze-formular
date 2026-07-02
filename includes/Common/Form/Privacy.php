@@ -38,37 +38,23 @@ class Privacy
         return self::getPreferredSlug() === self::SLUG_DE;
     }
 
-    /**
-     * Canonical privacy page URL without fragment (used for validation messages).
-     */
     public static function getPageUrl(): string
     {
-        $page = self::getPage();
+        $page = self::getPublishedPage();
         if ($page instanceof \WP_Post) {
             $url = get_permalink($page);
 
             if (is_string($url) && $url !== '') {
-                return self::stripFragment($url);
+                return $url;
             }
         }
 
         return user_trailingslashit(home_url('/' . self::getPreferredSlug()));
     }
 
-    /**
-     * Privacy page URL with #contact fragment (used in form links).
-     */
     public static function getLinkUrl(): string
     {
         return self::getPageUrl() . '#' . self::CONTACT_FRAGMENT;
-    }
-
-    /**
-     * @deprecated Use getLinkUrl() for links or getPageUrl() for validation messages.
-     */
-    public static function getUrl(): string
-    {
-        return self::getLinkUrl();
     }
 
     public static function getLabel(): string
@@ -78,14 +64,9 @@ class Privacy
             : __('Privacy', 'rrze-formular');
     }
 
-    public static function getPage(): ?\WP_Post
-    {
-        return self::findPageBySlug(self::getPreferredSlug());
-    }
-
     public static function getPublishedPage(): ?\WP_Post
     {
-        $page = self::getPage();
+        $page = get_page_by_path(self::getPreferredSlug(), OBJECT, 'page');
 
         if ($page instanceof \WP_Post && $page->post_status === 'publish') {
             return $page;
@@ -120,31 +101,5 @@ class Privacy
             esc_attr(self::CONTACT_FRAGMENT),
             esc_html(self::getLabel())
         );
-    }
-
-    private static function findPageBySlug(string $slug): ?\WP_Post
-    {
-        $page = get_page_by_path($slug, OBJECT, 'page');
-        if ($page instanceof \WP_Post) {
-            return $page;
-        }
-
-        $pages = get_posts([
-            'post_type' => 'page',
-            'name' => $slug,
-            'post_status' => 'any',
-            'numberposts' => 1,
-            'orderby' => 'ID',
-            'order' => 'ASC',
-        ]);
-
-        $page = $pages[0] ?? null;
-
-        return $page instanceof \WP_Post ? $page : null;
-    }
-
-    private static function stripFragment(string $url): string
-    {
-        return preg_replace('/#.*$/', '', $url) ?? $url;
     }
 }

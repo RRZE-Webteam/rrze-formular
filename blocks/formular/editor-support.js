@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 import { registerPlugin } from '@wordpress/plugins';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -111,6 +111,21 @@ function hasInvalidRecipientBlocks( blocks ) {
 	return invalidEmails.length > 0;
 }
 
+function getPrivacyPublishBlockedMessage( config ) {
+	const label = config.privacyLabel || __( 'Privacy', 'rrze-formular' );
+	const url = config.privacyUrl || '';
+
+	return sprintf(
+		config.i18n?.privacyPublishBlockedFormat ||
+			__(
+				'This page cannot be published because no published %1$s page exists at %2$s.',
+				'rrze-formular'
+			),
+		label,
+		url
+	);
+}
+
 function getPublishBlockMessage( blocks ) {
 	if ( ! hasFormBlocks( blocks ) ) {
 		return '';
@@ -119,13 +134,7 @@ function getPublishBlockMessage( blocks ) {
 	const config = getEditorConfig();
 
 	if ( ! config.privacyPublished ) {
-		return (
-			config.i18n?.privacyPublishBlocked ||
-			__(
-				'This page cannot be published because the required privacy page is not published.',
-				'rrze-formular'
-			)
-		);
+		return getPrivacyPublishBlockedMessage( config );
 	}
 
 	if ( hasInvalidRecipientBlocks( blocks ) ) {

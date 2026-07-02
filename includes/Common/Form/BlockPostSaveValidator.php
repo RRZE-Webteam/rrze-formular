@@ -232,7 +232,10 @@ class BlockPostSaveValidator
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
                 'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
-                'privacyPublishBlocked' => Privacy::getPublishBlockedMessage(),
+                'privacyPublishBlockedFormat' => __(
+                    'This page cannot be published because no published %1$s page exists at %2$s.',
+                    'rrze-formular'
+                ),
             ],
         ];
     }
