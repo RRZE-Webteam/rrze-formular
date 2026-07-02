@@ -36,7 +36,7 @@ class Defaults
             ],
         ];
 
-        return apply_filters('rrze_formwizard_defaults', $defaults);
+        return apply_filters('rrze_formular_defaults', $defaults);
     }
 
     private function generalFields(): array
