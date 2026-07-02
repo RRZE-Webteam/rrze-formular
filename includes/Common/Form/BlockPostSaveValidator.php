@@ -2,6 +2,8 @@
 
 namespace RRZE\Formular\Common\Form;
 
+use WP_REST_Request;
+
 defined('ABSPATH') || exit;
 
 class BlockPostSaveValidator
@@ -18,9 +20,18 @@ class BlockPostSaveValidator
 
     public static function register(): void
     {
-        add_filter('wp_insert_post_data', [self::class, 'filterPostData'], 20, 2);
+        add_filter('wp_insert_post_data', [self::class, 'filterPostData'], 99, 2);
+        add_action('init', [self::class, 'registerRestFilters'], 20);
         add_action('enqueue_block_editor_assets', [self::class, 'enqueueEditorAssets']);
         add_action('admin_notices', [self::class, 'renderAdminNotice']);
+    }
+
+    public static function registerRestFilters(): void
+    {
+        foreach (array_keys(get_post_types(['show_in_rest' => true])) as $postType) {
+            add_filter("rest_pre_insert_{$postType}", [self::class, 'filterRestPost'], 99, 2);
+            add_action("rest_after_insert_{$postType}", [self::class, 'enforceDraftAfterRestSave'], 20, 3);
+        }
     }
 
     /**
@@ -34,16 +45,60 @@ class BlockPostSaveValidator
             return $data;
         }
 
-        $content = (string) ($data['post_content'] ?? '');
-        $invalidEmails = self::findInvalidRecipientEmails($content);
-        if ($invalidEmails === []) {
-            return $data;
+        $content = self::resolveContent($data, $postarr);
+        return self::applyDraftIfInvalid($data, $content);
+    }
+
+    /**
+     * @param object $preparedPost
+     */
+    public static function filterRestPost($preparedPost, WP_REST_Request $request)
+    {
+        if (!is_object($preparedPost)) {
+            return $preparedPost;
         }
 
-        $data['post_status'] = 'draft';
+        $content = $request->get_param('content');
+        if (!is_string($content) || $content === '') {
+            $content = isset($preparedPost->post_content) ? (string) $preparedPost->post_content : '';
+        }
+
+        $invalidEmails = self::findInvalidRecipientEmails($content);
+        if ($invalidEmails === []) {
+            return $preparedPost;
+        }
+
+        $preparedPost->post_status = 'draft';
         self::storeNotice($invalidEmails);
 
-        return $data;
+        return $preparedPost;
+    }
+
+    /**
+     * @param \WP_Post        $post
+     * @param WP_REST_Request $request
+     */
+    public static function enforceDraftAfterRestSave($post, WP_REST_Request $request, bool $creating): void
+    {
+        if (!($post instanceof \WP_Post)) {
+            return;
+        }
+
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+
+        $invalidEmails = self::findInvalidRecipientEmails((string) $post->post_content);
+        if ($invalidEmails === [] || $post->post_status !== 'publish') {
+            return;
+        }
+
+        wp_update_post([
+            'ID' => $post->ID,
+            'post_status' => 'draft',
+        ], true);
+
+        self::storeNotice($invalidEmails);
     }
 
     public static function enqueueEditorAssets(): void
@@ -53,6 +108,10 @@ class BlockPostSaveValidator
         }
 
         $handle = generate_block_asset_handle('rrze-formular/formular', 'editorScript');
+        if (!wp_script_is($handle, 'registered')) {
+            return;
+        }
+
         $userId = get_current_user_id();
         $notice = $userId > 0 ? get_transient(self::noticeKey($userId)) : false;
 
@@ -68,6 +127,7 @@ class BlockPostSaveValidator
                 'recipientInvalidEmail' => __('Please enter a valid e-mail address.', 'rrze-formular'),
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
+                'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
             ],
         ]);
     }
@@ -125,16 +185,59 @@ class BlockPostSaveValidator
     }
 
     /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $postarr
+     */
+    private static function resolveContent(array $data, array $postarr): string
+    {
+        $content = (string) ($data['post_content'] ?? '');
+        if ($content !== '') {
+            return $content;
+        }
+
+        return (string) ($postarr['post_content'] ?? '');
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private static function applyDraftIfInvalid(array $data, string $content): array
+    {
+        $invalidEmails = self::findInvalidRecipientEmails($content);
+        if ($invalidEmails === []) {
+            return $data;
+        }
+
+        $data['post_status'] = 'draft';
+        self::storeNotice($invalidEmails);
+
+        return $data;
+    }
+
+    /**
      * @return list<string>
      */
     private static function findInvalidRecipientEmails(string $content): array
     {
-        if ($content === '' || !has_blocks($content)) {
+        if ($content === '') {
             return [];
         }
 
         $invalid = [];
-        self::walkBlocks(parse_blocks($content), $invalid);
+
+        if (has_blocks($content)) {
+            self::walkBlocks(parse_blocks($content), $invalid);
+        }
+
+        if (preg_match_all('/"recipientEmail"\s*:\s*"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"/', $content, $matches)) {
+            foreach ($matches[1] as $rawEmail) {
+                $email = trim(stripslashes((string) $rawEmail));
+                if ($email !== '' && !AllowedDomains::isBlockRecipientAllowed($email)) {
+                    $invalid[] = $email;
+                }
+            }
+        }
 
         return array_values(array_unique($invalid));
     }

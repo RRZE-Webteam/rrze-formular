@@ -561,6 +561,9 @@
       "Public relations · Newsletter signup": [
         "Öffentlichkeitsarbeit · Newsletter-Anmeldung"
       ],
+      "Publishing is blocked until all form recipient addresses use an allowed domain.": [
+        "Die Veröffentlichung ist gesperrt, bis alle Empfänger-Adressen in Formularblöcken eine erlaubte Domain verwenden."
+      ],
       "Purpose": [
         "Zweck"
       ],

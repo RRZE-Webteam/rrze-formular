@@ -567,6 +567,9 @@ msgstr "Öffentlichkeitsarbeit · Alumni-Kontakt"
 msgid "Public relations · Newsletter signup"
 msgstr "Öffentlichkeitsarbeit · Newsletter-Anmeldung"
 
+msgid "Publishing is blocked until all form recipient addresses use an allowed domain."
+msgstr "Die Veröffentlichung ist gesperrt, bis alle Empfänger-Adressen in Formularblöcken eine erlaubte Domain verwenden."
+
 msgid "Purpose"
 msgstr "Zweck"
 

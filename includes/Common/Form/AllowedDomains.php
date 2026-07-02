@@ -10,6 +10,14 @@ class AllowedDomains
     private const SETTINGS_OPTION = 'rrze_settings';
     private const SETTINGS_DOMAINS_KEY = 'rrze_formular_allowedDomains';
 
+    /**
+     * @var list<string>
+     */
+    private const SETTINGS_DOMAIN_OPTION_KEYS = [
+        'rrze_formular_allowedDomains',
+        'rrze-formular_allowedDomains',
+    ];
+
     public static function isRrzeSettingsActive(): bool
     {
         if (!function_exists('is_plugin_active')) {
@@ -56,7 +64,12 @@ class AllowedDomains
             $raw = is_array($options) ? ($options['allowed_domains'] ?? '') : '';
         }
 
-        return self::parseDomains($raw);
+        $domains = self::parseDomains($raw);
+
+        /**
+         * @param list<string> $domains
+         */
+        return apply_filters('rrze_formular_allowed_domains', $domains);
     }
 
     public static function hasConfiguredDomains(): bool
@@ -123,8 +136,16 @@ class AllowedDomains
      */
     private static function parseDomains(mixed $raw): array
     {
+        $lines = [];
+
         if (is_array($raw)) {
-            $lines = array_map('strval', $raw);
+            foreach ($raw as $key => $value) {
+                if (is_string($value) && trim($value) !== '') {
+                    $lines[] = $value;
+                } elseif (is_string($key) && trim($key) !== '' && !is_numeric($key)) {
+                    $lines[] = $key;
+                }
+            }
         } else {
             $lines = preg_split('/\R/', (string) $raw) ?: [];
         }
@@ -144,22 +165,45 @@ class AllowedDomains
 
     private static function getRrzeSettingsDomainsRaw(): mixed
     {
-        $standalone = get_site_option(self::SETTINGS_DOMAINS_KEY, '');
-        if (self::hasDomainValue($standalone)) {
-            return $standalone;
+        if (class_exists('\RRZE\Settings\Options')) {
+            $options = \RRZE\Settings\Options::getSiteOptions();
+            $plugins = $options->plugins ?? null;
+            if (is_object($plugins) && isset($plugins->{self::SETTINGS_DOMAINS_KEY})) {
+                $value = $plugins->{self::SETTINGS_DOMAINS_KEY};
+                if (self::hasDomainValue($value)) {
+                    return $value;
+                }
+            }
         }
 
-        $settings = get_site_option(self::SETTINGS_OPTION, []);
-        if (!is_array($settings)) {
-            return '';
+        foreach (self::SETTINGS_DOMAIN_OPTION_KEYS as $optionKey) {
+            foreach ([static fn(): mixed => get_site_option($optionKey, ''), static fn(): mixed => get_option($optionKey, '')] as $reader) {
+                $value = $reader();
+                if (self::hasDomainValue($value)) {
+                    return $value;
+                }
+            }
         }
 
-        $plugins = $settings['plugins'] ?? [];
-        if (!is_array($plugins)) {
-            return '';
+        foreach ([static fn(): mixed => get_site_option(self::SETTINGS_OPTION, []), static fn(): mixed => get_option(self::SETTINGS_OPTION, [])] as $reader) {
+            $settings = $reader();
+            if (!is_array($settings)) {
+                continue;
+            }
+
+            $plugins = $settings['plugins'] ?? [];
+            if (!is_array($plugins)) {
+                continue;
+            }
+
+            foreach (self::SETTINGS_DOMAIN_OPTION_KEYS as $optionKey) {
+                if (isset($plugins[$optionKey]) && self::hasDomainValue($plugins[$optionKey])) {
+                    return $plugins[$optionKey];
+                }
+            }
         }
 
-        return $plugins[self::SETTINGS_DOMAINS_KEY] ?? '';
+        return '';
     }
 
     private static function hasDomainValue(mixed $value): bool
