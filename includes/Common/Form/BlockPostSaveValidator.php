@@ -222,16 +222,16 @@ class BlockPostSaveValidator
         return [
             'allowedDomains' => AllowedDomains::getAllowedDomains(),
             'domainsConfigured' => AllowedDomains::hasConfiguredDomains(),
-            'imprintPublished' => Imprint::isPublished(),
-            'imprintUrl' => Imprint::getUrl(),
-            'imprintLabel' => Imprint::getLabel(),
+            'privacyPublished' => Privacy::isPublished(),
+            'privacyUrl' => Privacy::getUrl(),
+            'privacyLabel' => Privacy::getLabel(),
             'saveNotice' => is_string($notice) ? $notice : '',
             'i18n' => [
                 'recipientInvalidEmail' => __('Please enter a valid e-mail address.', 'rrze-formular'),
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
                 'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
-                'imprintPublishBlocked' => Imprint::getPublishBlockedMessage(),
+                'privacyPublishBlocked' => Privacy::getPublishBlockedMessage(),
             ],
         ];
     }
@@ -312,8 +312,8 @@ class BlockPostSaveValidator
             return null;
         }
 
-        if (!Imprint::isPublished()) {
-            return Imprint::getPublishBlockedMessage();
+        if (!Privacy::isPublished()) {
+            return Privacy::getPublishBlockedMessage();
         }
 
         $invalidEmails = self::findInvalidRecipientEmails($content);

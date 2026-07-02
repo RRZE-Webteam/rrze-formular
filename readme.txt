@@ -2,9 +2,9 @@
 Contributors: rrze-webteam
 Tags: form, contact, block, wizard, mail
 Requires at least: 6.8
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 

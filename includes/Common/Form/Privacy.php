@@ -4,10 +4,10 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
-class Imprint
+class Privacy
 {
-    private const SLUG_DE = 'impressum';
-    private const SLUG_EN = 'imprint';
+    private const SLUG_DE = 'datenschutz';
+    private const SLUG_EN = 'privacy';
 
     public static function getSlug(): string
     {
@@ -24,8 +24,8 @@ class Imprint
     public static function getLabel(): string
     {
         return self::getSlug() === self::SLUG_DE
-            ? __('Impressum', 'rrze-formular')
-            : __('Imprint', 'rrze-formular');
+            ? __('Datenschutz', 'rrze-formular')
+            : __('Privacy', 'rrze-formular');
     }
 
     public static function getPage(): ?\WP_Post
@@ -45,7 +45,7 @@ class Imprint
     public static function getPublishBlockedMessage(): string
     {
         return sprintf(
-            /* translators: 1: page title (Impressum/Imprint), 2: expected URL path */
+            /* translators: 1: page title (Datenschutz/Privacy), 2: expected URL path */
             __(
                 'This page cannot be published because no published %1$s page exists at %2$s.',
                 'rrze-formular'
@@ -58,7 +58,7 @@ class Imprint
     public static function renderLink(): string
     {
         return sprintf(
-            '<p class="rrze-formular__imprint"><a href="%1$s">%2$s</a></p>',
+            '<p class="rrze-formular__privacy"><a href="%1$s">%2$s</a></p>',
             esc_url(self::getUrl()),
             esc_html(self::getLabel())
         );

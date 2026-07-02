@@ -66,7 +66,7 @@ class FormRenderer
                     </button>
                 </div>
 
-                <?php echo Imprint::renderLink(); ?>
+                <?php echo Privacy::renderLink(); ?>
 
                 <div class="rrze-formular__message" role="status" aria-live="polite" hidden></div>
             </form>

@@ -118,11 +118,11 @@ function getPublishBlockMessage( blocks ) {
 
 	const config = getEditorConfig();
 
-	if ( ! config.imprintPublished ) {
+	if ( ! config.privacyPublished ) {
 		return (
-			config.i18n?.imprintPublishBlocked ||
+			config.i18n?.privacyPublishBlocked ||
 			__(
-				'This page cannot be published because the required imprint page is not published.',
+				'This page cannot be published because the required privacy page is not published.',
 				'rrze-formular'
 			)
 		);
