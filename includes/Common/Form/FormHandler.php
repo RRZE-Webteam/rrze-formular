@@ -82,6 +82,17 @@ class FormHandler
         $ssoData = $includeSso ? SSO::getUserData() : null;
         $submissionUrl = Mailer::resolveSubmissionUrl((string) ($payload['pageUrl'] ?? ''));
         $websiteHeaders = Mailer::websiteHeaders($submissionUrl);
+        $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
+        $submitterName = $this->findSubmitterName($inputFields, $sanitized, $ssoData);
+        $operatorHeaders = $websiteHeaders;
+
+        if ($submitterEmail !== '') {
+            $operatorHeaders[] = sprintf(
+                'Reply-To: %s',
+                Mailer::formatMailboxAddress($submitterEmail, $submitterName)
+            );
+        }
+
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
 
@@ -89,7 +100,7 @@ class FormHandler
             $recipient['email'],
             $subject,
             $mailBody,
-            $websiteHeaders,
+            $operatorHeaders,
             $recipient['name']
         );
         if (!$sent) {
@@ -100,7 +111,6 @@ class FormHandler
         SpamProtection::consumeToken($tokenData);
 
         $sendConfirmation = !empty($attributes['sendConfirmation']);
-        $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
         if ($sendConfirmation && $submitterEmail !== '') {
             if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
@@ -111,7 +121,8 @@ class FormHandler
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
                 $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
-                $websiteHeaders
+                $websiteHeaders,
+                $submitterName
             );
 
             if ($confirmationSent) {
@@ -334,6 +345,24 @@ class FormHandler
             if ($field['type'] === 'email' && !empty($values[$field['id']])) {
                 return sanitize_email((string) $values[$field['id']]);
             }
+        }
+
+        return '';
+    }
+
+    private function findSubmitterName(array $fields, array $values, ?array $ssoData): string
+    {
+        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
+        if ($fullName !== '') {
+            return sanitize_text_field($fullName);
+        }
+
+        if (($values['name'] ?? '') !== '') {
+            return sanitize_text_field((string) $values['name']);
+        }
+
+        if ($ssoData !== null && ($ssoData['name'] ?? '') !== '') {
+            return sanitize_text_field((string) $ssoData['name']);
         }
 
         return '';

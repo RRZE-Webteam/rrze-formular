@@ -9,6 +9,9 @@
       "(required)": [
         "(Pflichtfeld)"
       ],
+      "About": [
+        "Über"
+      ],
       "Abstract": [
         "Abstract"
       ],
@@ -263,9 +266,6 @@
       ],
       "Guest lecture": [
         "Gastvortrag"
-      ],
-      "Guided tour": [
-        "Geführte Tour"
       ],
       "Hardware": [
         "Hardware"
@@ -663,9 +663,6 @@
       "Settings saved.": [
         "Einstellungen gespeichert."
       ],
-      "Setup tour": [
-        "Einrichtungs-Tour"
-      ],
       "Skills and experience": [
         "Kenntnisse und Erfahrung"
       ],
@@ -803,6 +800,9 @@
       ],
       "Topic of the call": [
         "Thema des Rückrufs"
+      ],
+      "Tour": [
+        "Tour"
       ],
       "Type": [
         "Typ"

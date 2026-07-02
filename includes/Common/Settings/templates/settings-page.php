@@ -10,10 +10,10 @@ $errors = $settings->errors->hasErrors();
 <div class="wrap rrze-formular-settings-wrap">
     <h1 class="wp-heading-inline"><?php echo esc_html($settings->title); ?></h1>
     <button type="button" id="rrze-formular-start-guided-tour" class="page-title-action">
-        <?php esc_html_e('Guided tour', 'rrze-formular'); ?>
+        <?php esc_html_e('About', 'rrze-formular'); ?>
     </button>
     <button type="button" id="rrze-formular-start-setup-tour" class="page-title-action">
-        <?php esc_html_e('Setup tour', 'rrze-formular'); ?>
+        <?php esc_html_e('Tour', 'rrze-formular'); ?>
     </button>
     <hr class="wp-header-end">
     <div id="rrze-formular-guided-tour-root"></div>

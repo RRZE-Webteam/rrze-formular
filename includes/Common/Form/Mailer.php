@@ -47,17 +47,17 @@ class Mailer
     {
         $blockEmail = trim((string) ($attributes['recipientEmail'] ?? ''));
         $blockName = sanitize_text_field((string) ($attributes['recipientName'] ?? ''));
+        $options = self::getOptions();
+        $defaultName = sanitize_text_field((string) ($options['default_recipient_name'] ?? ''));
 
         if ($blockEmail !== '') {
             $recipient = [
                 'email' => sanitize_email($blockEmail),
-                'name' => $blockName,
+                'name' => $blockName !== '' ? $blockName : $defaultName,
                 'source' => 'block',
             ];
         } else {
-            $options = self::getOptions();
             $defaultEmail = sanitize_email((string) ($options['default_recipient_email'] ?? ''));
-            $defaultName = sanitize_text_field((string) ($options['default_recipient_name'] ?? ''));
 
             if ($defaultEmail !== '') {
                 $recipient = [
@@ -116,14 +116,23 @@ class Mailer
 
     public static function formatRecipientAddress(string $email, string $name = ''): string
     {
+        return self::formatMailboxAddress($email, $name);
+    }
+
+    public static function formatMailboxAddress(string $email, string $name = ''): string
+    {
         $email = sanitize_email($email);
         $name = sanitize_text_field($name);
 
-        if ($name !== '') {
-            return sprintf('%s <%s>', $name, $email);
+        if ($name === '') {
+            return $email;
         }
 
-        return $email;
+        if (preg_match('/[,;"\\\\]/', $name)) {
+            $name = '"' . str_replace(['\\', '"'], ['\\\\', '\\"'], $name) . '"';
+        }
+
+        return sprintf('%s <%s>', $name, $email);
     }
 
     public static function getRecipient(): string
@@ -265,9 +274,10 @@ class Mailer
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
-        $to = self::formatRecipientAddress($recipient, $recipientName);
+        $recipientEmail = sanitize_email($recipient);
+        $recipientName = sanitize_text_field($recipientName);
 
-        if (!is_email($fromEmail) || !is_email(self::extractEmailAddress($to))) {
+        if (!is_email($fromEmail) || !is_email($recipientEmail)) {
             return false;
         }
 
@@ -275,12 +285,40 @@ class Mailer
 
         $defaultHeaders = [
             'Content-Type: text/plain; charset=UTF-8',
-            sprintf('From: %s <%s>', $fromName, $fromEmail),
+            sprintf('From: %s', self::formatMailboxAddress($fromEmail, $fromName)),
         ];
 
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        return (bool) wp_mail($to, $subject, $body, $allHeaders);
+        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName): void {
+            if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
+                return;
+            }
+
+            $phpmailer->clearAddresses();
+            $phpmailer->addAddress($recipientEmail, $recipientName);
+
+            // PHP mail() does not write the To header into the message body.
+            if ($phpmailer->Mailer === 'mail') {
+                $toHeader = $recipientName !== ''
+                    ? $phpmailer->addrFormat([$recipientEmail, $recipientName])
+                    : $recipientEmail;
+                $phpmailer->addCustomHeader('To', $toHeader);
+            }
+        };
+
+        add_action('phpmailer_init', $configureRecipient, 100, 1);
+
+        $sent = (bool) wp_mail(
+            self::formatMailboxAddress($recipientEmail, $recipientName),
+            $subject,
+            $body,
+            $allHeaders
+        );
+
+        remove_action('phpmailer_init', $configureRecipient, 100);
+
+        return $sent;
     }
 
     private static function extractEmailAddress(string $address): string
@@ -297,7 +335,8 @@ class Mailer
         string $submitterEmail,
         string $subject,
         string $body,
-        array $headers = []
+        array $headers = [],
+        string $submitterName = ''
     ): bool {
         if (!$enabled) {
             return false;
@@ -316,7 +355,8 @@ class Mailer
             $submitterEmail,
             $subject,
             $body,
-            $headers
+            $headers,
+            $submitterName
         );
     }
 }

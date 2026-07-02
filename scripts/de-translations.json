@@ -1,6 +1,7 @@
 {
   "(required)": "(Pflichtfeld)",
   "Abstract": "Abstract",
+  "About": "Über",
   "Abstract submission": "Abstract-Einreichung",
   "Accessibility": "Barrierefreiheit",
   "Accessibility requirements": "Anforderungen an Barrierefreiheit",
@@ -263,6 +264,7 @@
   "Time": "Uhrzeit",
   "Time slot": "Zeitfenster",
   "Title": "Titel",
+  "Tour": "Tour",
   "Too many submissions. Please try again later.": "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut.",
   "Too many confirmation e-mails. Please try again later.": "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut.",
   "Topic / reason for appointment": "Thema / Grund für den Termin",

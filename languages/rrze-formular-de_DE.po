@@ -15,6 +15,9 @@ msgstr ""
 msgid "(required)"
 msgstr "(Pflichtfeld)"
 
+msgid "About"
+msgstr "Über"
+
 msgid "Abstract"
 msgstr "Abstract"
 
@@ -269,9 +272,6 @@ msgstr "Gut"
 
 msgid "Guest lecture"
 msgstr "Gastvortrag"
-
-msgid "Guided tour"
-msgstr "Geführte Tour"
 
 msgid "Hardware"
 msgstr "Hardware"
@@ -669,9 +669,6 @@ msgstr "Probleme in den Einstellungen erkannt."
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-msgid "Setup tour"
-msgstr "Einrichtungs-Tour"
-
 msgid "Skills and experience"
 msgstr "Kenntnisse und Erfahrung"
 
@@ -809,6 +806,9 @@ msgstr "Themenideen oder Forschungsgebiet"
 
 msgid "Topic of the call"
 msgstr "Thema des Rückrufs"
+
+msgid "Tour"
+msgstr "Tour"
 
 msgid "Type"
 msgstr "Typ"
