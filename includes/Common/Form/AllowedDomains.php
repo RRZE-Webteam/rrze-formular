@@ -69,7 +69,9 @@ class AllowedDomains
         /**
          * @param list<string> $domains
          */
-        return apply_filters('rrze_formular_allowed_domains', $domains);
+        $domains = apply_filters('rrze_formular_allowed_domains', $domains);
+
+        return is_array($domains) ? array_values(array_unique(array_map('strval', $domains))) : [];
     }
 
     public static function hasConfiguredDomains(): bool
@@ -134,7 +136,7 @@ class AllowedDomains
     /**
      * @return list<string>
      */
-    private static function parseDomains(mixed $raw): array
+    public static function parseDomains(mixed $raw): array
     {
         $lines = [];
 
@@ -143,6 +145,14 @@ class AllowedDomains
                 if (is_string($value) && trim($value) !== '') {
                     $lines[] = $value;
                 } elseif (is_string($key) && trim($key) !== '' && !is_numeric($key)) {
+                    $lines[] = $key;
+                }
+            }
+        } elseif (is_object($raw)) {
+            foreach (get_object_vars($raw) as $key => $value) {
+                if (is_string($value) && trim($value) !== '') {
+                    $lines[] = $value;
+                } elseif (is_string($key) && trim($key) !== '') {
                     $lines[] = $key;
                 }
             }
@@ -177,7 +187,7 @@ class AllowedDomains
         }
 
         foreach (self::SETTINGS_DOMAIN_OPTION_KEYS as $optionKey) {
-            foreach ([static fn(): mixed => get_site_option($optionKey, ''), static fn(): mixed => get_option($optionKey, '')] as $reader) {
+            foreach ([static fn (): mixed => get_site_option($optionKey, ''), static fn (): mixed => get_option($optionKey, '')] as $reader) {
                 $value = $reader();
                 if (self::hasDomainValue($value)) {
                     return $value;
@@ -185,7 +195,7 @@ class AllowedDomains
             }
         }
 
-        foreach ([static fn(): mixed => get_site_option(self::SETTINGS_OPTION, []), static fn(): mixed => get_option(self::SETTINGS_OPTION, [])] as $reader) {
+        foreach ([static fn (): mixed => get_site_option(self::SETTINGS_OPTION, []), static fn (): mixed => get_option(self::SETTINGS_OPTION, [])] as $reader) {
             $settings = $reader();
             if (!is_array($settings)) {
                 continue;
@@ -214,6 +224,10 @@ class AllowedDomains
 
         if (is_array($value)) {
             return $value !== [];
+        }
+
+        if (is_object($value)) {
+            return get_object_vars($value) !== [];
         }
 
         return false;

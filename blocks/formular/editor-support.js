@@ -8,8 +8,26 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 const BLOCK_NAMES = [ 'rrze-formular/formular', 'rrze-formular/form-wizard' ];
 const LOCK_NAME = 'rrze-formular-invalid-recipient';
 
+function getEditorConfig() {
+	if ( window.RRZEFormularEditor ) {
+		return window.RRZEFormularEditor;
+	}
+
+	const blockEditorSettings = window.wp?.data?.select( 'core/block-editor' )?.getSettings?.();
+	if ( blockEditorSettings?.rrzeFormularEditor ) {
+		return blockEditorSettings.rrzeFormularEditor;
+	}
+
+	const editorSettings = window.wp?.data?.select( 'core/editor' )?.getEditorSettings?.();
+	if ( editorSettings?.rrzeFormularEditor ) {
+		return editorSettings.rrzeFormularEditor;
+	}
+
+	return {};
+}
+
 export function getRecipientEmailError( recipientEmail ) {
-	const config = window.RRZEFormularEditor || {};
+	const config = getEditorConfig();
 	const value = ( recipientEmail || '' ).trim();
 
 	if ( ! value ) {
@@ -76,18 +94,18 @@ function hasInvalidRecipientBlocks( blocks ) {
 
 function SaveNotice() {
 	const { createNotice } = useDispatch( 'core/notices' );
+	const saveNotice = useSelect( () => getEditorConfig().saveNotice, [] );
 
 	useEffect( () => {
-		const message = window.RRZEFormularEditor?.saveNotice;
-		if ( ! message ) {
+		if ( ! saveNotice ) {
 			return;
 		}
 
-		createNotice( 'warning', message, {
+		createNotice( 'warning', saveNotice, {
 			isDismissible: true,
 			type: 'snackbar',
 		} );
-	}, [ createNotice ] );
+	}, [ createNotice, saveNotice ] );
 
 	return null;
 }
@@ -105,7 +123,7 @@ function PublishLock() {
 			lockPostSaving( LOCK_NAME );
 			createNotice(
 				'error',
-				window.RRZEFormularEditor?.i18n?.publishBlocked ||
+				getEditorConfig().i18n?.publishBlocked ||
 					__(
 						'Publishing is blocked until all form recipient addresses use an allowed domain.',
 						'rrze-formular'
