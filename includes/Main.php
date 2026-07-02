@@ -6,6 +6,7 @@ use function RRZE\Formular\plugin;
 
 use RRZE\Formular\Common\{
     API\FormAPI,
+    Form\BlockPostSaveValidator,
     Form\FormLocale,
     Settings\Settings
 };
@@ -28,6 +29,7 @@ class Main
         $this->defaults = new Defaults();
         $this->settings();
         $this->formApi = new FormAPI();
+        BlockPostSaveValidator::register();
 
         $this->registerAssets();
     }

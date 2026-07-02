@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
+import { getRecipientEmailError } from './editor-support';
 
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
@@ -172,6 +173,7 @@ export default function Edit({ attributes, setAttributes }) {
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
+	const recipientError = getRecipientEmailError(recipientEmail);
 	const previewKey = JSON.stringify(
 		(fields || []).map((field) => ({
 			id: field.id,
@@ -245,9 +247,16 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<TextControl
 						label={__('Recipient e-mail', 'rrze-formular')}
-						help={__('Optional. Must use an allowed domain. Otherwise the default recipient is used.', 'rrze-formular')}
+						help={
+							recipientError ||
+							__(
+								'Optional. Must use an allowed domain. Otherwise the default recipient is used.',
+								'rrze-formular'
+							)
+						}
 						value={recipientEmail}
 						onChange={(value) => setAttributes({ recipientEmail: value })}
+						className={recipientError ? 'rrze-formular-recipient-email--invalid' : undefined}
 					/>
 					<TextControl
 						label={__('Recipient name', 'rrze-formular')}

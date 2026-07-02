@@ -9,6 +9,9 @@
       "(required)": [
         "(Pflichtfeld)"
       ],
+      "A recipient e-mail requires configured allowed domains.": [
+        "Für eine Empfänger-E-Mail müssen erlaubte Domains konfiguriert sein."
+      ],
       "About": [
         "Über"
       ],
@@ -753,6 +756,12 @@
       "The message could not be sent.": [
         "Die Nachricht konnte nicht gesendet werden."
       ],
+      "The page was saved as a draft because the form recipient address %1$s is not allowed. Allowed domains: %2$s.": [
+        "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adresse %1$s im Formularblock nicht erlaubt ist. Erlaubte Domains: %2$s."
+      ],
+      "The page was saved as a draft because the form recipient addresses %1$s are not allowed. Allowed domains: %2$s.": [
+        "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adressen %1$s in Formularblöcken nicht erlaubt sind. Erlaubte Domains: %2$s."
+      ],
       "The recipient e-mail domain is not allowed.": [
         "Die E-Mail-Domain des Empfängers ist nicht erlaubt."
       ],
@@ -893,6 +902,9 @@
       ],
       "mail": [
         "E-Mail"
+      ],
+      "none configured": [
+        "keine konfiguriert"
       ]
     }
   }

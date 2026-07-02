@@ -15,6 +15,9 @@ msgstr ""
 msgid "(required)"
 msgstr "(Pflichtfeld)"
 
+msgid "A recipient e-mail requires configured allowed domains."
+msgstr "Für eine Empfänger-E-Mail müssen erlaubte Domains konfiguriert sein."
+
 msgid "About"
 msgstr "Über"
 
@@ -759,6 +762,12 @@ msgstr "Das Formular konnte nicht gesendet werden. Bitte versuchen Sie es späte
 msgid "The message could not be sent."
 msgstr "Die Nachricht konnte nicht gesendet werden."
 
+msgid "The page was saved as a draft because the form recipient address %1$s is not allowed. Allowed domains: %2$s."
+msgstr "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adresse %1$s im Formularblock nicht erlaubt ist. Erlaubte Domains: %2$s."
+
+msgid "The page was saved as a draft because the form recipient addresses %1$s are not allowed. Allowed domains: %2$s."
+msgstr "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adressen %1$s in Formularblöcken nicht erlaubt sind. Erlaubte Domains: %2$s."
+
 msgid "The recipient e-mail domain is not allowed."
 msgstr "Die E-Mail-Domain des Empfängers ist nicht erlaubt."
 
@@ -899,3 +908,6 @@ msgstr "Formular"
 
 msgid "mail"
 msgstr "E-Mail"
+
+msgid "none configured"
+msgstr "keine konfiguriert"

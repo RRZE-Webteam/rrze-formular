@@ -102,7 +102,7 @@ class Defaults
             ],
         ];
 
-        if (!AllowedDomains::isRrzeCmsActive()) {
+        if (!AllowedDomains::isRrzeSettingsActive()) {
             $fields[] = [
                 'name' => 'allowed_domains',
                 'label' => __('Allowed e-mail domains', 'rrze-formular'),
