@@ -15,7 +15,7 @@ class AllowedDomains
         }
 
         $pluginFiles = [
-            'rrze-cms/rrze-cms.php',
+            'rrze-settings/rrze-settings.php',
         ];
 
         foreach ($pluginFiles as $pluginFile) {
