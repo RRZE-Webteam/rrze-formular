@@ -6,6 +6,9 @@
         "lang": "de_DE",
         "plural-forms": "nplurals=2; plural=(n != 1);"
       },
+      "(required)": [
+        "(Pflichtfeld)"
+      ],
       "Abstract": [
         "Abstract"
       ],
@@ -44,6 +47,9 @@
       ],
       "Age": [
         "Alter"
+      ],
+      "Allowed e-mail domains": [
+        "Erlaubte E-Mail-Domains"
       ],
       "Alumni contact": [
         "Alumni-Kontakt"
@@ -86,6 +92,9 @@
       ],
       "Click Save changes after editing settings on each tab.": [
         "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderungen speichern“."
+      ],
+      "Confirm selection": [
+        "Auswahl bestätigen"
       ],
       "Confirmation: %s": [
         "Bestätigung: %s"
@@ -140,6 +149,12 @@
       ],
       "Deadline": [
         "Frist"
+      ],
+      "Default recipient e-mail": [
+        "Standard-Empfänger-E-Mail"
+      ],
+      "Default recipient name": [
+        "Standard-Empfänger-Name"
       ],
       "Delete selected domains": [
         "Ausgewählte Domains löschen"
@@ -297,6 +312,9 @@
       "Internship application": [
         "Praktikumsbewerbung"
       ],
+      "Invalid form configuration.": [
+        "Ungültige Formular-Konfiguration."
+      ],
       "Invalid or too fast submission.": [
         "Ungültige oder zu schnelle Übermittlung."
       ],
@@ -369,6 +387,9 @@
       "Move up": [
         "Nach oben"
       ],
+      "Multiselect": [
+        "Mehrfachauswahl"
+      ],
       "Name": [
         "Name"
       ],
@@ -405,11 +426,17 @@
       "Office hours appointment": [
         "Sprechstundentermin"
       ],
+      "One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains.": [
+        "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müssen zu einer dieser Domains gehören."
+      ],
       "Online": [
         "Online"
       ],
       "Only sent when the submitter e-mail uses an allowed confirmation domain.": [
         "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
+      ],
+      "Only sent when the submitter e-mail uses an allowed domain.": [
+        "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
       ],
       "Open the General tab to configure default form behaviour.": [
         "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
@@ -423,8 +450,20 @@
       "Option value": [
         "Optionswert"
       ],
+      "Optional display name for the default recipient.": [
+        "Optionaler Anzeigename für den Standard-Empfänger."
+      ],
+      "Optional display name for the recipient.": [
+        "Optionaler Anzeigename für den Empfänger."
+      ],
       "Optional text prepended to every form mail subject in square brackets, e.g. [FAU].": [
         "Optionaler Text, der jedem Formular-Mail-Betreff in eckigen Klammern vorangestellt wird, z. B. [FAU]."
+      ],
+      "Optional. Leave empty to use the site e-mail address (%s). Must use an allowed domain when set.": [
+        "Optional. Leer lassen, um die Website-E-Mail-Adresse (%s) zu verwenden. Bei Eingabe muss eine erlaubte Domain verwendet werden."
+      ],
+      "Optional. Leave empty to use the site e-mail address. Must use an allowed domain when set.": [
+        "Optional. Leer lassen, um die Website-E-Mail-Adresse zu verwenden. Bei Eingabe muss eine erlaubte Domain verwendet werden."
       ],
       "Optional. Must use an allowed domain. Otherwise the default recipient is used.": [
         "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
@@ -461,6 +500,9 @@
       ],
       "Please choose…": [
         "Bitte wählen…"
+      ],
+      "Please enter a valid e-mail address from an allowed domain.": [
+        "Bitte geben Sie eine gültige E-Mail-Adresse aus einer erlaubten Domain ein."
       ],
       "Please enter a valid e-mail address.": [
         "Bitte geben Sie eine gültige E-Mail-Adresse ein."
@@ -537,6 +579,9 @@
       "Recipient e-mail": [
         "Empfänger-E-Mail"
       ],
+      "Recipient name": [
+        "Empfänger-Name"
+      ],
       "Register as a participant in our research study.": [
         "Registrieren Sie sich als Teilnehmer an unserer Studie."
       ],
@@ -611,9 +656,6 @@
       ],
       "Sending…": [
         "Wird gesendet…"
-      ],
-      "Sends a copy of the submission to the e-mail address entered in the form.": [
-        "Sendet eine Kopie der Eingabe an die im Formular angegebene E-Mail-Adresse."
       ],
       "Settings issues detected.": [
         "Probleme in den Einstellungen erkannt."
@@ -714,6 +756,9 @@
       "The message could not be sent.": [
         "Die Nachricht konnte nicht gesendet werden."
       ],
+      "The recipient e-mail domain is not allowed.": [
+        "Die E-Mail-Domain des Empfängers ist nicht erlaubt."
+      ],
       "The server is running PHP version %1$s. The plugin requires at least PHP version %2$s.": [
         "Der Server verwendet PHP-Version %1$s. Das Plugin benötigt mindestens PHP-Version %2$s."
       ],
@@ -740,6 +785,9 @@
       ],
       "Title": [
         "Titel"
+      ],
+      "Too many confirmation e-mails. Please try again later.": [
+        "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
       ],
       "Too many submissions. Please try again later.": [
         "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut."

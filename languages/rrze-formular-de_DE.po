@@ -12,6 +12,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "(required)"
+msgstr "(Pflichtfeld)"
+
 msgid "Abstract"
 msgstr "Abstract"
 
@@ -50,6 +53,9 @@ msgstr "Nachmittags (12–17 Uhr)"
 
 msgid "Age"
 msgstr "Alter"
+
+msgid "Allowed e-mail domains"
+msgstr "Erlaubte E-Mail-Domains"
 
 msgid "Alumni contact"
 msgstr "Alumni-Kontakt"
@@ -92,6 +98,9 @@ msgstr "Kontrollkästchen"
 
 msgid "Click Save changes after editing settings on each tab."
 msgstr "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderungen speichern“."
+
+msgid "Confirm selection"
+msgstr "Auswahl bestätigen"
 
 msgid "Confirmation: %s"
 msgstr "Bestätigung: %s"
@@ -146,6 +155,12 @@ msgstr "Tage und Uhrzeiten, zu denen Sie verfügbar sind"
 
 msgid "Deadline"
 msgstr "Frist"
+
+msgid "Default recipient e-mail"
+msgstr "Standard-Empfänger-E-Mail"
+
+msgid "Default recipient name"
+msgstr "Standard-Empfänger-Name"
 
 msgid "Delete selected domains"
 msgstr "Ausgewählte Domains löschen"
@@ -303,6 +318,9 @@ msgstr "Fügen Sie den Block „RRZE Formular“ auf einer Seite ein, wählen Si
 msgid "Internship application"
 msgstr "Praktikumsbewerbung"
 
+msgid "Invalid form configuration."
+msgstr "Ungültige Formular-Konfiguration."
+
 msgid "Invalid or too fast submission."
 msgstr "Ungültige oder zu schnelle Übermittlung."
 
@@ -375,6 +393,9 @@ msgstr "Nach unten"
 msgid "Move up"
 msgstr "Nach oben"
 
+msgid "Multiselect"
+msgstr "Mehrfachauswahl"
+
 msgid "Name"
 msgstr "Name"
 
@@ -411,11 +432,17 @@ msgstr "Anzahl der Teilnehmenden"
 msgid "Office hours appointment"
 msgstr "Sprechstundentermin"
 
+msgid "One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains."
+msgstr "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müssen zu einer dieser Domains gehören."
+
 msgid "Online"
 msgstr "Online"
 
 msgid "Only sent when the submitter e-mail uses an allowed confirmation domain."
 msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
+
+msgid "Only sent when the submitter e-mail uses an allowed domain."
+msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
 
 msgid "Open the General tab to configure default form behaviour."
 msgstr "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
@@ -429,8 +456,20 @@ msgstr "Optionsbeschriftung"
 msgid "Option value"
 msgstr "Optionswert"
 
+msgid "Optional display name for the default recipient."
+msgstr "Optionaler Anzeigename für den Standard-Empfänger."
+
+msgid "Optional display name for the recipient."
+msgstr "Optionaler Anzeigename für den Empfänger."
+
 msgid "Optional text prepended to every form mail subject in square brackets, e.g. [FAU]."
 msgstr "Optionaler Text, der jedem Formular-Mail-Betreff in eckigen Klammern vorangestellt wird, z. B. [FAU]."
+
+msgid "Optional. Leave empty to use the site e-mail address (%s). Must use an allowed domain when set."
+msgstr "Optional. Leer lassen, um die Website-E-Mail-Adresse (%s) zu verwenden. Bei Eingabe muss eine erlaubte Domain verwendet werden."
+
+msgid "Optional. Leave empty to use the site e-mail address. Must use an allowed domain when set."
+msgstr "Optional. Leer lassen, um die Website-E-Mail-Adresse zu verwenden. Bei Eingabe muss eine erlaubte Domain verwendet werden."
 
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
@@ -467,6 +506,9 @@ msgstr "Platzhalter"
 
 msgid "Please choose…"
 msgstr "Bitte wählen…"
+
+msgid "Please enter a valid e-mail address from an allowed domain."
+msgstr "Bitte geben Sie eine gültige E-Mail-Adresse aus einer erlaubten Domain ein."
 
 msgid "Please enter a valid e-mail address."
 msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
@@ -543,6 +585,9 @@ msgstr "Optionsfeld"
 msgid "Recipient e-mail"
 msgstr "Empfänger-E-Mail"
 
+msgid "Recipient name"
+msgstr "Empfänger-Name"
+
 msgid "Register as a participant in our research study."
 msgstr "Registrieren Sie sich als Teilnehmer an unserer Studie."
 
@@ -617,9 +662,6 @@ msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 
 msgid "Sending…"
 msgstr "Wird gesendet…"
-
-msgid "Sends a copy of the submission to the e-mail address entered in the form."
-msgstr "Sendet eine Kopie der Eingabe an die im Formular angegebene E-Mail-Adresse."
 
 msgid "Settings issues detected."
 msgstr "Probleme in den Einstellungen erkannt."
@@ -720,6 +762,9 @@ msgstr "Das Formular konnte nicht gesendet werden. Bitte versuchen Sie es späte
 msgid "The message could not be sent."
 msgstr "Die Nachricht konnte nicht gesendet werden."
 
+msgid "The recipient e-mail domain is not allowed."
+msgstr "Die E-Mail-Domain des Empfängers ist nicht erlaubt."
+
 msgid "The server is running PHP version %1$s. The plugin requires at least PHP version %2$s."
 msgstr "Der Server verwendet PHP-Version %1$s. Das Plugin benötigt mindestens PHP-Version %2$s."
 
@@ -746,6 +791,9 @@ msgstr "Zeitfenster"
 
 msgid "Title"
 msgstr "Titel"
+
+msgid "Too many confirmation e-mails. Please try again later."
+msgstr "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
 
 msgid "Too many submissions. Please try again later."
 msgstr "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut."
