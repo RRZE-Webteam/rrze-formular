@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 class AllowedDomains
 {
-    private const CMS_OPTION = 'rrze-formular_allowedDomains';
+    private const CMS_OPTION = 'rrze_formular_allowedDomains';
 
     public static function isRrzeCmsActive(): bool
     {
