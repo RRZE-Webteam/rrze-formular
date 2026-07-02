@@ -78,21 +78,7 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 | `rrze_formular_token_ttl` | Anti-spam token lifetime |
 | `rrze_formular_allowed_confirmation_email` | Whether a confirmation mail may be sent |
 
-## Changelog
 
-### 1.2.1
-
-- Wording improvements
-
-### 1.2.0
-
-- Privacy link on forms and publish requirement for a published privacy page
-
-### 1.1.0
-
-- Recipient configuration, domain validation, and RRZE Settings integration
-
-### 0.0.2
 
 - Initial release
 
