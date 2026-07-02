@@ -38,20 +38,37 @@ class Privacy
         return self::getPreferredSlug() === self::SLUG_DE;
     }
 
-    public static function getUrl(): string
+    /**
+     * Canonical privacy page URL without fragment (used for validation messages).
+     */
+    public static function getPageUrl(): string
     {
         $page = self::getPage();
         if ($page instanceof \WP_Post) {
             $url = get_permalink($page);
 
             if (is_string($url) && $url !== '') {
-                return self::appendContactFragment($url);
+                return self::stripFragment($url);
             }
         }
 
-        return self::appendContactFragment(
-            user_trailingslashit(home_url('/' . self::getPreferredSlug()))
-        );
+        return user_trailingslashit(home_url('/' . self::getPreferredSlug()));
+    }
+
+    /**
+     * Privacy page URL with #contact fragment (used in form links).
+     */
+    public static function getLinkUrl(): string
+    {
+        return self::getPageUrl() . '#' . self::CONTACT_FRAGMENT;
+    }
+
+    /**
+     * @deprecated Use getLinkUrl() for links or getPageUrl() for validation messages.
+     */
+    public static function getUrl(): string
+    {
+        return self::getLinkUrl();
     }
 
     public static function getLabel(): string
@@ -63,9 +80,7 @@ class Privacy
 
     public static function getPage(): ?\WP_Post
     {
-        $page = get_page_by_path(self::getPreferredSlug(), OBJECT, 'page');
-
-        return $page instanceof \WP_Post ? $page : null;
+        return self::findPageBySlug(self::getPreferredSlug());
     }
 
     public static function getPublishedPage(): ?\WP_Post
@@ -87,29 +102,49 @@ class Privacy
     public static function getPublishBlockedMessage(): string
     {
         return sprintf(
-            /* translators: 1: page title (Datenschutz/Privacy), 2: expected URL with #contact fragment */
+            /* translators: 1: page title (Datenschutz/Privacy), 2: expected page URL without fragment */
             __(
                 'This page cannot be published because no published %1$s page exists at %2$s.',
                 'rrze-formular'
             ),
             self::getLabel(),
-            self::getUrl()
+            self::getPageUrl()
         );
     }
 
     public static function renderLink(): string
     {
         return sprintf(
-            '<p class="rrze-formular__privacy"><a href="%1$s">%2$s</a></p>',
-            esc_url(self::getUrl()),
+            '<p class="rrze-formular__privacy"><a href="%1$s#%2$s">%3$s</a></p>',
+            esc_url(self::getPageUrl()),
+            esc_attr(self::CONTACT_FRAGMENT),
             esc_html(self::getLabel())
         );
     }
 
-    private static function appendContactFragment(string $url): string
+    private static function findPageBySlug(string $slug): ?\WP_Post
     {
-        $url = preg_replace('/#.*$/', '', $url) ?? $url;
+        $page = get_page_by_path($slug, OBJECT, 'page');
+        if ($page instanceof \WP_Post) {
+            return $page;
+        }
 
-        return $url . '#' . self::CONTACT_FRAGMENT;
+        $pages = get_posts([
+            'post_type' => 'page',
+            'name' => $slug,
+            'post_status' => 'any',
+            'numberposts' => 1,
+            'orderby' => 'ID',
+            'order' => 'ASC',
+        ]);
+
+        $page = $pages[0] ?? null;
+
+        return $page instanceof \WP_Post ? $page : null;
+    }
+
+    private static function stripFragment(string $url): string
+    {
+        return preg_replace('/#.*$/', '', $url) ?? $url;
     }
 }

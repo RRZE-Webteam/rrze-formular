@@ -223,7 +223,8 @@ class BlockPostSaveValidator
             'allowedDomains' => AllowedDomains::getAllowedDomains(),
             'domainsConfigured' => AllowedDomains::hasConfiguredDomains(),
             'privacyPublished' => Privacy::isPublished(),
-            'privacyUrl' => Privacy::getUrl(),
+            'privacyUrl' => Privacy::getPageUrl(),
+            'privacyLinkUrl' => Privacy::getLinkUrl(),
             'privacyLabel' => Privacy::getLabel(),
             'saveNotice' => is_string($notice) ? $notice : '',
             'i18n' => [
