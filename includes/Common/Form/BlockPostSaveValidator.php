@@ -224,8 +224,7 @@ class BlockPostSaveValidator
             'domainsConfigured' => AllowedDomains::hasConfiguredDomains(),
             'privacyPublished' => Privacy::isPublished(),
             'privacyUrl' => Privacy::getPageUrl(),
-            'privacyLinkUrl' => Privacy::getLinkUrl(),
-            'privacyLabel' => Privacy::getLabel(),
+            'privacyLabel' => __('Privacy', 'rrze-formular'),
             'saveNotice' => is_string($notice) ? $notice : '',
             'i18n' => [
                 'recipientInvalidEmail' => __('Please enter a valid e-mail address.', 'rrze-formular'),

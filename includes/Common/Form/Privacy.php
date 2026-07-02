@@ -6,41 +6,16 @@ defined('ABSPATH') || exit;
 
 class Privacy
 {
-    private const SLUG_DE = 'datenschutz';
-    private const SLUG_EN = 'privacy';
     private const CONTACT_FRAGMENT = 'contact';
 
-    public static function getPreferredSlug(): string
+    public static function isPublished(): bool
     {
-        $language = strtolower((string) get_bloginfo('language'));
-        if ($language !== '') {
-            if (str_starts_with($language, 'de')) {
-                return self::SLUG_DE;
-            }
-
-            if (str_starts_with($language, 'en')) {
-                return self::SLUG_EN;
-            }
-        }
-
-        $locale = FormLocale::getSiteLocale();
-
-        return str_starts_with($locale, 'de') ? self::SLUG_DE : self::SLUG_EN;
-    }
-
-    public static function getSlug(): string
-    {
-        return self::getPreferredSlug();
-    }
-
-    public static function isGermanSite(): bool
-    {
-        return self::getPreferredSlug() === self::SLUG_DE;
+        return self::publishedPage() !== null;
     }
 
     public static function getPageUrl(): string
     {
-        $page = self::getPublishedPage();
+        $page = self::publishedPage();
         if ($page instanceof \WP_Post) {
             $url = get_permalink($page);
 
@@ -49,46 +24,18 @@ class Privacy
             }
         }
 
-        return user_trailingslashit(home_url('/' . self::getPreferredSlug()));
-    }
-
-    public static function getLinkUrl(): string
-    {
-        return self::getPageUrl() . '#' . self::CONTACT_FRAGMENT;
-    }
-
-    public static function getLabel(): string
-    {
-        return self::isGermanSite()
-            ? __('Datenschutz', 'rrze-formular')
-            : __('Privacy', 'rrze-formular');
-    }
-
-    public static function getPublishedPage(): ?\WP_Post
-    {
-        $page = get_page_by_path(self::getPreferredSlug(), OBJECT, 'page');
-
-        if ($page instanceof \WP_Post && $page->post_status === 'publish') {
-            return $page;
-        }
-
-        return null;
-    }
-
-    public static function isPublished(): bool
-    {
-        return self::getPublishedPage() !== null;
+        return user_trailingslashit(home_url('/' . self::slug()));
     }
 
     public static function getPublishBlockedMessage(): string
     {
         return sprintf(
-            /* translators: 1: page title (Datenschutz/Privacy), 2: expected page URL without fragment */
+            /* translators: 1: page title, 2: expected page URL without fragment */
             __(
                 'This page cannot be published because no published %1$s page exists at %2$s.',
                 'rrze-formular'
             ),
-            self::getLabel(),
+            __('Privacy', 'rrze-formular'),
             self::getPageUrl()
         );
     }
@@ -99,7 +46,19 @@ class Privacy
             '<p class="rrze-formular__privacy"><a href="%1$s#%2$s">%3$s</a></p>',
             esc_url(self::getPageUrl()),
             esc_attr(self::CONTACT_FRAGMENT),
-            esc_html(self::getLabel())
+            esc_html(__('Privacy', 'rrze-formular'))
         );
+    }
+
+    private static function slug(): string
+    {
+        return str_starts_with(FormLocale::getSiteLocale(), 'de') ? 'datenschutz' : 'privacy';
+    }
+
+    private static function publishedPage(): ?\WP_Post
+    {
+        $page = get_page_by_path(self::slug(), OBJECT, 'page');
+
+        return $page instanceof \WP_Post && $page->post_status === 'publish' ? $page : null;
     }
 }
