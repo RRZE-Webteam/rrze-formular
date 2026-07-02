@@ -25,6 +25,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"recipientName": {
+			"type": "string",
+			"default": ""
+		},
 		"submitLabel": {
 			"type": "string",
 			"default": "Senden"

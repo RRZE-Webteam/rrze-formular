@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
+import { getRecipientEmailError } from './editor-support';
 
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
@@ -162,6 +163,8 @@ export default function Edit({ attributes, setAttributes }) {
 		template,
 		formTitle,
 		formDescription,
+		recipientEmail,
+		recipientName,
 		submitLabel,
 		successMessage,
 		includeSsoInfo,
@@ -170,6 +173,7 @@ export default function Edit({ attributes, setAttributes }) {
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
+	const recipientError = getRecipientEmailError(recipientEmail);
 	const previewKey = JSON.stringify(
 		(fields || []).map((field) => ({
 			id: field.id,
@@ -242,6 +246,25 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(value) => setAttributes({ formDescription: value })}
 					/>
 					<TextControl
+						label={__('Recipient e-mail', 'rrze-formular')}
+						help={
+							recipientError ||
+							__(
+								'Optional. Must use an allowed domain. Otherwise the default recipient is used.',
+								'rrze-formular'
+							)
+						}
+						value={recipientEmail}
+						onChange={(value) => setAttributes({ recipientEmail: value })}
+						className={recipientError ? 'rrze-formular-recipient-email--invalid' : undefined}
+					/>
+					<TextControl
+						label={__('Recipient name', 'rrze-formular')}
+						help={__('Optional display name for the recipient.', 'rrze-formular')}
+						value={recipientName}
+						onChange={(value) => setAttributes({ recipientName: value })}
+					/>
+					<TextControl
 						label={__('Submit button label', 'rrze-formular')}
 						value={submitLabel}
 						onChange={(value) => setAttributes({ submitLabel: value })}
@@ -258,7 +281,7 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<ToggleControl
 						label={__('Send confirmation to submitter', 'rrze-formular')}
-						help={__('Sends a copy of the submission to the e-mail address entered in the form.', 'rrze-formular')}
+						help={__('Only sent when the submitter e-mail uses an allowed domain.', 'rrze-formular')}
 						checked={!!sendConfirmation}
 						onChange={(value) => setAttributes({ sendConfirmation: value })}
 					/>

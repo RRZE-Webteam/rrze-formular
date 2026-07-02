@@ -29,6 +29,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"recipientEmail": {
+			"type": "string",
+			"default": ""
+		},
+		"recipientName": {
+			"type": "string",
+			"default": ""
+		},
 		"includeSsoInfo": {
 			"type": "boolean",
 			"default": true

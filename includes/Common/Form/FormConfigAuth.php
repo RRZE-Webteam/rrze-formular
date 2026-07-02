@@ -18,6 +18,10 @@ class FormConfigAuth
             'formTitle' => sanitize_text_field((string) ($attributes['formTitle'] ?? '')),
             'formDescription' => sanitize_textarea_field((string) ($attributes['formDescription'] ?? '')),
             'successMessage' => sanitize_text_field((string) ($attributes['successMessage'] ?? '')),
+            'recipientEmail' => AllowedDomains::sanitizeAllowedRecipientEmail(
+                (string) ($attributes['recipientEmail'] ?? '')
+            ),
+            'recipientName' => sanitize_text_field((string) ($attributes['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($attributes['includeSsoInfo']),
             'sendConfirmation' => !empty($attributes['sendConfirmation']),
             'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
@@ -27,6 +31,8 @@ class FormConfigAuth
             'formTitle' => $normalized['formTitle'],
             'formDescription' => $normalized['formDescription'],
             'successMessage' => $normalized['successMessage'],
+            'recipientEmail' => $normalized['recipientEmail'],
+            'recipientName' => $normalized['recipientName'],
             'includeSsoInfo' => $normalized['includeSsoInfo'],
             'sendConfirmation' => $normalized['sendConfirmation'],
             'fields' => FieldTypes::sanitizeFields($normalized['fields']),

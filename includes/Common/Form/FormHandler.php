@@ -65,9 +65,13 @@ class FormHandler
             ];
         }
 
-        $recipient = Mailer::getRecipient();
-        if ($recipient === '') {
-            return $this->error(__('No valid recipient configured.', 'rrze-formular'), 500);
+        $recipient = Mailer::resolveRecipient($attributes);
+        $recipientError = Mailer::validateResolvedRecipient(
+            $recipient,
+            (string) ($trustedConfig['recipientEmail'] ?? '')
+        );
+        if ($recipientError !== null) {
+            return $this->error($recipientError, 422);
         }
 
         $options = Mailer::getOptions();
@@ -78,10 +82,27 @@ class FormHandler
         $ssoData = $includeSso ? SSO::getUserData() : null;
         $submissionUrl = Mailer::resolveSubmissionUrl((string) ($payload['pageUrl'] ?? ''));
         $websiteHeaders = Mailer::websiteHeaders($submissionUrl);
+        $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
+        $submitterName = $this->findSubmitterName($inputFields, $sanitized, $ssoData);
+        $operatorHeaders = $websiteHeaders;
+
+        if ($submitterEmail !== '') {
+            $operatorHeaders[] = sprintf(
+                'Reply-To: %s',
+                Mailer::formatMailboxAddress($submitterEmail, $submitterName)
+            );
+        }
+
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
 
-        $sent = Mailer::sendOperatorMail($recipient, $subject, $mailBody, $websiteHeaders);
+        $sent = Mailer::sendOperatorMail(
+            $recipient['email'],
+            $subject,
+            $mailBody,
+            $operatorHeaders,
+            $recipient['name']
+        );
         if (!$sent) {
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
@@ -90,7 +111,6 @@ class FormHandler
         SpamProtection::consumeToken($tokenData);
 
         $sendConfirmation = !empty($attributes['sendConfirmation']);
-        $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
         if ($sendConfirmation && $submitterEmail !== '') {
             if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
@@ -101,7 +121,8 @@ class FormHandler
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
                 $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
-                $websiteHeaders
+                $websiteHeaders,
+                $submitterName
             );
 
             if ($confirmationSent) {
@@ -126,6 +147,8 @@ class FormHandler
             'formTitle' => sanitize_text_field((string) ($trustedConfig['formTitle'] ?? '')),
             'formDescription' => sanitize_textarea_field((string) ($trustedConfig['formDescription'] ?? '')),
             'successMessage' => sanitize_text_field((string) ($trustedConfig['successMessage'] ?? '')),
+            'recipientEmail' => sanitize_text_field((string) ($trustedConfig['recipientEmail'] ?? '')),
+            'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
             'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
@@ -322,6 +345,24 @@ class FormHandler
             if ($field['type'] === 'email' && !empty($values[$field['id']])) {
                 return sanitize_email((string) $values[$field['id']]);
             }
+        }
+
+        return '';
+    }
+
+    private function findSubmitterName(array $fields, array $values, ?array $ssoData): string
+    {
+        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
+        if ($fullName !== '') {
+            return sanitize_text_field($fullName);
+        }
+
+        if (($values['name'] ?? '') !== '') {
+            return sanitize_text_field((string) $values['name']);
+        }
+
+        if ($ssoData !== null && ($ssoData['name'] ?? '') !== '') {
+            return sanitize_text_field((string) $ssoData['name']);
         }
 
         return '';

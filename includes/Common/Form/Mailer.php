@@ -31,23 +31,115 @@ class Mailer
 
     public static function getSenderAddress(): string
     {
-        $address = apply_filters('rrze_formwizard_sender_email', self::getAdministratorEmail());
-
-        return sanitize_email((string) $address);
+        return self::getAdministratorEmail();
     }
 
     public static function getSenderName(): string
     {
-        $name = apply_filters('rrze_formular_sender_name', self::getAdministratorName());
+        return sanitize_text_field(get_bloginfo('name'));
+    }
 
-        return sanitize_text_field((string) $name);
+    /**
+     * @param array<string, mixed> $attributes
+     * @return array{email: string, name: string, source: string}
+     */
+    public static function resolveRecipient(array $attributes): array
+    {
+        $blockEmail = trim((string) ($attributes['recipientEmail'] ?? ''));
+        $blockName = sanitize_text_field((string) ($attributes['recipientName'] ?? ''));
+        $options = self::getOptions();
+        $defaultName = sanitize_text_field((string) ($options['default_recipient_name'] ?? ''));
+
+        if ($blockEmail !== '') {
+            $recipient = [
+                'email' => sanitize_email($blockEmail),
+                'name' => $blockName !== '' ? $blockName : $defaultName,
+                'source' => 'block',
+            ];
+        } else {
+            $defaultEmail = sanitize_email((string) ($options['default_recipient_email'] ?? ''));
+
+            if ($defaultEmail !== '') {
+                $recipient = [
+                    'email' => $defaultEmail,
+                    'name' => $defaultName,
+                    'source' => 'settings',
+                ];
+            } else {
+                $recipient = [
+                    'email' => self::getAdministratorEmail(),
+                    'name' => $defaultName,
+                    'source' => 'default',
+                ];
+            }
+        }
+
+        /**
+         * @param array{email: string, name: string, source: string} $recipient
+         * @param array<string, mixed> $attributes
+         */
+        return apply_filters('rrze_formular_resolved_recipient', $recipient, $attributes);
+    }
+
+    /**
+     * @param array{email: string, name: string, source: string} $recipient
+     */
+    public static function validateResolvedRecipient(array $recipient, string $configuredBlockEmail = ''): ?string
+    {
+        $configuredBlockEmail = trim($configuredBlockEmail);
+        if ($configuredBlockEmail !== '' && !is_email($configuredBlockEmail)) {
+            return __('Please enter a valid e-mail address.', 'rrze-formular');
+        }
+
+        $email = sanitize_email((string) ($recipient['email'] ?? ''));
+        if ($email === '' || !is_email($email)) {
+            return __('No valid recipient configured.', 'rrze-formular');
+        }
+
+        $source = (string) ($recipient['source'] ?? 'default');
+        if ($source !== 'default' || AllowedDomains::hasConfiguredDomains()) {
+            if (!AllowedDomains::hasConfiguredDomains()) {
+                if ($source === 'block') {
+                    return __('The recipient e-mail domain is not allowed.', 'rrze-formular');
+                }
+
+                return null;
+            }
+
+            if (!AllowedDomains::isEmailDomainAllowed($email)) {
+                return __('The recipient e-mail domain is not allowed.', 'rrze-formular');
+            }
+        }
+
+        return null;
+    }
+
+    public static function formatRecipientAddress(string $email, string $name = ''): string
+    {
+        return self::formatMailboxAddress($email, $name);
+    }
+
+    public static function formatMailboxAddress(string $email, string $name = ''): string
+    {
+        $email = sanitize_email($email);
+        $name = sanitize_text_field($name);
+
+        if ($name === '') {
+            return $email;
+        }
+
+        if (preg_match('/[,;"\\\\]/', $name)) {
+            $name = '"' . str_replace(['\\', '"'], ['\\\\', '\\"'], $name) . '"';
+        }
+
+        return sprintf('%s <%s>', $name, $email);
     }
 
     public static function getRecipient(): string
     {
-        $recipient = apply_filters('rrze_formular_recipient_email', self::getAdministratorEmail());
+        $recipient = self::resolveRecipient([]);
 
-        return sanitize_email((string) $recipient);
+        return sanitize_email((string) ($recipient['email'] ?? ''));
     }
 
     public static function getSubjectPrefix(): string
@@ -159,6 +251,10 @@ class Mailer
 
     private static function isAllowedConfirmationRecipient(string $email): bool
     {
+        if (AllowedDomains::hasConfiguredDomains()) {
+            return AllowedDomains::isEmailDomainAllowed($email);
+        }
+
         /**
          * Filter whether a confirmation mail may be sent to the given address.
          * Return false to block the recipient (e.g. domain allowlists).
@@ -173,12 +269,15 @@ class Mailer
         string $recipient,
         string $subject,
         string $body,
-        array $headers = []
+        array $headers = [],
+        string $recipientName = ''
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
+        $recipientEmail = sanitize_email($recipient);
+        $recipientName = sanitize_text_field($recipientName);
 
-        if (!is_email($fromEmail) || !is_email($recipient)) {
+        if (!is_email($fromEmail) || !is_email($recipientEmail)) {
             return false;
         }
 
@@ -186,12 +285,49 @@ class Mailer
 
         $defaultHeaders = [
             'Content-Type: text/plain; charset=UTF-8',
-            sprintf('From: %s <%s>', $fromName, $fromEmail),
+            sprintf('From: %s', self::formatMailboxAddress($fromEmail, $fromName)),
         ];
 
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        return (bool) wp_mail($recipient, $subject, $body, $allHeaders);
+        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName): void {
+            if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
+                return;
+            }
+
+            $phpmailer->clearAddresses();
+            $phpmailer->addAddress($recipientEmail, $recipientName);
+
+            // PHP mail() does not write the To header into the message body.
+            if ($phpmailer->Mailer === 'mail') {
+                $toHeader = $recipientName !== ''
+                    ? $phpmailer->addrFormat([$recipientEmail, $recipientName])
+                    : $recipientEmail;
+                $phpmailer->addCustomHeader('To', $toHeader);
+            }
+        };
+
+        add_action('phpmailer_init', $configureRecipient, 100, 1);
+
+        $sent = (bool) wp_mail(
+            self::formatMailboxAddress($recipientEmail, $recipientName),
+            $subject,
+            $body,
+            $allHeaders
+        );
+
+        remove_action('phpmailer_init', $configureRecipient, 100);
+
+        return $sent;
+    }
+
+    private static function extractEmailAddress(string $address): string
+    {
+        if (preg_match('/<([^>]+)>\s*$/', $address, $matches)) {
+            return sanitize_email($matches[1]);
+        }
+
+        return sanitize_email($address);
     }
 
     public static function maybeSendConfirmation(
@@ -199,7 +335,8 @@ class Mailer
         string $submitterEmail,
         string $subject,
         string $body,
-        array $headers = []
+        array $headers = [],
+        string $submitterName = ''
     ): bool {
         if (!$enabled) {
             return false;
@@ -218,7 +355,8 @@ class Mailer
             $submitterEmail,
             $subject,
             $body,
-            $headers
+            $headers,
+            $submitterName
         );
     }
 }

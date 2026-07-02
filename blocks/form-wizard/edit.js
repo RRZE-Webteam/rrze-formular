@@ -265,6 +265,7 @@ export default function Edit({ attributes, setAttributes }) {
 		formTitle,
 		formDescription,
 		recipientEmail,
+		recipientName,
 		submitLabel,
 		successMessage,
 		includeSsoInfo,
@@ -337,6 +338,12 @@ export default function Edit({ attributes, setAttributes }) {
 						help={__('Optional. Must use an allowed domain. Otherwise the default recipient is used.', 'rrze-formular')}
 						value={recipientEmail}
 						onChange={(value) => setAttributes({ recipientEmail: value })}
+					/>
+					<TextControl
+						label={__('Recipient name', 'rrze-formular')}
+						help={__('Optional display name for the recipient.', 'rrze-formular')}
+						value={recipientName}
+						onChange={(value) => setAttributes({ recipientName: value })}
 					/>
 					<TextControl
 						label={__('Submit button label', 'rrze-formular')}
