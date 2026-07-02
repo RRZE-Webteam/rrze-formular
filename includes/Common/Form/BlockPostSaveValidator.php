@@ -75,8 +75,16 @@ class BlockPostSaveValidator
         }
 
         $content = self::resolveContent($data, $postarr);
+        $message = self::getPublishBlockMessage($content);
 
-        return self::applyDraftIfInvalid($data, $content);
+        if ($message === null) {
+            return $data;
+        }
+
+        $data['post_status'] = 'draft';
+        self::storeNoticeMessage($message);
+
+        return $data;
     }
 
     /**
@@ -99,15 +107,15 @@ class BlockPostSaveValidator
         }
 
         $content = self::resolveRestContent($request, $preparedPost);
-        $invalidEmails = self::findInvalidRecipientEmails($content);
+        $message = self::getPublishBlockMessage($content);
 
-        if ($invalidEmails === []) {
+        if ($message === null) {
             return $preparedPost;
         }
 
         return new WP_Error(
-            'rrze_formular_invalid_recipient',
-            self::buildNoticeMessage($invalidEmails),
+            'rrze_formular_publish_blocked',
+            $message,
             ['status' => 400]
         );
     }
@@ -132,8 +140,12 @@ class BlockPostSaveValidator
             return;
         }
 
-        $invalidEmails = self::findInvalidRecipientEmails((string) $post->post_content);
-        if ($invalidEmails === [] || $post->post_status !== 'publish') {
+        if ($post->post_status !== 'publish') {
+            return;
+        }
+
+        $message = self::getPublishBlockMessage((string) $post->post_content);
+        if ($message === null) {
             return;
         }
 
@@ -142,7 +154,7 @@ class BlockPostSaveValidator
             'post_status' => 'draft',
         ], true);
 
-        self::storeNotice($invalidEmails);
+        self::storeNoticeMessage($message);
     }
 
     public static function enqueueEditorAssets(): void
@@ -210,12 +222,16 @@ class BlockPostSaveValidator
         return [
             'allowedDomains' => AllowedDomains::getAllowedDomains(),
             'domainsConfigured' => AllowedDomains::hasConfiguredDomains(),
+            'imprintPublished' => Imprint::isPublished(),
+            'imprintUrl' => Imprint::getUrl(),
+            'imprintLabel' => Imprint::getLabel(),
             'saveNotice' => is_string($notice) ? $notice : '',
             'i18n' => [
                 'recipientInvalidEmail' => __('Please enter a valid e-mail address.', 'rrze-formular'),
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
                 'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
+                'imprintPublishBlocked' => Imprint::getPublishBlockedMessage(),
             ],
         ];
     }
@@ -290,21 +306,59 @@ class BlockPostSaveValidator
         return isset($preparedPost->post_status) ? (string) $preparedPost->post_status : 'draft';
     }
 
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
-     */
-    private static function applyDraftIfInvalid(array $data, string $content): array
+    private static function getPublishBlockMessage(string $content): ?string
     {
-        $invalidEmails = self::findInvalidRecipientEmails($content);
-        if ($invalidEmails === []) {
-            return $data;
+        if (!self::contentHasFormBlocks($content)) {
+            return null;
         }
 
-        $data['post_status'] = 'draft';
-        self::storeNotice($invalidEmails);
+        if (!Imprint::isPublished()) {
+            return Imprint::getPublishBlockedMessage();
+        }
 
-        return $data;
+        $invalidEmails = self::findInvalidRecipientEmails($content);
+        if ($invalidEmails === []) {
+            return null;
+        }
+
+        return self::buildRecipientNoticeMessage($invalidEmails);
+    }
+
+    public static function contentHasFormBlocks(string $content): bool
+    {
+        if ($content === '') {
+            return false;
+        }
+
+        if (has_blocks($content)) {
+            return self::blocksContainForm(parse_blocks($content));
+        }
+
+        return (bool) preg_match('/wp:rrze-formular\/(?:formular|form-wizard)/', $content);
+    }
+
+    /**
+     * @param list<array<string, mixed>> $blocks
+     */
+    private static function blocksContainForm(array $blocks): bool
+    {
+        foreach ($blocks as $block) {
+            if (!is_array($block)) {
+                continue;
+            }
+
+            $name = (string) ($block['blockName'] ?? '');
+            if (in_array($name, self::BLOCK_NAMES, true)) {
+                return true;
+            }
+
+            $innerBlocks = $block['innerBlocks'] ?? [];
+            if (is_array($innerBlocks) && $innerBlocks !== [] && self::blocksContainForm($innerBlocks)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -360,23 +414,20 @@ class BlockPostSaveValidator
         }
     }
 
-    /**
-     * @param list<string> $invalidEmails
-     */
-    private static function storeNotice(array $invalidEmails): void
+    private static function storeNoticeMessage(string $message): void
     {
         $userId = get_current_user_id();
-        if ($userId <= 0) {
+        if ($userId <= 0 || $message === '') {
             return;
         }
 
-        set_transient(self::noticeKey($userId), self::buildNoticeMessage($invalidEmails), MINUTE_IN_SECONDS);
+        set_transient(self::noticeKey($userId), $message, MINUTE_IN_SECONDS);
     }
 
     /**
      * @param list<string> $invalidEmails
      */
-    private static function buildNoticeMessage(array $invalidEmails): string
+    private static function buildRecipientNoticeMessage(array $invalidEmails): string
     {
         $domains = AllowedDomains::getAllowedDomains();
         $domainList = $domains !== [] ? implode(', ', $domains) : __('none configured', 'rrze-formular');

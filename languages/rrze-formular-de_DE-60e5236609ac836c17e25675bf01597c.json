@@ -294,6 +294,12 @@
       "If applicable": [
         "Falls zutreffend"
       ],
+      "Impressum": [
+        "Impressum"
+      ],
+      "Imprint": [
+        "Impressum"
+      ],
       "In person": [
         "Vor Ort"
       ],
@@ -785,6 +791,12 @@
       ],
       "This form has no fields.": [
         "Dieses Formular hat keine Felder."
+      ],
+      "This page cannot be published because no published %1$s page exists at %2$s.": [
+        "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlichte %1$s-Seite unter %2$s vorhanden ist."
+      ],
+      "This page cannot be published because the required imprint page is not published.": [
+        "Diese Seite kann nicht veröffentlicht werden, weil die erforderliche Impressum-Seite nicht veröffentlicht ist."
       ],
       "Time": [
         "Uhrzeit"
