@@ -152,7 +152,7 @@ class SpamProtection
         }
 
         $options = get_option('rrze-formular', []);
-        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 5));
+        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
         $key = self::getConfirmationRateLimitKey($email);
         $count = (int) get_transient($key);
 

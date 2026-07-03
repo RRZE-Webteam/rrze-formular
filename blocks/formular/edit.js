@@ -12,10 +12,15 @@ import {
 	SelectControl,
 	Button,
 	Disabled,
+	Notice,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
 import { getRecipientEmailError } from './editor-support';
+
+function getEditorConfig() {
+	return window.RRZEFormularEditor || {};
+}
 
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
@@ -174,7 +179,9 @@ export default function Edit({ attributes, setAttributes }) {
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
+	const editorConfig = getEditorConfig();
 	const recipientError = getRecipientEmailError(recipientEmail);
+	const confirmationDomainsConfigured = editorConfig.confirmationDomainsConfigured === true;
 	const previewKey = JSON.stringify(
 		(fields || []).map((field) => ({
 			id: field.id,
@@ -282,10 +289,22 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<ToggleControl
 						label={__('Send confirmation to submitter', 'rrze-formular')}
-						help={__('Only sent when the submitter e-mail uses an allowed domain.', 'rrze-formular')}
+						help={__(
+							'Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches.',
+							'rrze-formular'
+						)}
 						checked={!!sendConfirmation}
 						onChange={(value) => setAttributes({ sendConfirmation: value })}
 					/>
+					{ sendConfirmation && ! confirmationDomainsConfigured && (
+						<Notice status="warning" isDismissible={ false }>
+							{ editorConfig.i18n?.confirmationDomainsRequired ||
+								__(
+									'Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option.',
+									'rrze-formular'
+								) }
+						</Notice>
+					) }
 					<ToggleControl
 						label={__('Attach CSV to operator e-mail', 'rrze-formular')}
 						help={__(

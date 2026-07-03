@@ -4,7 +4,7 @@ Tags: form, contact, block, mail, spam-protection
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -62,7 +62,9 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 = When are confirmation mails sent? =
 
-When enabled on the block and the submitter provides a valid e-mail address. If allowed domains are configured, the submitter address must match one of them.
+When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the allowed confirmation domains (or the general allowed recipient domains when no separate list is set). If no domains are configured anywhere, confirmation mails are never sent.
+
+Confirmation mails contain only a short receipt — not submitted field values — and are rate-limited per submitter address.
 
 = When is a CSV file attached? =
 

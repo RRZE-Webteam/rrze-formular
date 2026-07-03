@@ -81,28 +81,43 @@ class AllowedDomains
 
     public static function isEmailDomainAllowed(string $email): bool
     {
-        $email = sanitize_email($email);
-        if (!is_email($email)) {
-            return false;
-        }
+        return self::isEmailInDomains($email, self::getAllowedDomains());
+    }
 
-        $domains = self::getAllowedDomains();
+    /**
+     * Domains that may receive automatic confirmation mails.
+     *
+     * Uses the dedicated confirmation allowlist when configured; otherwise falls
+     * back to the recipient allowed domains. An empty result disables confirmations.
+     *
+     * @return list<string>
+     */
+    public static function getConfirmationDomains(): array
+    {
+        $options = get_option('rrze-formular', []);
+        $raw = is_array($options) ? ($options['allowed_confirmation_domains'] ?? '') : '';
+        $domains = self::parseDomains($raw);
+
         if ($domains === []) {
-            return false;
+            $domains = self::getAllowedDomains();
         }
 
-        $domain = self::emailDomain($email);
-        if ($domain === '') {
-            return false;
-        }
+        /**
+         * @param list<string> $domains
+         */
+        $domains = apply_filters('rrze_formular_confirmation_domains', $domains);
 
-        foreach ($domains as $allowed) {
-            if ($domain === $allowed || str_ends_with($domain, '.' . $allowed)) {
-                return true;
-            }
-        }
+        return is_array($domains) ? array_values(array_unique(array_map('strval', $domains))) : [];
+    }
 
-        return false;
+    public static function hasConfirmationDomainsConfigured(): bool
+    {
+        return self::getConfirmationDomains() !== [];
+    }
+
+    public static function isConfirmationEmailAllowed(string $email): bool
+    {
+        return self::isEmailInDomains($email, self::getConfirmationDomains());
     }
 
     public static function isBlockRecipientAllowed(string $email): bool
@@ -238,5 +253,34 @@ class AllowedDomains
         $at = strrchr($email, '@');
 
         return $at === false ? '' : strtolower(substr($at, 1));
+    }
+
+    /**
+     * @param list<string> $domains
+     */
+    private static function isEmailInDomains(string $email, array $domains): bool
+    {
+        $email = sanitize_email($email);
+        if (!is_email($email) || $domains === []) {
+            return false;
+        }
+
+        $domain = self::emailDomain($email);
+        if ($domain === '') {
+            return false;
+        }
+
+        foreach ($domains as $allowed) {
+            $allowed = strtolower(trim((string) $allowed));
+            if ($allowed === '') {
+                continue;
+            }
+
+            if ($domain === $allowed || str_ends_with($domain, '.' . $allowed)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

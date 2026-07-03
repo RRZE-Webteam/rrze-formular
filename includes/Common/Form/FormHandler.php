@@ -140,7 +140,7 @@ class FormHandler
                 true,
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
-                $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
+                $this->buildConfirmationBody($attributes),
                 $websiteHeaders,
                 $submitterName
             );
@@ -342,37 +342,26 @@ class FormHandler
         return implode("\n", $lines);
     }
 
-    private function buildConfirmationBody(array $fields, array $values, ?array $ssoData): string
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function buildConfirmationBody(array $attributes): string
     {
         $lines = [
             __('We received your submission.', 'rrze-formular'),
             '',
         ];
 
-        $messageFieldId = $this->findLeadingMessageFieldId($fields, $values);
-        if ($messageFieldId !== null) {
-            $lines[] = $values[$messageFieldId];
-            $lines[] = '';
-        }
-
-        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
-        if ($fullName !== '') {
-            $lines[] = $fullName;
-        }
-
-        foreach (['email', 'phone', 'organisation'] as $fieldId) {
-            $value = $this->valueForFieldId($fields, $values, $fieldId);
-            if ($value !== '') {
-                $lines[] = $value;
-            }
+        $formTitle = sanitize_text_field((string) ($attributes['formTitle'] ?? ''));
+        if ($formTitle !== '') {
+            $lines[] = sprintf(
+                /* translators: %s: form title */
+                __('Form: %s', 'rrze-formular'),
+                $formTitle
+            );
         }
 
         $lines[] = '';
-
-        if ($ssoData !== null) {
-            $lines[] = SSO::formatCompactLine($ssoData);
-        }
-
         $lines[] = Mailer::formatSiteLinkLine();
         $lines[] = Mailer::formatMailDateLine();
 

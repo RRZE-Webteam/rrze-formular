@@ -58,7 +58,9 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 ### When are confirmation mails sent?
 
-When enabled on the block and the submitter provides a valid e-mail address. If allowed domains are configured, the submitter address must match one of them.
+When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains** (or the general allowed recipient domains when no separate list is set). If no domains are configured anywhere, confirmation mails are never sent.
+
+Confirmation mails contain only a short receipt (form title, site link, date) — not submitted field values — and are rate-limited per submitter address.
 
 ### When is a CSV file attached?
 
@@ -83,6 +85,7 @@ Protection is enforced server-side in `FormHandler`:
 - **Minimum submit delay** — rejects submissions faster than the configured threshold
 - **Honeypot** (`website`) — must stay empty
 - **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
+- **Confirmation domain allowlist** — confirmation mails are only sent when allowed domains are configured; submitted content is not included in confirmation mails
 - **Field validation** — required fields, e-mail format, allowed recipient domains
 
 The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.
@@ -97,7 +100,8 @@ The REST route validates the request shape (required parameters, `values` object
 | `rrze_formular_resolved_recipient` | Resolved recipient after block/settings/default |
 | `rrze_formular_templates` | Form templates in the block editor |
 | `rrze_formular_token_ttl` | Anti-spam token lifetime |
-| `rrze_formular_allowed_confirmation_email` | Whether a confirmation mail may be sent |
+| `rrze_formular_allowed_confirmation_email` | Whether a confirmation mail may be sent (after domain check) |
+| `rrze_formular_confirmation_domains` | Allowed domains for confirmation mails |
 | `rrze_formular_privacy_page_reachable` | Override privacy page availability check |
 
 ## Links

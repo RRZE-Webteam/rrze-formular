@@ -251,15 +251,15 @@ class Mailer
 
     private static function isAllowedConfirmationRecipient(string $email): bool
     {
-        if (AllowedDomains::hasConfiguredDomains()) {
-            return AllowedDomains::isEmailDomainAllowed($email);
+        if (!AllowedDomains::isConfirmationEmailAllowed($email)) {
+            return false;
         }
 
         /**
          * Filter whether a confirmation mail may be sent to the given address.
-         * Return false to block the recipient (e.g. domain allowlists).
+         * Return false to block the recipient even when the domain is allowed.
          *
-         * @param bool $allowed Default true.
+         * @param bool $allowed Default true when the domain is allowed.
          * @param string $email Sanitized recipient address.
          */
         return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
