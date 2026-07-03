@@ -146,7 +146,7 @@ abstract class Type
      */
     public function getLabel()
     {
-        return esc_attr($this->getArg('label'));
+        return esc_html((string) $this->getArg('label', ''));
     }
 
     /**
@@ -169,6 +169,7 @@ abstract class Type
             'include_sso_by_default' => 'sso-default',
             'min_submit_seconds' => 'min-submit-seconds',
             'rate_limit_per_hour' => 'rate-limit',
+            'confirmation_rate_limit_per_hour' => 'confirmation-rate-limit',
         ];
 
         $name = $this->getName();

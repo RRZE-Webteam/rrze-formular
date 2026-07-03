@@ -38,10 +38,6 @@ class FormHandler
             return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
         }
 
-        if (!SpamProtection::isWithinRateLimit()) {
-            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
-        }
-
         $attributes = $this->attributesFromTrustedConfig($trustedConfig);
         $fields = FieldTypes::localizeFieldsForDisplay($trustedConfig['fields']);
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
@@ -72,6 +68,14 @@ class FormHandler
         );
         if ($recipientError !== null) {
             return $this->error($recipientError, 422);
+        }
+
+        if (!SpamProtection::claimTokenNonce((string) ($tokenData['nonce'] ?? ''))) {
+            return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
+        }
+
+        if (!SpamProtection::tryAcquireSubmissionSlot()) {
+            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
 
         $options = Mailer::getOptions();
@@ -127,12 +131,9 @@ class FormHandler
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
 
-        SpamProtection::recordSubmission();
-        SpamProtection::consumeToken($tokenData);
-
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         if ($sendConfirmation && $submitterEmail !== '') {
-            if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
+            if (!SpamProtection::tryAcquireConfirmationSlot($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
             }
 
@@ -140,13 +141,13 @@ class FormHandler
                 true,
                 $submitterEmail,
                 sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
-                $this->buildConfirmationBody($inputFields, $sanitized, $ssoData),
+                $this->buildConfirmationBody($attributes),
                 $websiteHeaders,
                 $submitterName
             );
 
-            if ($confirmationSent) {
-                SpamProtection::recordConfirmationSend($submitterEmail);
+            if (!$confirmationSent) {
+                return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
             }
         }
 
@@ -342,37 +343,26 @@ class FormHandler
         return implode("\n", $lines);
     }
 
-    private function buildConfirmationBody(array $fields, array $values, ?array $ssoData): string
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function buildConfirmationBody(array $attributes): string
     {
         $lines = [
             __('We received your submission.', 'rrze-formular'),
             '',
         ];
 
-        $messageFieldId = $this->findLeadingMessageFieldId($fields, $values);
-        if ($messageFieldId !== null) {
-            $lines[] = $values[$messageFieldId];
-            $lines[] = '';
-        }
-
-        $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
-        if ($fullName !== '') {
-            $lines[] = $fullName;
-        }
-
-        foreach (['email', 'phone', 'organisation'] as $fieldId) {
-            $value = $this->valueForFieldId($fields, $values, $fieldId);
-            if ($value !== '') {
-                $lines[] = $value;
-            }
+        $formTitle = sanitize_text_field((string) ($attributes['formTitle'] ?? ''));
+        if ($formTitle !== '') {
+            $lines[] = sprintf(
+                /* translators: %s: form title */
+                __('Form: %s', 'rrze-formular'),
+                $formTitle
+            );
         }
 
         $lines[] = '';
-
-        if ($ssoData !== null) {
-            $lines[] = SSO::formatCompactLine($ssoData);
-        }
-
         $lines[] = Mailer::formatSiteLinkLine();
         $lines[] = Mailer::formatMailDateLine();
 

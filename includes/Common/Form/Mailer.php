@@ -6,10 +6,19 @@ defined('ABSPATH') || exit;
 
 class Mailer
 {
+    /**
+     * @var array<string, mixed>|null
+     */
+    private static ?array $optionsCache = null;
+
     public static function getOptions(): array
     {
-        $options = get_option('rrze-formular', []);
-        return is_array($options) ? $options : [];
+        if (self::$optionsCache === null) {
+            $options = get_option('rrze-formular', []);
+            self::$optionsCache = is_array($options) ? $options : [];
+        }
+
+        return self::$optionsCache;
     }
 
     public static function getAdministratorEmail(): string
@@ -251,15 +260,15 @@ class Mailer
 
     private static function isAllowedConfirmationRecipient(string $email): bool
     {
-        if (AllowedDomains::hasConfiguredDomains()) {
-            return AllowedDomains::isEmailDomainAllowed($email);
+        if (!AllowedDomains::isConfirmationEmailAllowed($email)) {
+            return false;
         }
 
         /**
          * Filter whether a confirmation mail may be sent to the given address.
-         * Return false to block the recipient (e.g. domain allowlists).
+         * Return false to block the recipient even when the domain is allowed.
          *
-         * @param bool $allowed Default true.
+         * @param bool $allowed Default true when the domain is allowed.
          * @param string $email Sanitized recipient address.
          */
         return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);

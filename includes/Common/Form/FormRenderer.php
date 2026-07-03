@@ -10,7 +10,6 @@ class FormRenderer
     {
         $attributes = self::normalizeAttributes($attributes);
         $trustedConfig = FormConfigAuth::buildTrustedConfig($attributes);
-        $configHash = FormConfigAuth::configHash($trustedConfig);
         $signedConfig = FormConfigAuth::sign($trustedConfig);
         $fields = FieldTypes::localizeFieldsForDisplay($trustedConfig['fields']);
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
@@ -18,12 +17,12 @@ class FormRenderer
         $attributes['submitLabel'] = FieldTypes::localizeDisplayString($attributes['submitLabel']);
         $formId = wp_unique_id('rrze-fw-');
         $postId = get_the_ID() ? (int) get_the_ID() : 0;
-        $tokenData = SpamProtection::createToken($formId, $configHash, $postId);
 
         ob_start();
         ?>
         <div class="rrze-formular" id="<?php echo esc_attr($formId); ?>"
-             data-form-id="<?php echo esc_attr($formId); ?>">
+             data-form-id="<?php echo esc_attr($formId); ?>"
+             data-post-id="<?php echo esc_attr((string) $postId); ?>">
             <?php if ($attributes['formTitle'] !== '') : ?>
                 <h2 class="rrze-formular__title"><?php echo esc_html($attributes['formTitle']); ?></h2>
             <?php endif; ?>
@@ -36,7 +35,7 @@ class FormRenderer
                   method="post"
                   action="#"
                   novalidate<?php echo !empty($trustedConfig['attachCsv']) ? ' data-attach-csv="1"' : ''; ?>>
-                <input type="hidden" name="token" value="<?php echo esc_attr($tokenData['token']); ?>">
+                <input type="hidden" name="token" value="">
                 <input type="hidden" name="formConfig" value="<?php echo esc_attr($signedConfig['payload']); ?>">
                 <input type="hidden" name="formConfigSig" value="<?php echo esc_attr($signedConfig['signature']); ?>">
 
@@ -49,11 +48,11 @@ class FormRenderer
                            autocomplete="off">
                 </div>
 
-                <fieldset class="rrze-formular__fields">
+                <div class="rrze-formular__fields">
                     <?php foreach ($fields as $field) : ?>
                         <?php echo self::renderField($field, $formId); ?>
                     <?php endforeach; ?>
-                </fieldset>
+                </div>
 
                 <div class="rrze-formular__actions">
                     <button type="submit" class="rrze-formular__submit">

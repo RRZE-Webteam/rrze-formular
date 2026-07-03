@@ -13,15 +13,15 @@ defined('ABSPATH') || exit;
             <legend class="screen-reader-text"><span><?php echo $option->getLabel(); ?></span></legend>
             <?php foreach ($option->getArg('options', []) as $key => $label) { ?>
                 <label>
-                    <input name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo $option->getIdAttribute(); ?>" type="radio" value="<?php echo $key; ?>" <?php checked($key, $option->getValueAttribute()); ?> <?php echo $option->getInputClassAttribute(); ?>>
-                    <?php echo $label; ?>
+                    <input name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo esc_attr($option->getIdAttribute()); ?>" type="radio" value="<?php echo esc_attr((string) $key); ?>" <?php checked($key, $option->getValueAttribute()); ?> <?php echo $option->getInputClassAttribute(); ?>>
+                    <?php echo esc_html((string) $label); ?>
                 </label><br>
             <?php } ?>
             <?php if ($description = $option->getArg('description')) { ?>
-                <p class="description"><?php echo $description; ?></p>
+                <p class="description"><?php echo esc_html((string) $description); ?></p>
             <?php } ?>
             <?php if ($error = $option->hasError()) { ?>
-                <div class="rrze-formular-settings-error"><?php echo $error; ?></div>
+                <div class="rrze-formular-settings-error"><?php echo esc_html((string) $error); ?></div>
             <?php } ?>
         </fieldset>
     </td>

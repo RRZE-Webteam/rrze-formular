@@ -19,7 +19,7 @@ use RRZE\Formular\Common\API\SyncAPI;
             echo '<style> .settings_page_rrze-formular #log .form-table th {width:0;}</style>';
             echo '<table class="wp-list-table widefat striped"><tbody>';
             foreach ($domains as $identifier => $url) {
-                echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_attr($identifier) . '"></td><td>' . esc_html($identifier) . '</td><td>' . esc_url($url) . '</td></tr>';
+                echo '<tr><td><input type="checkbox" name="del_domain_' . esc_attr($i) . '" value="' . esc_attr($identifier) . '"></td><td>' . esc_html($identifier) . '</td><td>' . esc_html($url) . '</td></tr>';
                 $i++;
             }
             echo '</tbody></table>';

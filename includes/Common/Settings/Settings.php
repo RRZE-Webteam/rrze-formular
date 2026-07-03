@@ -645,7 +645,7 @@ class Settings
         if (
             !isset($_POST['rrze-formular_settings_save'])
             || !wp_verify_nonce(
-                $_POST['rrze-formular_settings_save'],
+                wp_unslash((string) $_POST['rrze-formular_settings_save']),
                 'rrze-formular_settings_save_' . $this->optionName
             )
         ) {
@@ -657,7 +657,11 @@ class Settings
         }
 
         $currentOptions = $this->getOptions();
-        $submittedOptions = apply_filters('rrze-formular_settings_new_options', $_POST[$this->optionName] ?? [], $currentOptions);
+        $submittedOptions = apply_filters(
+            'rrze-formular_settings_new_options',
+            wp_unslash($_POST[$this->optionName] ?? []),
+            $currentOptions
+        );
         $newOptions = $currentOptions;
 
         foreach ($this->getActiveTab()->getActiveSections() as $section) {

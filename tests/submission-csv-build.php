@@ -31,25 +31,25 @@ namespace RRZE\Formular\Common\Form {
     require __DIR__ . '/../includes/Common/Form/SubmissionCsv.php';
 
     $headers = [
-        'Vorname',
-        'Nachname',
-        'E-Mail-Adresse',
-        'Zugehörigkeit',
-        'Titel des Beitrags',
+        'First name',
+        'Last name',
+        'E-mail',
+        'Organisation',
+        'Title',
         'Abstract',
-        'Schlagwörter',
-        'Bevorzugtes Format',
+        'Keywords',
+        'Preferred format',
     ];
 
     $values = [
-        'Benjamin',
-        'Klemencic',
-        'benjamin.klemencic@fau.de',
-        'RRZE AI',
-        'Das ist mein Titel',
-        'Und das ist das Abstract.',
-        'eins,zwei,drei',
-        'Beides möglich',
+        'Anna',
+        'Example',
+        'anna.example@example.edu',
+        'Example University',
+        'Sample submission title',
+        'Sample abstract text.',
+        'alpha,beta,gamma',
+        'Both formats',
     ];
 
     $content = SubmissionCsv::build($headers, $values);
@@ -65,14 +65,14 @@ namespace RRZE\Formular\Common\Form {
         exit(1);
     }
 
-  foreach ($headers as $header) {
+    foreach ($headers as $header) {
         if (!str_contains($lines[0], $header)) {
             fwrite(STDERR, "FAIL: header row missing {$header}\n{$lines[0]}\n");
             exit(1);
         }
     }
 
-    if (!str_contains($lines[1], 'Benjamin') || !str_contains($lines[1], 'Beides möglich') || !str_contains($lines[1], '"eins,zwei,drei"')) {
+    if (!str_contains($lines[1], 'Anna') || !str_contains($lines[1], 'Both formats') || !str_contains($lines[1], '"alpha,beta,gamma"')) {
         fwrite(STDERR, "FAIL: value row invalid\n{$lines[1]}\n");
         exit(1);
     }

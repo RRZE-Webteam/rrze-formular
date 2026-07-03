@@ -6,18 +6,18 @@ defined('ABSPATH') || exit;
 ?>
 <tr valign="top">
     <th scope="row" class="rrze-wp-form-label">
-        <label for="<?php echo $option->getIdAttribute(); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
+        <label for="<?php echo esc_attr($option->getIdAttribute()); ?>" <?php echo $option->getLabelClassAttribute(); ?>><?php echo $option->getLabel(); ?></label>
     </th>
     <td class="rrze-wp-form rrze-wp-form-input"<?php echo $option->getTourDataAttribute(); ?>>
         <label>
-            <input name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo $option->getIdAttribute(); ?>" type="checkbox" value="1" <?php checked($option->isChecked()); ?> <?php echo $option->getInputClassAttribute(); ?>>
-            <?php echo $option->getArg('description'); ?>
+            <input name="<?php echo esc_attr($option->getNameAttribute()); ?>" id="<?php echo esc_attr($option->getIdAttribute()); ?>" type="checkbox" value="1" <?php checked($option->isChecked()); ?> <?php echo $option->getInputClassAttribute(); ?>>
+            <?php echo esc_html((string) $option->getArg('description', '')); ?>
         </label>
 
         <input type="hidden" name="wp_settings_submitted[]" value="<?php echo esc_attr($option->getName()); ?>">
 
         <?php if ($error = $option->hasError()) { ?>
-            <div class="rrze-formular-settings-error"><?php echo $error; ?></div>
+            <div class="rrze-formular-settings-error"><?php echo esc_html((string) $error); ?></div>
         <?php } ?>
     </td>
 </tr>
