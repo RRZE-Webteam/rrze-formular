@@ -294,30 +294,59 @@ class Mailer
 
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName, $attachments): void {
+        $attachmentPaths = [];
+        $attachmentNames = [];
+
+        foreach ($attachments as $attachment) {
+            $path = '';
+            $name = '';
+
+            if (is_array($attachment)) {
+                $path = (string) ($attachment['path'] ?? '');
+                $name = (string) ($attachment['name'] ?? '');
+            } elseif (is_string($attachment)) {
+                $path = $attachment;
+            }
+
+            if ($path === '' || !is_readable($path)) {
+                continue;
+            }
+
+            $attachmentPaths[] = $path;
+            if ($name !== '') {
+                $attachmentNames[$path] = $name;
+            }
+        }
+
+        if ($attachmentPaths !== []) {
+            $allHeaders = array_values(array_filter(
+                $allHeaders,
+                static fn(string $header): bool => stripos($header, 'Content-Type:') !== 0
+            ));
+        }
+
+        $configureRecipient = static function ($phpmailer) use (
+            $recipientEmail,
+            $recipientName,
+            $attachmentPaths,
+            $attachmentNames
+        ): void {
             if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
                 return;
             }
 
             $phpmailer->clearAddresses();
             $phpmailer->addAddress($recipientEmail, $recipientName);
+            $phpmailer->CharSet = 'UTF-8';
+            $phpmailer->isHTML(false);
 
-            foreach ($attachments as $attachment) {
-                $path = '';
-                $name = '';
+            if ($attachmentPaths !== [] && method_exists($phpmailer, 'clearAttachments')) {
+                $phpmailer->clearAttachments();
 
-                if (is_array($attachment)) {
-                    $path = (string) ($attachment['path'] ?? '');
-                    $name = (string) ($attachment['name'] ?? '');
-                } elseif (is_string($attachment)) {
-                    $path = $attachment;
+                foreach ($attachmentPaths as $path) {
+                    $name = $attachmentNames[$path] ?? '';
+                    $phpmailer->addAttachment($path, $name);
                 }
-
-                if ($path === '' || !is_readable($path)) {
-                    continue;
-                }
-
-                $phpmailer->addAttachment($path, $name);
             }
 
             // PHP mail() does not write the To header into the message body.
@@ -335,7 +364,8 @@ class Mailer
             self::formatMailboxAddress($recipientEmail, $recipientName),
             $subject,
             $body,
-            $allHeaders
+            $allHeaders,
+            $attachmentPaths
         );
 
         remove_action('phpmailer_init', $configureRecipient, 100);
