@@ -14,7 +14,7 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 
 - Block editor integration (no shortcodes required)
 - Form field types with section headings for longer forms
-- Templates for FAU websites (contact, teaching, events, research, IT, public relations and more)
+- Templates for university websites (contact, teaching, events, research, public relations and more)
 - Fixed sender address and name from the website configuration
 - Recipient resolution: block setting → plugin default → site administrator e-mail
 - Optional recipient name for block and default recipient

@@ -70,7 +70,7 @@ class Templates
                     self::personalFields(true),
                     [
                         self::field('organisation', 'text', __('Organisation / unit', 'rrze-formular'), [
-                                                        'placeholder' => __('e.g. chair, office, institution', 'rrze-formular'),
+                            'placeholder' => __('e.g. chair, office, institution', 'rrze-formular'),
                         ]),
                         self::field('subject', 'text', __('Subject', 'rrze-formular'), ['required' => true]),
                         self::field('message', 'textarea', __('Message', 'rrze-formular'), ['required' => true]),
@@ -86,60 +86,13 @@ class Templates
                     [
                         self::field('phone', 'tel', __('Telephone number', 'rrze-formular'), ['required' => true]),
                         self::field('preferred_time', 'select', __('Preferred time', 'rrze-formular'), [
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'morning', 'label' => __('Morning (8–12)', 'rrze-formular')],
                                 ['value' => 'afternoon', 'label' => __('Afternoon (12–17)', 'rrze-formular')],
                                 ['value' => 'flexible', 'label' => __('Flexible', 'rrze-formular')],
                             ],
                         ]),
                         self::field('topic', 'textarea', __('Topic of the call', 'rrze-formular'), ['required' => true]),
-                    ]
-                ),
-            ],
-            'feedback' => [
-                'label' => __('Contact · Website feedback', 'rrze-formular'),
-                'formTitle' => __('Website feedback', 'rrze-formular'),
-                'formDescription' => __('Help us improve this website.', 'rrze-formular'),
-                'fields' => [
-                    self::field('page_url', 'text', __('Page URL', 'rrze-formular'), ['placeholder' => 'https://']),
-                    self::field('rating', 'select', __('Overall rating', 'rrze-formular'), [
-                        'required' => true,
-                                                'options' => [
-                            ['value' => '5', 'label' => __('Excellent', 'rrze-formular')],
-                            ['value' => '4', 'label' => __('Good', 'rrze-formular')],
-                            ['value' => '3', 'label' => __('Average', 'rrze-formular')],
-                            ['value' => '2', 'label' => __('Poor', 'rrze-formular')],
-                            ['value' => '1', 'label' => __('Very poor', 'rrze-formular')],
-                        ],
-                    ]),
-                    self::field('comment', 'textarea', __('Your feedback', 'rrze-formular'), ['required' => true]),
-                    self::field('email', 'email', __('E-mail address (optional)', 'rrze-formular')),
-                ],
-            ],
-            'website_issue' => [
-                'label' => __('Contact · Website or technical issue', 'rrze-formular'),
-                'formTitle' => __('Report an issue', 'rrze-formular'),
-                'formDescription' => __('Report a technical problem or an error on this website.', 'rrze-formular'),
-                'fields' => array_merge(
-                    self::personalFields(),
-                    [
-                        self::field('page_url', 'text', __('Affected page URL', 'rrze-formular'), [
-                            'required' => true,
-                                                        'placeholder' => 'https://',
-                        ]),
-                        self::field('category', 'select', __('Issue type', 'rrze-formular'), [
-                            'required' => true,
-                                                        'options' => [
-                                ['value' => 'broken_link', 'label' => __('Broken link', 'rrze-formular')],
-                                ['value' => 'display', 'label' => __('Display or layout', 'rrze-formular')],
-                                ['value' => 'accessibility', 'label' => __('Accessibility', 'rrze-formular')],
-                                ['value' => 'content', 'label' => __('Outdated or incorrect content', 'rrze-formular')],
-                                ['value' => 'other', 'label' => __('Other', 'rrze-formular')],
-                            ],
-                        ]),
-                        self::field('description', 'textarea', __('Description of the issue', 'rrze-formular'), [
-                            'required' => true,
-                                                    ]),
                     ]
                 ),
             ],
@@ -152,7 +105,7 @@ class Templates
                     self::personalFields(true),
                     [
                         self::field('deadline', 'text', __('Deadline', 'rrze-formular'), [
-                                                        'placeholder' => __('e.g. date and time', 'rrze-formular'),
+                            'placeholder' => __('e.g. date and time', 'rrze-formular'),
                         ]),
                         self::field('topic', 'textarea', __('Enquiry', 'rrze-formular'), ['required' => true]),
                     ]
@@ -168,42 +121,35 @@ class Templates
                     [
                         self::field('preferred_date', 'text', __('Preferred date', 'rrze-formular'), [
                             'required' => true,
-                                                        'placeholder' => __('e.g. DD.MM.YYYY', 'rrze-formular'),
+                            'placeholder' => __('e.g. DD.MM.YYYY', 'rrze-formular'),
                         ]),
                         self::field('topic', 'textarea', __('Topic / reason for appointment', 'rrze-formular'), [
                             'required' => true,
-                                                    ]),
+                        ]),
                     ]
                 ),
             ],
-            'thesis_bachelor' => [
-                'label' => __('Teaching · Bachelor thesis enquiry', 'rrze-formular'),
-                'formTitle' => __('Bachelor thesis enquiry', 'rrze-formular'),
-                'formDescription' => __('Express your interest in writing a bachelor thesis with us.', 'rrze-formular'),
+            'thesis' => [
+                'label' => __('Teaching · Thesis enquiry', 'rrze-formular'),
+                'formTitle' => __('Thesis enquiry', 'rrze-formular'),
+                'formDescription' => __('Express your interest in writing a thesis with us.', 'rrze-formular'),
                 'fields' => array_merge(
                     self::personalFields(),
                     self::studentFields(),
                     [
-                        self::field('study_semester', 'number', __('Current semester', 'rrze-formular')),
+                        self::field('degree', 'select', __('Degree', 'rrze-formular'), [
+                            'required' => true,
+                            'options' => [
+                                ['value' => 'bachelor', 'label' => __('Bachelor', 'rrze-formular')],
+                                ['value' => 'master', 'label' => __('Master', 'rrze-formular')],
+                            ],
+                        ]),
                         self::field('topic_interest', 'textarea', __('Topic ideas or areas of interest', 'rrze-formular'), [
                             'required' => true,
-                                                    ]),
-                        self::field('start_date', 'text', __('Preferred start date', 'rrze-formular')),
-                    ]
-                ),
-            ],
-            'thesis_master' => [
-                'label' => __('Teaching · Master thesis enquiry', 'rrze-formular'),
-                'formTitle' => __('Master thesis enquiry', 'rrze-formular'),
-                'formDescription' => __('Express your interest in writing a master thesis with us.', 'rrze-formular'),
-                'fields' => array_merge(
-                    self::personalFields(),
-                    self::studentFields(),
-                    [
-                        self::field('topic_interest', 'textarea', __('Topic ideas or research area', 'rrze-formular'), [
-                            'required' => true,
-                                                    ]),
-                        self::field('supervisor', 'text', __('Preferred supervisor', 'rrze-formular')),
+                        ]),
+                        self::field('supervisor', 'text', __('Preferred supervisor', 'rrze-formular'), [
+                            'placeholder' => __('If applicable', 'rrze-formular'),
+                        ]),
                         self::field('start_date', 'text', __('Preferred start date', 'rrze-formular')),
                     ]
                 ),
@@ -218,7 +164,7 @@ class Templates
                     [
                         self::field('skills', 'textarea', __('Skills and experience', 'rrze-formular'), ['required' => true]),
                         self::field('hours', 'select', __('Desired weekly hours', 'rrze-formular'), [
-                                                        'options' => [
+                            'options' => [
                                 ['value' => '5', 'label' => __('Up to 5 hours', 'rrze-formular')],
                                 ['value' => '10', 'label' => __('Up to 10 hours', 'rrze-formular')],
                                 ['value' => '15', 'label' => __('Up to 15 hours', 'rrze-formular')],
@@ -240,11 +186,11 @@ class Templates
                     [
                         self::field('period', 'text', __('Desired internship period', 'rrze-formular'), [
                             'required' => true,
-                                                        'placeholder' => __('e.g. 01.03.–31.08.', 'rrze-formular'),
+                            'placeholder' => __('e.g. 01.03.–31.08.', 'rrze-formular'),
                         ]),
                         self::field('motivation', 'textarea', __('Motivation and expectations', 'rrze-formular'), [
                             'required' => true,
-                                                    ]),
+                        ]),
                     ]
                 ),
             ],
@@ -258,40 +204,21 @@ class Templates
                         self::heading('event_heading', __('Event details', 'rrze-formular')),
                         self::field('attendance', 'radio', __('Participation', 'rrze-formular'), [
                             'required' => true,
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'in_person', 'label' => __('In person', 'rrze-formular')],
                                 ['value' => 'online', 'label' => __('Online', 'rrze-formular')],
                             ],
                         ]),
                         self::field('diet', 'select', __('Dietary requirements', 'rrze-formular'), [
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'none', 'label' => __('None', 'rrze-formular')],
                                 ['value' => 'vegetarian', 'label' => __('Vegetarian', 'rrze-formular')],
                                 ['value' => 'vegan', 'label' => __('Vegan', 'rrze-formular')],
                             ],
                         ]),
                         self::field('accessibility', 'textarea', __('Accessibility requirements', 'rrze-formular'), [
-                                                        'placeholder' => __('If applicable', 'rrze-formular'),
+                            'placeholder' => __('If applicable', 'rrze-formular'),
                         ]),
-                    ]
-                ),
-            ],
-            'workshop' => [
-                'label' => __('Events · Workshop registration', 'rrze-formular'),
-                'formTitle' => __('Workshop registration', 'rrze-formular'),
-                'formDescription' => __('Register for the workshop.', 'rrze-formular'),
-                'fields' => array_merge(
-                    self::personalFields(),
-                    self::studentFields(),
-                    [
-                        self::field('experience', 'select', __('Prior knowledge', 'rrze-formular'), [
-                                                        'options' => [
-                                ['value' => 'none', 'label' => __('No prior knowledge', 'rrze-formular')],
-                                ['value' => 'basic', 'label' => __('Basic', 'rrze-formular')],
-                                ['value' => 'advanced', 'label' => __('Advanced', 'rrze-formular')],
-                            ],
-                        ]),
-                        self::field('expectations', 'textarea', __('Expectations', 'rrze-formular')),
                     ]
                 ),
             ],
@@ -304,13 +231,13 @@ class Templates
                     [
                         self::field('affiliation', 'text', __('Affiliation', 'rrze-formular'), [
                             'required' => true,
-                                                        'placeholder' => __('e.g. chair, institute, company', 'rrze-formular'),
+                            'placeholder' => __('e.g. chair, institute, company', 'rrze-formular'),
                         ]),
                         self::field('title', 'text', __('Paper title', 'rrze-formular'), ['required' => true]),
                         self::field('abstract', 'textarea', __('Abstract', 'rrze-formular'), ['required' => true]),
                         self::field('keywords', 'text', __('Keywords', 'rrze-formular')),
                         self::field('presentation', 'radio', __('Preferred format', 'rrze-formular'), [
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'talk', 'label' => __('Talk', 'rrze-formular')],
                                 ['value' => 'poster', 'label' => __('Poster', 'rrze-formular')],
                                 ['value' => 'either', 'label' => __('Either', 'rrze-formular')],
@@ -329,25 +256,11 @@ class Templates
                         self::field('age', 'number', __('Age', 'rrze-formular'), ['required' => true]),
                         self::field('availability', 'textarea', __('Availability', 'rrze-formular'), [
                             'required' => true,
-                                                        'placeholder' => __('Days and times you are available', 'rrze-formular'),
+                            'placeholder' => __('Days and times you are available', 'rrze-formular'),
                         ]),
                         self::field('consent', 'checkbox', __('I confirm that I have read the participant information.', 'rrze-formular'), [
                             'required' => true,
-                                                    ]),
-                    ]
-                ),
-            ],
-            'lab_reservation' => [
-                'label' => __('Research · Lab or equipment reservation', 'rrze-formular'),
-                'formTitle' => __('Lab or equipment reservation', 'rrze-formular'),
-                'formDescription' => __('Request a lab space or research equipment.', 'rrze-formular'),
-                'fields' => array_merge(
-                    self::personalFields(),
-                    [
-                        self::field('resource', 'text', __('Lab / equipment', 'rrze-formular'), ['required' => true]),
-                        self::field('date', 'text', __('Date', 'rrze-formular'), ['required' => true]),
-                        self::field('time', 'text', __('Time slot', 'rrze-formular'), ['required' => true]),
-                        self::field('purpose', 'textarea', __('Purpose of use', 'rrze-formular'), ['required' => true]),
+                        ]),
                     ]
                 ),
             ],
@@ -361,7 +274,7 @@ class Templates
                     [
                         self::field('cooperation_type', 'select', __('Type of cooperation', 'rrze-formular'), [
                             'required' => true,
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'research', 'label' => __('Joint research project', 'rrze-formular')],
                                 ['value' => 'industry', 'label' => __('Industry partnership', 'rrze-formular')],
                                 ['value' => 'thesis', 'label' => __('Thesis with external partner', 'rrze-formular')],
@@ -371,38 +284,7 @@ class Templates
                         ]),
                         self::field('description', 'textarea', __('Project description', 'rrze-formular'), [
                             'required' => true,
-                                                    ]),
-                    ]
-                ),
-            ],
-            'it_support' => [
-                'label' => __('IT · Support request', 'rrze-formular'),
-                'formTitle' => __('IT support request', 'rrze-formular'),
-                'formDescription' => __(
-                    'Describe your IT problem. For account issues, please include your IdM user name.',
-                    'rrze-formular'
-                ),
-                'fields' => array_merge(
-                    self::personalFields(),
-                    [
-                        self::field('idm_user', 'text', __('IdM user name', 'rrze-formular'), [
-                                                        'placeholder' => __('If applicable', 'rrze-formular'),
                         ]),
-                        self::field('category', 'select', __('Category', 'rrze-formular'), [
-                            'required' => true,
-                                                        'options' => [
-                                ['value' => 'account', 'label' => __('Account / login', 'rrze-formular')],
-                                ['value' => 'email', 'label' => __('E-mail', 'rrze-formular')],
-                                ['value' => 'network', 'label' => __('Network / VPN', 'rrze-formular')],
-                                ['value' => 'software', 'label' => __('Software', 'rrze-formular')],
-                                ['value' => 'hardware', 'label' => __('Hardware', 'rrze-formular')],
-                                ['value' => 'website', 'label' => __('Website / CMS', 'rrze-formular')],
-                                ['value' => 'other', 'label' => __('Other', 'rrze-formular')],
-                            ],
-                        ]),
-                        self::field('description', 'textarea', __('Problem description', 'rrze-formular'), [
-                            'required' => true,
-                                                    ]),
                     ]
                 ),
             ],
@@ -415,7 +297,7 @@ class Templates
                     [
                         self::field('organisation', 'text', __('Organisation / unit', 'rrze-formular'), ['required' => true]),
                         self::field('room_type', 'select', __('Room type', 'rrze-formular'), [
-                                                        'options' => [
+                            'options' => [
                                 ['value' => 'meeting', 'label' => __('Meeting room', 'rrze-formular')],
                                 ['value' => 'seminar', 'label' => __('Seminar room', 'rrze-formular')],
                                 ['value' => 'lab', 'label' => __('Laboratory', 'rrze-formular')],
@@ -457,8 +339,6 @@ class Templates
                 ),
             ],
         ];
-
-        $templates['support'] = $templates['website_issue'];
 
         return apply_filters('rrze_formular_templates', $templates);
     }

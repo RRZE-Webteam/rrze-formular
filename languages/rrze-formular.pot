@@ -27,14 +27,8 @@ msgstr "Abstract"
 msgid "Abstract submission"
 msgstr "Abstract-Einreichung"
 
-msgid "Accessibility"
-msgstr "Barrierefreiheit"
-
 msgid "Accessibility requirements"
 msgstr "Anforderungen an Barrierefreiheit"
-
-msgid "Account / login"
-msgstr "Konto / Anmeldung"
 
 msgid "Add field"
 msgstr "Feld hinzufügen"
@@ -47,12 +41,6 @@ msgstr "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten
 
 msgid "Adjust limits for honeypot, minimum fill time and rate limiting."
 msgstr "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
-
-msgid "Advanced"
-msgstr "Fortgeschritten"
-
-msgid "Affected page URL"
-msgstr "Betroffene Seiten-URL"
 
 msgid "Affiliation"
 msgstr "Zugehörigkeit"
@@ -87,26 +75,14 @@ msgstr "Verfügbarkeit"
 msgid "Available from"
 msgstr "Verfügbar ab"
 
-msgid "Average"
-msgstr "Durchschnittlich"
-
-msgid "Bachelor thesis enquiry"
-msgstr "Anfrage Bachelorarbeit"
-
-msgid "Basic"
-msgstr "Grundkenntnisse"
+msgid "Bachelor"
+msgstr "Bachelor"
 
 msgid "Blank form"
 msgstr "Leeres Formular"
 
-msgid "Broken link"
-msgstr "Defekter Link"
-
 msgid "Callback request"
 msgstr "Rückrufanfrage"
-
-msgid "Category"
-msgstr "Kategorie"
 
 msgid "Checkbox"
 msgstr "Kontrollkästchen"
@@ -141,12 +117,6 @@ msgstr "Kontakt · Allgemeine Anfrage"
 msgid "Contact · Press enquiry"
 msgstr "Kontakt · Presseanfrage"
 
-msgid "Contact · Website feedback"
-msgstr "Kontakt · Website-Feedback"
-
-msgid "Contact · Website or technical issue"
-msgstr "Kontakt · Website- oder technisches Problem"
-
 msgid "Continue to the next tab to see the highlighted field."
 msgstr "Wechseln Sie zur nächsten Registerkarte, um das hervorgehobene Feld zu sehen."
 
@@ -158,9 +128,6 @@ msgstr "Erstellen Sie Kontakt- und Anfrageformulare im Block-Editor — ohne HTM
 
 msgid "Create forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically."
 msgstr "Formulare ohne HTML erstellen. Sie definieren die Felder — Design, Spam-Schutz und Mail-Versand werden automatisch übernommen."
-
-msgid "Current semester"
-msgstr "Aktuelles Fachsemester"
 
 msgid "Date"
 msgstr "Datum"
@@ -177,17 +144,14 @@ msgstr "Standard-Empfänger-E-Mail"
 msgid "Default recipient name"
 msgstr "Standard-Empfänger-Name"
 
+msgid "Degree"
+msgstr "Abschluss"
+
 msgid "Delete selected domains"
 msgstr "Ausgewählte Domains löschen"
 
-msgid "Describe your IT problem. For account issues, please include your IdM user name."
-msgstr "Beschreiben Sie Ihr IT-Problem. Bei Kontoproblemen geben Sie bitte Ihren IdM-Benutzernamen an."
-
 msgid "Description"
 msgstr "Beschreibung"
-
-msgid "Description of the issue"
-msgstr "Beschreibung des Problems"
 
 msgid "Desired internship period"
 msgstr "Gewünschter Praktikumszeitraum"
@@ -198,17 +162,11 @@ msgstr "Gewünschte Wochenstunden"
 msgid "Dietary requirements"
 msgstr "Ernährungsanforderungen"
 
-msgid "Display or layout"
-msgstr "Darstellung oder Layout"
-
 msgid "E-mail"
 msgstr "E-Mail"
 
 msgid "E-mail address"
 msgstr "E-Mail-Adresse"
-
-msgid "E-mail address (optional)"
-msgstr "E-Mail-Adresse (optional)"
 
 msgid "Either"
 msgstr "Beides möglich"
@@ -228,20 +186,8 @@ msgstr "Veranstaltungen · Abstract-Einreichung"
 msgid "Events · Event registration"
 msgstr "Veranstaltungen · Veranstaltungsanmeldung"
 
-msgid "Events · Workshop registration"
-msgstr "Veranstaltungen · Workshop-Anmeldung"
-
-msgid "Excellent"
-msgstr "Ausgezeichnet"
-
-msgid "Expectations"
-msgstr "Erwartungen"
-
-msgid "Express your interest in writing a bachelor thesis with us."
-msgstr "Bekunden Sie Ihr Interesse an einer Bachelorarbeit bei uns."
-
-msgid "Express your interest in writing a master thesis with us."
-msgstr "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
+msgid "Express your interest in writing a thesis with us."
+msgstr "Bekunden Sie Ihr Interesse an einer Abschlussarbeit bei uns."
 
 msgid "Field"
 msgstr "Feld"
@@ -273,32 +219,14 @@ msgstr "Allgemein"
 msgid "Get in touch with our alumni network."
 msgstr "Nehmen Sie Kontakt mit unserem Alumni-Netzwerk auf."
 
-msgid "Good"
-msgstr "Gut"
-
 msgid "Guest lecture"
 msgstr "Gastvortrag"
-
-msgid "Hardware"
-msgstr "Hardware"
-
-msgid "Help us improve this website."
-msgstr "Helfen Sie uns, diese Website zu verbessern."
 
 msgid "I agree to receive the newsletter and have read the privacy notice."
 msgstr "Ich möchte den Newsletter erhalten und habe die Datenschutzhinweise gelesen."
 
 msgid "I confirm that I have read the participant information."
 msgstr "Ich bestätige, dass ich die Teilnehmerinformationen gelesen habe."
-
-msgid "IT support request"
-msgstr "IT-Support-Anfrage"
-
-msgid "IT · Support request"
-msgstr "IT · Support-Anfrage"
-
-msgid "IdM user name"
-msgstr "IdM-Benutzername"
 
 msgid "If applicable"
 msgstr "Falls zutreffend"
@@ -330,20 +258,11 @@ msgstr "Ungültige Formular-Konfiguration."
 msgid "Invalid or too fast submission."
 msgstr "Ungültige oder zu schnelle Übermittlung."
 
-msgid "Issue type"
-msgstr "Art des Problems"
-
 msgid "Joint research project"
 msgstr "Gemeinsames Forschungsprojekt"
 
 msgid "Keywords"
 msgstr "Schlagwörter"
-
-msgid "Lab / equipment"
-msgstr "Labor / Gerät"
-
-msgid "Lab or equipment reservation"
-msgstr "Labor- oder Gerätereservierung"
 
 msgid "Label"
 msgstr "Beschriftung"
@@ -363,8 +282,8 @@ msgstr "Logdatei ist leer."
 msgid "Mail subject prefix"
 msgstr "Betreff-Präfix"
 
-msgid "Master thesis enquiry"
-msgstr "Anfrage Masterarbeit"
+msgid "Master"
+msgstr "Master"
 
 msgid "Matriculation number"
 msgstr "Matrikelnummer"
@@ -405,9 +324,6 @@ msgstr "Nach oben"
 msgid "Multiselect"
 msgstr "Mehrfachauswahl"
 
-msgid "Network / VPN"
-msgstr "Netzwerk / VPN"
-
 msgid "New field"
 msgstr "Neues Feld"
 
@@ -419,9 +335,6 @@ msgstr "Newsletter-Anmeldung"
 
 msgid "No"
 msgstr "Nein"
-
-msgid "No prior knowledge"
-msgstr "Keine Vorkenntnisse"
 
 msgid "No valid recipient configured."
 msgstr "Kein gültiger Empfänger konfiguriert."
@@ -489,15 +402,6 @@ msgstr "Organisation / Einrichtung"
 msgid "Other"
 msgstr "Sonstiges"
 
-msgid "Outdated or incorrect content"
-msgstr "Veralteter oder fehlerhafter Inhalt"
-
-msgid "Overall rating"
-msgstr "Gesamtbewertung"
-
-msgid "Page URL"
-msgstr "Seiten-URL"
-
 msgid "Paper title"
 msgstr "Titel des Beitrags"
 
@@ -528,9 +432,6 @@ msgstr "Hinweis: „Ausgewählte Domains löschen“ löscht alle FAQ- und Gloss
 msgid "Plugins: %1$s: %2$s"
 msgstr "Plugins: %1$s: %2$s"
 
-msgid "Poor"
-msgstr "Schlecht"
-
 msgid "Poster"
 msgstr "Poster"
 
@@ -552,14 +453,8 @@ msgstr "Bevorzugte Uhrzeit"
 msgid "Press enquiry"
 msgstr "Presseanfrage"
 
-msgid "Prior knowledge"
-msgstr "Vorkenntnisse"
-
 msgid "Privacy"
 msgstr "Datenschutz"
-
-msgid "Problem description"
-msgstr "Problembeschreibung"
 
 msgid "Project description"
 msgstr "Projektbeschreibung"
@@ -578,9 +473,6 @@ msgstr "Die Veröffentlichung ist gesperrt, bis alle Empfänger-Adressen in Form
 
 msgid "Purpose"
 msgstr "Zweck"
-
-msgid "Purpose of use"
-msgstr "Verwendungszweck"
 
 msgid "RRZE Formular"
 msgstr "RRZE Formular"
@@ -606,23 +498,11 @@ msgstr "Registrieren Sie sich als Teilnehmer an unserer Studie."
 msgid "Register for the event."
 msgstr "Melden Sie sich für die Veranstaltung an."
 
-msgid "Register for the workshop."
-msgstr "Melden Sie sich für den Workshop an."
-
 msgid "Reject submissions that arrive faster than this threshold."
 msgstr "Übermittlungen ablehnen, die schneller als dieser Schwellenwert eingehen."
 
 msgid "Remove"
 msgstr "Entfernen"
-
-msgid "Report a technical problem or an error on this website."
-msgstr "Melden Sie ein technisches Problem oder einen Fehler auf dieser Website."
-
-msgid "Report an issue"
-msgstr "Problem melden"
-
-msgid "Request a lab space or research equipment."
-msgstr "Fordern Sie einen Laborplatz oder Forschungsgeräte an."
 
 msgid "Request a room or meeting space."
 msgstr "Fordern Sie einen Raum oder Besprechungsraum an."
@@ -635,9 +515,6 @@ msgstr "Pflichtfeld"
 
 msgid "Research · Cooperation enquiry"
 msgstr "Forschung · Kooperationsanfrage"
-
-msgid "Research · Lab or equipment reservation"
-msgstr "Forschung · Labor- oder Gerätereservierung"
 
 msgid "Research · Study participant registration"
 msgstr "Forschung · Studienteilnehmer-Anmeldung"
@@ -684,9 +561,6 @@ msgstr "Einstellungen gespeichert."
 msgid "Skills and experience"
 msgstr "Kenntnisse und Erfahrung"
 
-msgid "Software"
-msgstr "Software"
-
 msgid "Spam Protection"
 msgstr "Spam-Schutz"
 
@@ -723,20 +597,17 @@ msgstr "Erfolgsmeldung"
 msgid "Talk"
 msgstr "Vortrag"
 
-msgid "Teaching · Bachelor thesis enquiry"
-msgstr "Lehre · Anfrage Bachelorarbeit"
-
 msgid "Teaching · Internship application"
 msgstr "Lehre · Praktikumsbewerbung"
-
-msgid "Teaching · Master thesis enquiry"
-msgstr "Lehre · Anfrage Masterarbeit"
 
 msgid "Teaching · Office hours appointment"
 msgstr "Lehre · Sprechstundentermin"
 
 msgid "Teaching · Student assistant application"
 msgstr "Lehre · HiWi-Bewerbung"
+
+msgid "Teaching · Thesis enquiry"
+msgstr "Lehre · Abschlussarbeitsanfrage"
 
 msgid "Telephone"
 msgstr "Telefon"
@@ -780,6 +651,9 @@ msgstr "Der Server verwendet WordPress-Version %1$s. Das Plugin benötigt mindes
 msgid "The setup tour walks you through the recommended settings step by step — start it any time with the button above."
 msgstr "Die Einrichtungs-Tour führt Sie Schritt für Schritt durch die empfohlenen Einstellungen — starten Sie sie jederzeit über die Schaltfläche oben."
 
+msgid "Thesis enquiry"
+msgstr "Anfrage Abschlussarbeit"
+
 msgid "Thesis with external partner"
 msgstr "Abschlussarbeit mit externem Partner"
 
@@ -795,9 +669,6 @@ msgstr "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlich
 msgid "Time"
 msgstr "Uhrzeit"
 
-msgid "Time slot"
-msgstr "Zeitfenster"
-
 msgid "Title"
 msgstr "Titel"
 
@@ -812,9 +683,6 @@ msgstr "Thema / Grund für den Termin"
 
 msgid "Topic ideas or areas of interest"
 msgstr "Themenideen oder Interessensgebiete"
-
-msgid "Topic ideas or research area"
-msgstr "Themenideen oder Forschungsgebiet"
 
 msgid "Topic of the call"
 msgstr "Thema des Rückrufs"
@@ -849,29 +717,17 @@ msgstr "Vegan"
 msgid "Vegetarian"
 msgstr "Vegetarisch"
 
-msgid "Very poor"
-msgstr "Sehr schlecht"
-
 msgid "We received your submission."
 msgstr "Wir haben Ihre Übermittlung erhalten."
 
 msgid "Website"
 msgstr "Website"
 
-msgid "Website / CMS"
-msgstr "Website / CMS"
-
-msgid "Website feedback"
-msgstr "Website-Feedback"
-
 msgid "When a logged-in user submits a form, include name and email in the operator mail."
 msgstr "Name und E-Mail in die Betreiber-Mail aufnehmen, wenn ein angemeldeter Benutzer ein Formular absendet."
 
 msgid "When enabled, name and e-mail of logged-in users are appended to operator mails."
 msgstr "Wenn aktiviert, werden Name und E-Mail angemeldeter Benutzer an Betreiber-Mails angehängt."
-
-msgid "Workshop registration"
-msgstr "Workshop-Anmeldung"
 
 msgid "Year of graduation"
 msgstr "Abschlussjahr"
@@ -881,9 +737,6 @@ msgstr "Ja"
 
 msgid "You do not have enough permissions to do that."
 msgstr "Sie haben nicht die erforderlichen Berechtigungen dafür."
-
-msgid "Your feedback"
-msgstr "Ihr Feedback"
 
 msgid "contact"
 msgstr "Kontakt"

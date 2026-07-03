@@ -21,14 +21,8 @@
       "Abstract submission": [
         "Abstract-Einreichung"
       ],
-      "Accessibility": [
-        "Barrierefreiheit"
-      ],
       "Accessibility requirements": [
         "Anforderungen an Barrierefreiheit"
-      ],
-      "Account / login": [
-        "Konto / Anmeldung"
       ],
       "Add field": [
         "Feld hinzufügen"
@@ -41,12 +35,6 @@
       ],
       "Adjust limits for honeypot, minimum fill time and rate limiting.": [
         "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
-      ],
-      "Advanced": [
-        "Fortgeschritten"
-      ],
-      "Affected page URL": [
-        "Betroffene Seiten-URL"
       ],
       "Affiliation": [
         "Zugehörigkeit"
@@ -81,26 +69,14 @@
       "Available from": [
         "Verfügbar ab"
       ],
-      "Average": [
-        "Durchschnittlich"
-      ],
-      "Bachelor thesis enquiry": [
-        "Anfrage Bachelorarbeit"
-      ],
-      "Basic": [
-        "Grundkenntnisse"
+      "Bachelor": [
+        "Bachelor"
       ],
       "Blank form": [
         "Leeres Formular"
       ],
-      "Broken link": [
-        "Defekter Link"
-      ],
       "Callback request": [
         "Rückrufanfrage"
-      ],
-      "Category": [
-        "Kategorie"
       ],
       "Checkbox": [
         "Kontrollkästchen"
@@ -135,12 +111,6 @@
       "Contact · Press enquiry": [
         "Kontakt · Presseanfrage"
       ],
-      "Contact · Website feedback": [
-        "Kontakt · Website-Feedback"
-      ],
-      "Contact · Website or technical issue": [
-        "Kontakt · Website- oder technisches Problem"
-      ],
       "Continue to the next tab to see the highlighted field.": [
         "Wechseln Sie zur nächsten Registerkarte, um das hervorgehobene Feld zu sehen."
       ],
@@ -152,9 +122,6 @@
       ],
       "Create forms without HTML. You define the fields — design, spam protection and mail delivery are handled automatically.": [
         "Formulare ohne HTML erstellen. Sie definieren die Felder — Design, Spam-Schutz und Mail-Versand werden automatisch übernommen."
-      ],
-      "Current semester": [
-        "Aktuelles Fachsemester"
       ],
       "Date": [
         "Datum"
@@ -171,17 +138,14 @@
       "Default recipient name": [
         "Standard-Empfänger-Name"
       ],
+      "Degree": [
+        "Abschluss"
+      ],
       "Delete selected domains": [
         "Ausgewählte Domains löschen"
       ],
-      "Describe your IT problem. For account issues, please include your IdM user name.": [
-        "Beschreiben Sie Ihr IT-Problem. Bei Kontoproblemen geben Sie bitte Ihren IdM-Benutzernamen an."
-      ],
       "Description": [
         "Beschreibung"
-      ],
-      "Description of the issue": [
-        "Beschreibung des Problems"
       ],
       "Desired internship period": [
         "Gewünschter Praktikumszeitraum"
@@ -192,17 +156,11 @@
       "Dietary requirements": [
         "Ernährungsanforderungen"
       ],
-      "Display or layout": [
-        "Darstellung oder Layout"
-      ],
       "E-mail": [
         "E-Mail"
       ],
       "E-mail address": [
         "E-Mail-Adresse"
-      ],
-      "E-mail address (optional)": [
-        "E-Mail-Adresse (optional)"
       ],
       "Either": [
         "Beides möglich"
@@ -222,20 +180,8 @@
       "Events · Event registration": [
         "Veranstaltungen · Veranstaltungsanmeldung"
       ],
-      "Events · Workshop registration": [
-        "Veranstaltungen · Workshop-Anmeldung"
-      ],
-      "Excellent": [
-        "Ausgezeichnet"
-      ],
-      "Expectations": [
-        "Erwartungen"
-      ],
-      "Express your interest in writing a bachelor thesis with us.": [
-        "Bekunden Sie Ihr Interesse an einer Bachelorarbeit bei uns."
-      ],
-      "Express your interest in writing a master thesis with us.": [
-        "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
+      "Express your interest in writing a thesis with us.": [
+        "Bekunden Sie Ihr Interesse an einer Abschlussarbeit bei uns."
       ],
       "Field": [
         "Feld"
@@ -267,32 +213,14 @@
       "Get in touch with our alumni network.": [
         "Nehmen Sie Kontakt mit unserem Alumni-Netzwerk auf."
       ],
-      "Good": [
-        "Gut"
-      ],
       "Guest lecture": [
         "Gastvortrag"
-      ],
-      "Hardware": [
-        "Hardware"
-      ],
-      "Help us improve this website.": [
-        "Helfen Sie uns, diese Website zu verbessern."
       ],
       "I agree to receive the newsletter and have read the privacy notice.": [
         "Ich möchte den Newsletter erhalten und habe die Datenschutzhinweise gelesen."
       ],
       "I confirm that I have read the participant information.": [
         "Ich bestätige, dass ich die Teilnehmerinformationen gelesen habe."
-      ],
-      "IT support request": [
-        "IT-Support-Anfrage"
-      ],
-      "IT · Support request": [
-        "IT · Support-Anfrage"
-      ],
-      "IdM user name": [
-        "IdM-Benutzername"
       ],
       "If applicable": [
         "Falls zutreffend"
@@ -324,20 +252,11 @@
       "Invalid or too fast submission.": [
         "Ungültige oder zu schnelle Übermittlung."
       ],
-      "Issue type": [
-        "Art des Problems"
-      ],
       "Joint research project": [
         "Gemeinsames Forschungsprojekt"
       ],
       "Keywords": [
         "Schlagwörter"
-      ],
-      "Lab / equipment": [
-        "Labor / Gerät"
-      ],
-      "Lab or equipment reservation": [
-        "Labor- oder Gerätereservierung"
       ],
       "Label": [
         "Beschriftung"
@@ -357,8 +276,8 @@
       "Mail subject prefix": [
         "Betreff-Präfix"
       ],
-      "Master thesis enquiry": [
-        "Anfrage Masterarbeit"
+      "Master": [
+        "Master"
       ],
       "Matriculation number": [
         "Matrikelnummer"
@@ -399,9 +318,6 @@
       "Multiselect": [
         "Mehrfachauswahl"
       ],
-      "Network / VPN": [
-        "Netzwerk / VPN"
-      ],
       "New field": [
         "Neues Feld"
       ],
@@ -413,9 +329,6 @@
       ],
       "No": [
         "Nein"
-      ],
-      "No prior knowledge": [
-        "Keine Vorkenntnisse"
       ],
       "No valid recipient configured.": [
         "Kein gültiger Empfänger konfiguriert."
@@ -483,15 +396,6 @@
       "Other": [
         "Sonstiges"
       ],
-      "Outdated or incorrect content": [
-        "Veralteter oder fehlerhafter Inhalt"
-      ],
-      "Overall rating": [
-        "Gesamtbewertung"
-      ],
-      "Page URL": [
-        "Seiten-URL"
-      ],
       "Paper title": [
         "Titel des Beitrags"
       ],
@@ -522,9 +426,6 @@
       "Plugins: %1$s: %2$s": [
         "Plugins: %1$s: %2$s"
       ],
-      "Poor": [
-        "Schlecht"
-      ],
       "Poster": [
         "Poster"
       ],
@@ -546,14 +447,8 @@
       "Press enquiry": [
         "Presseanfrage"
       ],
-      "Prior knowledge": [
-        "Vorkenntnisse"
-      ],
       "Privacy": [
         "Datenschutz"
-      ],
-      "Problem description": [
-        "Problembeschreibung"
       ],
       "Project description": [
         "Projektbeschreibung"
@@ -572,9 +467,6 @@
       ],
       "Purpose": [
         "Zweck"
-      ],
-      "Purpose of use": [
-        "Verwendungszweck"
       ],
       "RRZE Formular": [
         "RRZE Formular"
@@ -600,23 +492,11 @@
       "Register for the event.": [
         "Melden Sie sich für die Veranstaltung an."
       ],
-      "Register for the workshop.": [
-        "Melden Sie sich für den Workshop an."
-      ],
       "Reject submissions that arrive faster than this threshold.": [
         "Übermittlungen ablehnen, die schneller als dieser Schwellenwert eingehen."
       ],
       "Remove": [
         "Entfernen"
-      ],
-      "Report a technical problem or an error on this website.": [
-        "Melden Sie ein technisches Problem oder einen Fehler auf dieser Website."
-      ],
-      "Report an issue": [
-        "Problem melden"
-      ],
-      "Request a lab space or research equipment.": [
-        "Fordern Sie einen Laborplatz oder Forschungsgeräte an."
       ],
       "Request a room or meeting space.": [
         "Fordern Sie einen Raum oder Besprechungsraum an."
@@ -629,9 +509,6 @@
       ],
       "Research · Cooperation enquiry": [
         "Forschung · Kooperationsanfrage"
-      ],
-      "Research · Lab or equipment reservation": [
-        "Forschung · Labor- oder Gerätereservierung"
       ],
       "Research · Study participant registration": [
         "Forschung · Studienteilnehmer-Anmeldung"
@@ -678,9 +555,6 @@
       "Skills and experience": [
         "Kenntnisse und Erfahrung"
       ],
-      "Software": [
-        "Software"
-      ],
       "Spam Protection": [
         "Spam-Schutz"
       ],
@@ -717,20 +591,17 @@
       "Talk": [
         "Vortrag"
       ],
-      "Teaching · Bachelor thesis enquiry": [
-        "Lehre · Anfrage Bachelorarbeit"
-      ],
       "Teaching · Internship application": [
         "Lehre · Praktikumsbewerbung"
-      ],
-      "Teaching · Master thesis enquiry": [
-        "Lehre · Anfrage Masterarbeit"
       ],
       "Teaching · Office hours appointment": [
         "Lehre · Sprechstundentermin"
       ],
       "Teaching · Student assistant application": [
         "Lehre · HiWi-Bewerbung"
+      ],
+      "Teaching · Thesis enquiry": [
+        "Lehre · Abschlussarbeitsanfrage"
       ],
       "Telephone": [
         "Telefon"
@@ -774,6 +645,9 @@
       "The setup tour walks you through the recommended settings step by step — start it any time with the button above.": [
         "Die Einrichtungs-Tour führt Sie Schritt für Schritt durch die empfohlenen Einstellungen — starten Sie sie jederzeit über die Schaltfläche oben."
       ],
+      "Thesis enquiry": [
+        "Anfrage Abschlussarbeit"
+      ],
       "Thesis with external partner": [
         "Abschlussarbeit mit externem Partner"
       ],
@@ -789,9 +663,6 @@
       "Time": [
         "Uhrzeit"
       ],
-      "Time slot": [
-        "Zeitfenster"
-      ],
       "Title": [
         "Titel"
       ],
@@ -806,9 +677,6 @@
       ],
       "Topic ideas or areas of interest": [
         "Themenideen oder Interessensgebiete"
-      ],
-      "Topic ideas or research area": [
-        "Themenideen oder Forschungsgebiet"
       ],
       "Topic of the call": [
         "Thema des Rückrufs"
@@ -843,29 +711,17 @@
       "Vegetarian": [
         "Vegetarisch"
       ],
-      "Very poor": [
-        "Sehr schlecht"
-      ],
       "We received your submission.": [
         "Wir haben Ihre Übermittlung erhalten."
       ],
       "Website": [
         "Website"
       ],
-      "Website / CMS": [
-        "Website / CMS"
-      ],
-      "Website feedback": [
-        "Website-Feedback"
-      ],
       "When a logged-in user submits a form, include name and email in the operator mail.": [
         "Name und E-Mail in die Betreiber-Mail aufnehmen, wenn ein angemeldeter Benutzer ein Formular absendet."
       ],
       "When enabled, name and e-mail of logged-in users are appended to operator mails.": [
         "Wenn aktiviert, werden Name und E-Mail angemeldeter Benutzer an Betreiber-Mails angehängt."
-      ],
-      "Workshop registration": [
-        "Workshop-Anmeldung"
       ],
       "Year of graduation": [
         "Abschlussjahr"
@@ -875,9 +731,6 @@
       ],
       "You do not have enough permissions to do that.": [
         "Sie haben nicht die erforderlichen Berechtigungen dafür."
-      ],
-      "Your feedback": [
-        "Ihr Feedback"
       ],
       "contact": [
         "Kontakt"

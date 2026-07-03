@@ -72,6 +72,22 @@ export function getRecipientEmailError( recipientEmail ) {
 	return '';
 }
 
+function getEffectiveRecipientEmail( blockAttributes ) {
+	const config = getEditorConfig();
+	const blockEmail = ( blockAttributes?.recipientEmail || '' ).trim();
+
+	if ( blockEmail ) {
+		return blockEmail;
+	}
+
+	const defaultEmail = ( config.defaultRecipientEmail || '' ).trim();
+	if ( defaultEmail ) {
+		return defaultEmail;
+	}
+
+	return ( config.administratorEmail || '' ).trim();
+}
+
 function walkBlocks( blockList, visitor ) {
 	blockList.forEach( ( block ) => {
 		visitor( block );
@@ -94,21 +110,27 @@ function hasFormBlocks( blocks ) {
 	return found;
 }
 
-function hasInvalidRecipientBlocks( blocks ) {
-	const invalidEmails = [];
+function getInvalidRecipientErrors( blocks ) {
+	const errors = [];
 
 	walkBlocks( blocks, ( block ) => {
 		if ( ! BLOCK_NAMES.includes( block.name ) ) {
 			return;
 		}
 
-		const error = getRecipientEmailError( block.attributes?.recipientEmail );
+		const error = getRecipientEmailError(
+			getEffectiveRecipientEmail( block.attributes )
+		);
 		if ( error ) {
-			invalidEmails.push( block.attributes?.recipientEmail || '' );
+			errors.push( error );
 		}
 	} );
 
-	return invalidEmails.length > 0;
+	return errors;
+}
+
+function hasInvalidRecipientBlocks( blocks ) {
+	return getInvalidRecipientErrors( blocks ).length > 0;
 }
 
 function getPrivacyPublishBlockedMessage( config ) {
@@ -207,14 +229,11 @@ function getPublishBlockMessage( blocks, privacyReachable ) {
 		return getPrivacyPublishBlockedMessage( config );
 	}
 
-	if ( privacyReachable !== false && hasInvalidRecipientBlocks( blocks ) ) {
-		return (
-			config.i18n?.publishBlocked ||
-			__(
-				'Publishing is blocked until all form recipient addresses use an allowed domain.',
-				'rrze-formular'
-			)
-		);
+	if ( privacyReachable !== false ) {
+		const recipientErrors = getInvalidRecipientErrors( blocks );
+		if ( recipientErrors.length > 0 ) {
+			return recipientErrors[ 0 ];
+		}
 	}
 
 	return '';
