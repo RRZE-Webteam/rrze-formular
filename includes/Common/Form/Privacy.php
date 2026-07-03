@@ -11,7 +11,14 @@ class Privacy
     public static function isPublished(): bool
     {
         $url = self::getPageUrl();
-        $reachable = self::isUrlReachable($url);
+
+        if (self::isRrzeLegalPrivacyAvailable()) {
+            $reachable = true;
+        } elseif (self::isPublishedPage(self::slug())) {
+            $reachable = true;
+        } else {
+            $reachable = self::isUrlReachable($url);
+        }
 
         /**
          * @param bool $reachable Whether the privacy page URL returns a success response.
@@ -22,6 +29,13 @@ class Privacy
 
     public static function getPageUrl(): string
     {
+        if (class_exists(\RRZE\Legal\TOS\Endpoint::class)) {
+            $url = \RRZE\Legal\TOS\Endpoint::endpointUrl('privacy');
+            if (is_string($url) && $url !== '') {
+                return user_trailingslashit($url);
+            }
+        }
+
         return user_trailingslashit(home_url('/' . self::slug()));
     }
 
@@ -58,16 +72,59 @@ class Privacy
         return str_starts_with($language, 'de') ? 'datenschutz' : 'privacy';
     }
 
+    private static function isRrzeLegalPrivacyAvailable(): bool
+    {
+        if (!class_exists(\RRZE\Legal\TOS\Endpoint::class) || !function_exists('RRZE\Legal\plugin')) {
+            return false;
+        }
+
+        if (function_exists('RRZE\Legal\tos')) {
+            $tos = \RRZE\Legal\tos();
+            if (
+                is_object($tos)
+                && method_exists($tos, 'overwriteEndpoints')
+                && $tos->overwriteEndpoints()
+            ) {
+                $slugs = \RRZE\Legal\TOS\Endpoint::getSlugs();
+                $pagePath = (string) ($slugs['privacy'] ?? self::slug());
+
+                return self::isPublishedPage($pagePath);
+            }
+        }
+
+        $langCode = class_exists(\RRZE\Legal\Locale::class)
+            ? \RRZE\Legal\Locale::getLangCode()
+            : 'en';
+        $basePath = \RRZE\Legal\plugin()->getPath() . 'templates/tos/';
+        $template = $basePath . 'privacy-' . $langCode . '.html';
+
+        if (!is_readable($template)) {
+            $template = $basePath . 'privacy-en.html';
+        }
+
+        return is_readable($template);
+    }
+
+    private static function isPublishedPage(string $slug): bool
+    {
+        $page = get_page_by_path($slug, OBJECT, 'page');
+
+        return $page instanceof \WP_Post && $page->post_status === 'publish';
+    }
+
     private static function isUrlReachable(string $url): bool
     {
         if (!self::isSameSiteUrl($url)) {
             return false;
         }
 
-        $response = wp_remote_head($url, [
+        $requestArgs = [
             'timeout' => 5,
             'redirection' => 3,
-        ]);
+            'sslverify' => apply_filters('https_local_ssl_verify', false),
+        ];
+
+        $response = wp_remote_head($url, $requestArgs);
 
         if (!is_wp_error($response)) {
             $code = (int) wp_remote_retrieve_response_code($response);
@@ -80,10 +137,7 @@ class Privacy
             }
         }
 
-        $response = wp_remote_get($url, [
-            'timeout' => 5,
-            'redirection' => 3,
-        ]);
+        $response = wp_remote_get($url, $requestArgs);
 
         if (is_wp_error($response)) {
             return false;

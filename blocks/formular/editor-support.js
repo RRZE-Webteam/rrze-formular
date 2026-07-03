@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { registerPlugin } from '@wordpress/plugins';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
@@ -126,18 +126,88 @@ function getPrivacyPublishBlockedMessage( config ) {
 	);
 }
 
-function getPublishBlockMessage( blocks ) {
+async function checkPrivacyUrlReachable( privacyUrl ) {
+	if ( ! privacyUrl ) {
+		return false;
+	}
+
+	try {
+		let response = await fetch( privacyUrl, {
+			method: 'HEAD',
+			credentials: 'same-origin',
+		} );
+
+		if ( response.ok ) {
+			return true;
+		}
+
+		if ( response.status !== 405 && response.status !== 501 ) {
+			return false;
+		}
+
+		response = await fetch( privacyUrl, {
+			method: 'GET',
+			credentials: 'same-origin',
+		} );
+
+		return response.ok;
+	} catch {
+		return null;
+	}
+}
+
+function usePrivacyReachable() {
+	const config = getEditorConfig();
+	const privacyUrl = config.privacyUrl || '';
+	const [ reachable, setReachable ] = useState( () => {
+		if ( config.privacyPublished === true ) {
+			return true;
+		}
+
+		return privacyUrl ? null : false;
+	} );
+
+	useEffect( () => {
+		if ( ! privacyUrl ) {
+			setReachable( false );
+			return undefined;
+		}
+
+		let cancelled = false;
+
+		checkPrivacyUrlReachable( privacyUrl ).then( ( result ) => {
+			if ( cancelled ) {
+				return;
+			}
+
+			if ( result === null ) {
+				setReachable( config.privacyPublished === true );
+				return;
+			}
+
+			setReachable( result );
+		} );
+
+		return () => {
+			cancelled = true;
+		};
+	}, [ privacyUrl, config.privacyPublished ] );
+
+	return reachable;
+}
+
+function getPublishBlockMessage( blocks, privacyReachable ) {
 	if ( ! hasFormBlocks( blocks ) ) {
 		return '';
 	}
 
 	const config = getEditorConfig();
 
-	if ( ! config.privacyPublished ) {
+	if ( privacyReachable === false ) {
 		return getPrivacyPublishBlockedMessage( config );
 	}
 
-	if ( hasInvalidRecipientBlocks( blocks ) ) {
+	if ( privacyReachable !== false && hasInvalidRecipientBlocks( blocks ) ) {
 		return (
 			config.i18n?.publishBlocked ||
 			__(
@@ -170,11 +240,12 @@ function SaveNotice() {
 
 function PublishLock() {
 	const blocks = useSelect( ( select ) => select( blockEditorStore ).getBlocks(), [] );
+	const privacyReachable = usePrivacyReachable();
 	const { lockPostSaving, unlockPostSaving } = useDispatch( editorStore );
 	const { createNotice, removeNotice } = useDispatch( 'core/notices' );
 
 	useEffect( () => {
-		const message = getPublishBlockMessage( blocks );
+		const message = getPublishBlockMessage( blocks, privacyReachable );
 
 		if ( message ) {
 			lockPostSaving( LOCK_NAME );
@@ -191,7 +262,7 @@ function PublishLock() {
 			unlockPostSaving( LOCK_NAME );
 			removeNotice( NOTICE_ID );
 		};
-	}, [ blocks, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
+	}, [ blocks, privacyReachable, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
 
 	return null;
 }
