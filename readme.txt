@@ -12,21 +12,23 @@ Simple forms for the block editor with automatic design, spam protection and sec
 
 == Description ==
 
+**RRZE Formular** provides simple forms for the block editor with automatic design, spam protection and secure mail delivery.
+
 RRZE Formular lets editors create forms directly in the block editor. You define the fields and their order; design, markup, spam protection and mail delivery are handled automatically.
 
 = Features =
 
-* Block editor integration (no shortcodes required)
+* Block editor integration
 * Form field types with section headings for longer forms
 * Templates for university websites (contact, teaching, events, research, public relations and more)
 * Fixed sender address and name from the website configuration
-* Recipient resolution: block setting, plugin default, or site administrator e-mail
+* Recipient resolution: block setting → plugin default → site administrator e-mail
 * Optional recipient name for block and default recipient
 * Domain validation for recipient addresses
-* Allowed domains from **RRZE Settings** (network) or from the plugin settings when RRZE Settings is inactive
+* Allowed domains from **RRZE Settings** (network) or from plugin settings when RRZE Settings is inactive
 * Privacy link on every form (`/datenschutz` on German sites, `/privacy` otherwise)
-* Publishing is blocked when a page contains a form block but the required privacy page is not published
-* Publishing is blocked when a block recipient uses a domain that is not allowed
+* Publishing blocked when the required privacy page is not published
+* Publishing blocked when a block recipient uses a domain that is not allowed
 * Optional confirmation e-mails to the submitter
 * Optional CSV attachment with submitted field values in operator e-mails (per block)
 * Invisible anti-spam measures (honeypot, time token, rate limiting)
@@ -62,13 +64,13 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 = When are confirmation mails sent? =
 
-When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the allowed confirmation domains (or the general allowed recipient domains when no separate list is set). If no domains are configured anywhere, confirmation mails are never sent.
+When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains**. If no domains are configured anywhere, confirmation mails are never sent.
 
-Confirmation mails contain only a short receipt — not submitted field values — and are rate-limited per submitter address.
+Confirmation mails contain only a short receipt (form title, site link, date) — not submitted field values — and are rate-limited per submitter address.
 
 = When is a CSV file attached? =
 
-When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second (RFC 4180, comma-separated). The file is sent only with the operator mail, not with confirmation mails.
+When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second. The file is sent only with the operator mail, not with confirmation mails.
 
 = Why can I not publish a page with a form? =
 
@@ -80,18 +82,33 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 
 = How is the submit endpoint protected? =
 
-`POST /wp-json/rrze-formular/v1/submit` is intentionally public so anonymous visitors can send forms. A WordPress REST nonce (`wp_rest`) is not used or required.
+`POST /wp-json/rrze-formular/v1/submit` is intentionally public so anonymous visitors can send forms. A WordPress REST nonce (`wp_rest`) is **not** used or required.
 
-Protection is enforced server-side: signed form configuration, one-time submission token (issued via REST, not in cached HTML), minimum submit delay, honeypot, rate limiting, and field validation. The REST route validates the request shape before processing.
+Protection is enforced server-side in `FormHandler`:
+
+* **Signed form configuration** (`formConfig` + `formConfigSig`) — only fields defined in the block can be submitted
+* **One-time submission token** (`token`) — issued via `POST /wp-json/rrze-formular/v1/token` when the page loads in the browser (not during HTML rendering), HMAC-signed, bound to the form config, atomically consumed before mail delivery
+* **Minimum submit delay** — rejects submissions faster than the configured threshold
+* **Honeypot** (`website`) — must stay empty
+* **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
+* **Confirmation domain allowlist** — confirmation mails are only sent when allowed domains are configured; submitted content is not included in confirmation mails
+* **Field validation** — required fields, e-mail format, allowed recipient domains
+
+The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.
 
 == Hooks ==
 
-* `rrze_formular_defaults` – plugin settings structure
-* `rrze_formular_allowed_domains` – allowed recipient domains
+* `rrze_formular_defaults` – Plugin settings structure
+* `rrze_formular_allowed_domains` – Allowed recipient domains
 * `rrze_formular_sso_user_data` – SSO user data for operator mails
-* `rrze_formular_resolved_recipient` – resolved recipient after block/settings/default
-* `rrze_formular_templates` – form templates in the block editor
-* `rrze_formular_token_ttl` – anti-spam token lifetime
-* `rrze_formular_allowed_confirmation_email` – whether a confirmation mail may be sent
-* `rrze_formular_privacy_page_reachable` – override privacy page availability check
+* `rrze_formular_resolved_recipient` – Resolved recipient after block/settings/default
+* `rrze_formular_templates` – Form templates in the block editor
+* `rrze_formular_token_ttl` – Anti-spam token lifetime
+* `rrze_formular_allowed_confirmation_email` – Whether a confirmation mail may be sent (after domain check)
+* `rrze_formular_confirmation_domains` – Allowed domains for confirmation mails
+* `rrze_formular_privacy_page_reachable` – Override privacy page availability check
 
+== Links ==
+
+* [Plugin on GitHub](https://github.com/RRZE-Webteam/rrze-formular)
+* [Documentation](https://www.wp.rrze.fau.de/)

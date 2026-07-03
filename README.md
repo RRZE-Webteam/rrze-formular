@@ -11,13 +11,11 @@
 
 **RRZE Formular** provides simple forms for the block editor with automatic design, spam protection and secure mail delivery.
 
-Requires WordPress 6.8+ and PHP 8.2+.
-
 RRZE Formular lets editors create forms directly in the block editor. You define the fields and their order; design, markup, spam protection and mail delivery are handled automatically.
 
 ### Features
 
-- Block editor integration (no shortcodes required)
+- Block editor integration
 - Form field types with section headings for longer forms
 - Templates for university websites (contact, teaching, events, research, public relations and more)
 - Fixed sender address and name from the website configuration
@@ -63,13 +61,13 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 ### When are confirmation mails sent?
 
-When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains** (or the general allowed recipient domains when no separate list is set). If no domains are configured anywhere, confirmation mails are never sent.
+When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains**. If no domains are configured anywhere, confirmation mails are never sent.
 
 Confirmation mails contain only a short receipt (form title, site link, date) — not submitted field values — and are rate-limited per submitter address.
 
 ### When is a CSV file attached?
 
-When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second (RFC 4180, comma-separated). The file is sent only with the operator mail, not with confirmation mails.
+When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second. The file is sent only with the operator mail, not with confirmation mails.
 
 ### Why can I not publish a page with a form?
 
