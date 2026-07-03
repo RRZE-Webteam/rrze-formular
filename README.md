@@ -72,6 +72,21 @@ Publishing is blocked when either the required privacy page is missing or not pu
 
 If a user is logged in, name and e-mail can be appended to the operator mail. External SSO systems can supply data via the `rrze_formular_sso_user_data` filter.
 
+### How is the submit endpoint protected?
+
+`POST /wp-json/rrze-formular/v1/submit` is intentionally public so anonymous visitors can send forms. A WordPress REST nonce (`wp_rest`) is **not** used or required.
+
+Protection is enforced server-side in `FormHandler`:
+
+- **Signed form configuration** (`formConfig` + `formConfigSig`) — only fields defined in the block can be submitted
+- **One-time submission token** (`token`) — HMAC-signed, bound to the form config, consumed after use
+- **Minimum submit delay** — rejects submissions faster than the configured threshold
+- **Honeypot** (`website`) — must stay empty
+- **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
+- **Field validation** — required fields, e-mail format, allowed recipient domains
+
+The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.
+
 ## Hooks
 
 | Hook | Purpose |
@@ -88,4 +103,4 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 ## Links
 
 - [Plugin on GitHub](https://github.com/RRZE-Webteam/rrze-formular)
-- [RRZE Webteam](https://www.wp.rrze.fau.de/)
+- [Documentation](https://www.wp.rrze.fau.de/)

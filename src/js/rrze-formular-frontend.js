@@ -48,7 +48,6 @@ function initFormular(root) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'X-WP-Nonce': RRZEFormular.nonce,
 				},
 				body: JSON.stringify(payload),
 			});
