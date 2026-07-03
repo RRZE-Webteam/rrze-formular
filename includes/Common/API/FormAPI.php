@@ -278,6 +278,7 @@ class FormAPI
             return false;
         }
 
-        return (bool) preg_match('/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/i', $value);
+        // Accept BCP 47 (de-DE) and WordPress locale format (de_DE).
+        return (bool) preg_match('/^[a-z]{2,3}([_-][a-z0-9]{2,8})*$/i', $value);
     }
 }
