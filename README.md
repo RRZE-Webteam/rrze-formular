@@ -1,12 +1,17 @@
 # RRZE Formular
 
-Simple forms for the block editor with automatic design, spam protection and secure mail delivery.
+[![Version](https://img.shields.io/github/package-json/v/rrze-webteam/rrze-formular/main?label=Version)](https://github.com/RRZE-Webteam/rrze-formular)
+[![Release Version](https://img.shields.io/github/v/release/rrze-webteam/rrze-formular?label=Release+Version)](https://github.com/RRZE-Webteam/rrze-formular/releases/)
+[![GitHub License](https://img.shields.io/github/license/rrze-webteam/rrze-formular)](https://github.com/RRZE-Webteam/rrze-formular)
+[![GitHub issues](https://img.shields.io/github/issues/rrze-webteam/rrze-formular)](https://github.com/RRZE-Webteam/rrze-formular/issues)
 
-**Requires WordPress:** 6.8+  
-**Requires PHP:** 8.2+  
-**License:** [GPLv3 or later](https://www.gnu.org/licenses/gpl-3.0.html)
+---
 
-## Description
+## Overview
+
+**RRZE Formular** provides simple forms for the block editor with automatic design, spam protection and secure mail delivery.
+
+Requires WordPress 6.8+ and PHP 8.2+.
 
 RRZE Formular lets editors create forms directly in the block editor. You define the fields and their order; design, markup, spam protection and mail delivery are handled automatically.
 
