@@ -32,9 +32,10 @@ class FormLocale
 
     public static function resolveLocale(array $payload = []): string
     {
-        $requested = sanitize_text_field((string) ($payload['locale'] ?? ''));
+        $requested = sanitize_text_field((string) ($payload['formLocale'] ?? $payload['locale'] ?? ''));
 
         if ($requested !== '') {
+            $requested = self::normalizeLanguageTag($requested);
             $mapped = self::mapLanguageTagToLocale($requested);
             if ($mapped !== '') {
                 return $mapped;
@@ -42,6 +43,22 @@ class FormLocale
         }
 
         return self::getSiteLocale();
+    }
+
+    private static function normalizeLanguageTag(string $tag): string
+    {
+        $tag = trim($tag);
+        if ($tag === '') {
+            return '';
+        }
+
+        $parts = preg_split('/[,;]/', $tag);
+        $tag = trim((string) ($parts[0] ?? $tag));
+
+        // Drop Unicode extensions such as -u-ca-gregorian.
+        $tag = preg_replace('/-u-.*/i', '', $tag) ?? $tag;
+
+        return trim($tag);
     }
 
     public static function getSiteLocale(): string
