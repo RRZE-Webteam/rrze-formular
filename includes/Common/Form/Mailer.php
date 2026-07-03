@@ -334,12 +334,16 @@ class Mailer
 
             if ($normalizedAttachments !== [] && method_exists($phpmailer, 'addStringAttachment')) {
                 foreach ($normalizedAttachments as $attachment) {
-                    $phpmailer->addStringAttachment(
-                        $attachment['content'],
-                        $attachment['name'],
-                        'base64',
-                        $attachment['mime']
-                    );
+                    try {
+                        $phpmailer->addStringAttachment(
+                            $attachment['content'],
+                            $attachment['name'],
+                            'base64',
+                            $attachment['mime']
+                        );
+                    } catch (\Throwable) {
+                        continue;
+                    }
                 }
             }
 

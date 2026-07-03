@@ -48,7 +48,7 @@ namespace RRZE\Formular\Common\Form {
     }
 
     $filename = SubmissionCsv::filename('Kontakt');
-    if ($filename === '' || !str_ends_with($filename, '.csv')) {
+    if ($filename === '' || !str_ends_with(strtolower($filename), '.csv')) {
         fwrite(STDERR, "FAIL: invalid filename: {$filename}\n");
         exit(1);
     }

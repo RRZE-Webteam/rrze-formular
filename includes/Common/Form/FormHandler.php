@@ -98,14 +98,18 @@ class FormHandler
         $stringAttachments = [];
 
         if (!empty($trustedConfig['attachCsv'])) {
-            $csvContent = SubmissionCsv::build($this->buildSubmissionRows($inputFields, $sanitized));
+            try {
+                $csvContent = SubmissionCsv::build($this->buildSubmissionRows($inputFields, $sanitized));
 
-            if ($csvContent !== '') {
-                $stringAttachments[] = [
-                    'content' => $csvContent,
-                    'name' => SubmissionCsv::filename((string) ($attributes['formTitle'] ?? '')),
-                    'mime' => 'text/csv',
-                ];
+                if ($csvContent !== '') {
+                    $stringAttachments[] = [
+                        'content' => $csvContent,
+                        'name' => SubmissionCsv::filename((string) ($attributes['formTitle'] ?? '')),
+                        'mime' => 'text/csv',
+                    ];
+                }
+            } catch (\Throwable) {
+                // CSV must not block form delivery.
             }
         }
 

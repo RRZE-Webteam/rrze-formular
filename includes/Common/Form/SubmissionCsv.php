@@ -11,23 +11,21 @@ class SubmissionCsv
      */
     public static function build(array $rows): string
     {
-        $handle = fopen('php://temp', 'r+');
-        if ($handle === false) {
-            return '';
-        }
-
-        fwrite($handle, "\xEF\xBB\xBF");
-        fputcsv($handle, [__('Field', 'rrze-formular'), __('Value', 'rrze-formular')], ',', '"', '\\');
+        $lines = [
+            self::formatRow([
+                __('Field', 'rrze-formular'),
+                __('Value', 'rrze-formular'),
+            ]),
+        ];
 
         foreach ($rows as $row) {
-            fputcsv($handle, [(string) ($row[0] ?? ''), (string) ($row[1] ?? '')], ',', '"', '\\');
+            $lines[] = self::formatRow([
+                (string) ($row[0] ?? ''),
+                (string) ($row[1] ?? ''),
+            ]);
         }
 
-        rewind($handle);
-        $content = stream_get_contents($handle);
-        fclose($handle);
-
-        return is_string($content) ? $content : '';
+        return "\xEF\xBB\xBF" . implode("\n", $lines);
     }
 
     public static function filename(string $formTitle): string
@@ -37,31 +35,36 @@ class SubmissionCsv
             $slug = 'formular';
         }
 
-        return sanitize_file_name(wp_date('Y-m-d-His') . '-' . $slug . '.csv');
+        $filename = wp_date('Y-m-d-His') . '-' . $slug . '.csv';
+        $filename = sanitize_file_name($filename);
+
+        if ($filename === '' || !str_ends_with(strtolower($filename), '.csv')) {
+            $filename = wp_date('Y-m-d-His') . '-formular.csv';
+            $filename = sanitize_file_name($filename);
+        }
+
+        return $filename !== '' ? $filename : 'formular.csv';
     }
 
-    public static function writeTempFile(string $content, string $filename): ?string
+    /**
+     * @param list<string> $fields
+     */
+    private static function formatRow(array $fields): string
     {
-        if ($content === '') {
-            return null;
+        return implode(',', array_map([self::class, 'escapeField'], $fields));
+    }
+
+    private static function escapeField(string $value): string
+    {
+        if (
+            !str_contains($value, '"')
+            && !str_contains($value, ',')
+            && !str_contains($value, "\n")
+            && !str_contains($value, "\r")
+        ) {
+            return $value;
         }
 
-        $filename = sanitize_file_name($filename);
-        if ($filename === '') {
-            return null;
-        }
-
-        $path = wp_tempnam($filename);
-        if ($path === false) {
-            return null;
-        }
-
-        if (file_put_contents($path, $content) === false) {
-            wp_delete_file($path);
-
-            return null;
-        }
-
-        return $path;
+        return '"' . str_replace('"', '""', $value) . '"';
     }
 }
