@@ -2,7 +2,9 @@
 
 namespace RRZE\Formular\Common\API;
 
+use RRZE\Formular\Common\Form\FormConfigAuth;
 use RRZE\Formular\Common\Form\FormHandler;
+use RRZE\Formular\Common\Form\SpamProtection;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -10,11 +12,14 @@ use WP_REST_Server;
 defined('ABSPATH') || exit;
 
 /**
- * Public REST endpoint for form submissions.
+ * Public REST endpoints for form submissions and token issuance.
  *
- * The route is intentionally accessible without login. Protection is enforced
- * server-side in FormHandler via signed form configuration, one-time submission
- * tokens, honeypot, minimum submit delay and rate limiting — not via wp_rest nonce.
+ * Routes are intentionally accessible without login. Protection is enforced
+ * server-side via signed form configuration, one-time submission tokens,
+ * honeypot, minimum submit delay and rate limiting — not via wp_rest nonce.
+ *
+ * Submission tokens are issued via REST (not during HTML rendering) so cached
+ * pages do not share one-time nonces across visitors.
  */
 class FormAPI
 {
@@ -25,6 +30,13 @@ class FormAPI
 
     public function registerRoutes(): void
     {
+        register_rest_route('rrze-formular/v1', '/token', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [$this, 'issueToken'],
+            'permission_callback' => [$this, 'allowPublicSubmit'],
+            'args' => $this->getTokenArgs(),
+        ]);
+
         register_rest_route('rrze-formular/v1', '/submit', [
             'methods' => WP_REST_Server::CREATABLE,
             'callback' => [$this, 'submit'],
@@ -39,6 +51,91 @@ class FormAPI
     public function allowPublicSubmit(): bool
     {
         return true;
+    }
+
+    public function issueToken(WP_REST_Request $request): WP_REST_Response
+    {
+        $trustedConfig = $this->resolveTrustedConfig($request);
+        if ($trustedConfig === null) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => __('Invalid form configuration.', 'rrze-formular'),
+            ], 400);
+        }
+
+        $formId = sanitize_key((string) $request->get_param('formId'));
+        if ($formId === '') {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => __('Invalid form configuration.', 'rrze-formular'),
+            ], 400);
+        }
+
+        $tokenData = SpamProtection::createToken(
+            $formId,
+            FormConfigAuth::configHash($trustedConfig),
+            max(0, (int) $request->get_param('postId'))
+        );
+
+        return new WP_REST_Response([
+            'success' => true,
+            'token' => $tokenData['token'],
+            'issuedAt' => $tokenData['issuedAt'],
+        ], 200);
+    }
+
+    public function submit(WP_REST_Request $request): WP_REST_Response
+    {
+        $payload = [
+            'formConfig' => $request->get_param('formConfig'),
+            'formConfigSig' => $request->get_param('formConfigSig'),
+            'values' => $request->get_param('values'),
+            'website' => $request->get_param('website'),
+            'token' => $request->get_param('token'),
+            'pageUrl' => $request->get_param('pageUrl'),
+            'locale' => $request->get_param('locale'),
+        ];
+
+        $handler = new FormHandler();
+        $result = $handler->handle($payload);
+        $status = (int) ($result['status'] ?? 200);
+
+        unset($result['status']);
+
+        return new WP_REST_Response($result, $status);
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function getTokenArgs(): array
+    {
+        return [
+            'formConfig' => [
+                'required' => true,
+                'type' => 'string',
+                'sanitize_callback' => [$this, 'sanitizeStringParam'],
+                'validate_callback' => [$this, 'validateNonEmptyString'],
+            ],
+            'formConfigSig' => [
+                'required' => true,
+                'type' => 'string',
+                'sanitize_callback' => [$this, 'sanitizeStringParam'],
+                'validate_callback' => [$this, 'validateNonEmptyString'],
+            ],
+            'formId' => [
+                'required' => true,
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_key',
+                'validate_callback' => [$this, 'validateNonEmptyString'],
+            ],
+            'postId' => [
+                'required' => false,
+                'type' => 'integer',
+                'default' => 0,
+                'sanitize_callback' => 'absint',
+            ],
+        ];
     }
 
     /**
@@ -93,25 +190,15 @@ class FormAPI
         ];
     }
 
-    public function submit(WP_REST_Request $request): WP_REST_Response
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolveTrustedConfig(WP_REST_Request $request): ?array
     {
-        $payload = [
-            'formConfig' => $request->get_param('formConfig'),
-            'formConfigSig' => $request->get_param('formConfigSig'),
-            'values' => $request->get_param('values'),
-            'website' => $request->get_param('website'),
-            'token' => $request->get_param('token'),
-            'pageUrl' => $request->get_param('pageUrl'),
-            'locale' => $request->get_param('locale'),
-        ];
-
-        $handler = new FormHandler();
-        $result = $handler->handle($payload);
-        $status = (int) ($result['status'] ?? 200);
-
-        unset($result['status']);
-
-        return new WP_REST_Response($result, $status);
+        return FormConfigAuth::verify(
+            (string) $request->get_param('formConfig'),
+            (string) $request->get_param('formConfigSig')
+        );
     }
 
     public function sanitizeStringParam(mixed $value): string

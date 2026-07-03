@@ -40,29 +40,14 @@ class SpamProtection
     }
 
     /**
-     * @return array<string, mixed>|null Decoded token payload when valid.
+     * Validate token signature, timing and binding without consuming the nonce.
+     *
+     * @return array<string, mixed>|null
      */
-    public static function verifyToken(string $token, string $configHash, string $pageUrl = ''): ?array
+    public static function validateTokenPayload(string $token, string $configHash, string $pageUrl = ''): ?array
     {
-        $token = trim($token);
-        if ($token === '') {
-            return null;
-        }
-
-        $decoded = base64_decode($token, true);
-        if ($decoded === false || !str_contains($decoded, '.')) {
-            return null;
-        }
-
-        [$payload, $signature] = explode('.', $decoded, 2);
-        $expected = hash_hmac('sha256', $payload, wp_salt('rrze-formular-token'));
-
-        if (!hash_equals($expected, $signature)) {
-            return null;
-        }
-
-        $data = json_decode($payload, true);
-        if (!is_array($data)) {
+        $data = self::decodeToken($token);
+        if ($data === null) {
             return null;
         }
 
@@ -92,10 +77,6 @@ class SpamProtection
             return null;
         }
 
-        if (!self::isNonceValid($nonce)) {
-            return null;
-        }
-
         if ($tokenPostId > 0) {
             $submissionUrl = Mailer::resolveSubmissionUrl($pageUrl);
             if ($submissionUrl !== '') {
@@ -110,16 +91,40 @@ class SpamProtection
     }
 
     /**
+     * @return array<string, mixed>|null Decoded token payload when valid and nonce unused.
+     */
+    public static function verifyToken(string $token, string $configHash, string $pageUrl = ''): ?array
+    {
+        $data = self::validateTokenPayload($token, $configHash, $pageUrl);
+        if ($data === null) {
+            return null;
+        }
+
+        $nonce = (string) ($data['nonce'] ?? '');
+        if ($nonce === '' || !self::isNonceValid($nonce)) {
+            return null;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Atomically consume a one-time nonce before processing a submission.
+     */
+    public static function claimTokenNonce(string $nonce): bool
+    {
+        $nonce = trim($nonce);
+
+        return $nonce !== '' && self::deleteTransientIfExists(self::getNonceKey($nonce));
+    }
+
+    /**
      * @param array<string, mixed> $tokenData
+     * @deprecated Use claimTokenNonce() before mail delivery.
      */
     public static function consumeToken(array $tokenData): void
     {
-        $nonce = (string) ($tokenData['nonce'] ?? '');
-        if ($nonce === '') {
-            return;
-        }
-
-        delete_transient(self::getNonceKey($nonce));
+        self::claimTokenNonce((string) ($tokenData['nonce'] ?? ''));
     }
 
     public static function checkHoneypot(string $value): bool
@@ -127,21 +132,39 @@ class SpamProtection
         return trim($value) === '';
     }
 
+    public static function tryAcquireSubmissionSlot(): bool
+    {
+        $options = get_option('rrze-formular', []);
+        $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
+
+        return self::tryIncrementCounter(self::getRateLimitKey(), HOUR_IN_SECONDS, $limit);
+    }
+
     public static function isWithinRateLimit(): bool
     {
         $options = get_option('rrze-formular', []);
         $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
         $key = self::getRateLimitKey();
-        $count = (int) get_transient($key);
 
-        return $count < $limit;
+        return self::getCounterValue($key) < $limit;
     }
 
     public static function recordSubmission(): void
     {
-        $key = self::getRateLimitKey();
-        $count = (int) get_transient($key);
-        set_transient($key, $count + 1, HOUR_IN_SECONDS);
+        self::tryAcquireSubmissionSlot();
+    }
+
+    public static function tryAcquireConfirmationSlot(string $email): bool
+    {
+        $email = sanitize_email($email);
+        if (!is_email($email)) {
+            return false;
+        }
+
+        $options = get_option('rrze-formular', []);
+        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
+
+        return self::tryIncrementCounter(self::getConfirmationRateLimitKey($email), HOUR_IN_SECONDS, $limit);
     }
 
     public static function isWithinConfirmationRateLimit(string $email): bool
@@ -153,22 +176,40 @@ class SpamProtection
 
         $options = get_option('rrze-formular', []);
         $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
-        $key = self::getConfirmationRateLimitKey($email);
-        $count = (int) get_transient($key);
 
-        return $count < $limit;
+        return self::getCounterValue(self::getConfirmationRateLimitKey($email)) < $limit;
     }
 
     public static function recordConfirmationSend(string $email): void
     {
-        $email = sanitize_email($email);
-        if (!is_email($email)) {
-            return;
+        self::tryAcquireConfirmationSlot($email);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function decodeToken(string $token): ?array
+    {
+        $token = trim($token);
+        if ($token === '') {
+            return null;
         }
 
-        $key = self::getConfirmationRateLimitKey($email);
-        $count = (int) get_transient($key);
-        set_transient($key, $count + 1, HOUR_IN_SECONDS);
+        $decoded = base64_decode($token, true);
+        if ($decoded === false || !str_contains($decoded, '.')) {
+            return null;
+        }
+
+        [$payload, $signature] = explode('.', $decoded, 2);
+        $expected = hash_hmac('sha256', $payload, wp_salt('rrze-formular-token'));
+
+        if (!hash_equals($expected, $signature)) {
+            return null;
+        }
+
+        $data = json_decode($payload, true);
+
+        return is_array($data) ? $data : null;
     }
 
     private static function storeNonce(string $nonce, int $expiresAt): void
@@ -180,6 +221,63 @@ class SpamProtection
     private static function isNonceValid(string $nonce): bool
     {
         return get_transient(self::getNonceKey($nonce)) !== false;
+    }
+
+    private static function deleteTransientIfExists(string $transient): bool
+    {
+        global $wpdb;
+
+        $option = '_transient_' . $transient;
+        $deleted = (int) $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$wpdb->options} WHERE option_name = %s",
+            $option
+        ));
+
+        if ($deleted <= 0) {
+            return false;
+        }
+
+        $timeout = '_transient_timeout_' . $transient;
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$wpdb->options} WHERE option_name = %s",
+            $timeout
+        ));
+
+        wp_cache_delete($option, 'options');
+        wp_cache_delete($timeout, 'options');
+        wp_cache_delete($transient, 'transient');
+
+        return true;
+    }
+
+    private static function tryIncrementCounter(string $storageKey, int $ttl, int $limit): bool
+    {
+        global $wpdb;
+
+        $name = 'rrze_fw_cnt_' . md5($storageKey);
+        $expiresName = $name . '_exp';
+        $now = time();
+        $expires = (int) get_option($expiresName, 0);
+
+        if ($expires <= $now) {
+            delete_option($name);
+            update_option($expiresName, (string) ($now + $ttl), false);
+        }
+
+        $wpdb->query($wpdb->prepare(
+            "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, '1', 'no')
+             ON DUPLICATE KEY UPDATE option_value = CAST(option_value AS UNSIGNED) + 1",
+            $name
+        ));
+
+        return self::getCounterValue($storageKey) <= $limit;
+    }
+
+    private static function getCounterValue(string $storageKey): int
+    {
+        $name = 'rrze_fw_cnt_' . md5($storageKey);
+
+        return max(0, (int) get_option($name, 0));
     }
 
     private static function getNonceKey(string $nonce): string
@@ -200,6 +298,7 @@ class SpamProtection
     private static function getClientIp(): string
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
         return sanitize_text_field((string) $ip);
     }
 }

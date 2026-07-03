@@ -81,7 +81,7 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 Protection is enforced server-side in `FormHandler`:
 
 - **Signed form configuration** (`formConfig` + `formConfigSig`) — only fields defined in the block can be submitted
-- **One-time submission token** (`token`) — HMAC-signed, bound to the form config, consumed after use
+- **One-time submission token** (`token`) — issued via `POST /wp-json/rrze-formular/v1/token` when the page loads in the browser (not during HTML rendering), HMAC-signed, bound to the form config, atomically consumed before mail delivery
 - **Minimum submit delay** — rejects submissions faster than the configured threshold
 - **Honeypot** (`website`) — must stay empty
 - **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)

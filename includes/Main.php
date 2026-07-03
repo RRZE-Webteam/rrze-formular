@@ -56,6 +56,7 @@ class Main
 
         wp_localize_script('rrze-formular-frontend', 'RRZEFormular', [
             'restUrl' => rest_url('rrze-formular/v1/submit'),
+            'tokenUrl' => rest_url('rrze-formular/v1/token'),
             'siteLocale' => FormLocale::getSiteLocale(),
             'i18n' => [
                 'submitting' => __('Sending…', 'rrze-formular'),

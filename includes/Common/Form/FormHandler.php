@@ -38,10 +38,6 @@ class FormHandler
             return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
         }
 
-        if (!SpamProtection::isWithinRateLimit()) {
-            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
-        }
-
         $attributes = $this->attributesFromTrustedConfig($trustedConfig);
         $fields = FieldTypes::localizeFieldsForDisplay($trustedConfig['fields']);
         $attributes['formTitle'] = FieldTypes::localizeDisplayString($attributes['formTitle']);
@@ -72,6 +68,14 @@ class FormHandler
         );
         if ($recipientError !== null) {
             return $this->error($recipientError, 422);
+        }
+
+        if (!SpamProtection::claimTokenNonce((string) ($tokenData['nonce'] ?? ''))) {
+            return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
+        }
+
+        if (!SpamProtection::tryAcquireSubmissionSlot()) {
+            return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
 
         $options = Mailer::getOptions();
@@ -127,12 +131,9 @@ class FormHandler
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
 
-        SpamProtection::recordSubmission();
-        SpamProtection::consumeToken($tokenData);
-
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         if ($sendConfirmation && $submitterEmail !== '') {
-            if (!SpamProtection::isWithinConfirmationRateLimit($submitterEmail)) {
+            if (!SpamProtection::tryAcquireConfirmationSlot($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
             }
 
@@ -145,8 +146,8 @@ class FormHandler
                 $submitterName
             );
 
-            if ($confirmationSent) {
-                SpamProtection::recordConfirmationSend($submitterEmail);
+            if (!$confirmationSent) {
+                return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
             }
         }
 

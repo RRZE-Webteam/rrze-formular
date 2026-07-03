@@ -4,7 +4,7 @@ Tags: form, contact, block, mail, spam-protection
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -82,7 +82,7 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 
 `POST /wp-json/rrze-formular/v1/submit` is intentionally public so anonymous visitors can send forms. A WordPress REST nonce (`wp_rest`) is not used or required.
 
-Protection is enforced server-side: signed form configuration, one-time submission token, minimum submit delay, honeypot, rate limiting, and field validation. The REST route validates the request shape before processing.
+Protection is enforced server-side: signed form configuration, one-time submission token (issued via REST, not in cached HTML), minimum submit delay, honeypot, rate limiting, and field validation. The REST route validates the request shape before processing.
 
 == Hooks ==
 
