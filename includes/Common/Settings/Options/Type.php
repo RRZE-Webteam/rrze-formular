@@ -146,7 +146,7 @@ abstract class Type
      */
     public function getLabel()
     {
-        return esc_attr($this->getArg('label'));
+        return esc_html((string) $this->getArg('label', ''));
     }
 
     /**

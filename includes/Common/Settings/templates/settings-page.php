@@ -19,14 +19,14 @@ $errors = $settings->errors->hasErrors();
     <div id="rrze-formular-guided-tour-root"></div>
 
     <?php if ($flash) { ?>
-        <div class="notice notice-<?php echo $flash['status']; ?> is-dismissible">
-            <p><?php echo $flash['message']; ?></p>
+        <div class="notice notice-<?php echo esc_attr((string) $flash['status']); ?> is-dismissible">
+            <p><?php echo esc_html((string) $flash['message']); ?></p>
         </div>
     <?php } ?>
 
     <?php if ($errors) { ?>
         <div class="notice notice-error is-dismissible">
-            <p><?php _e('Settings issues detected.', 'rrze-formular'); ?></p>
+            <p><?php esc_html_e('Settings issues detected.', 'rrze-formular'); ?></p>
         </div>
     <?php } ?>
 

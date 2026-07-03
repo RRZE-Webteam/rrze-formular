@@ -4,7 +4,7 @@ namespace RRZE\Formular\Common\Settings;
 
 defined('ABSPATH') || exit;
 ?>
-<form method="post" action="<?php echo $settings->getFullUrl(); ?>">
+<form method="post" action="<?php echo esc_url($settings->getFullUrl()); ?>">
     <?php Template::include('section-menu', compact('settings')); ?>
 
     <?php foreach ($settings->getActiveTab()->getActiveSections() as $section) { ?>

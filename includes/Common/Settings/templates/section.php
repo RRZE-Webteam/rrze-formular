@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 ?>
 
 <?php if ($section->description) { ?>
-    <div><?php echo $section->description; ?></div>
+    <div><?php echo esc_html((string) $section->description); ?></div>
 <?php } ?>
 
 <table class="form-table">
