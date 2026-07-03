@@ -99,7 +99,8 @@ class FormHandler
 
         if (!empty($trustedConfig['attachCsv'])) {
             try {
-                $csvContent = SubmissionCsv::build($this->buildSubmissionRows($inputFields, $sanitized));
+                $columns = $this->buildSubmissionColumns($inputFields, $sanitized);
+                $csvContent = SubmissionCsv::build($columns['headers'], $columns['values']);
 
                 if ($csvContent !== '') {
                     $stringAttachments[] = [
@@ -272,17 +273,23 @@ class FormHandler
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
     }
 
-    private function buildSubmissionRows(array $fields, array $values): array
+    /**
+     * @return array{headers: list<string>, values: list<string>}
+     */
+    private function buildSubmissionColumns(array $fields, array $values): array
     {
-        $rows = [];
+        $headers = [];
+        $columnValues = [];
 
         foreach ($fields as $field) {
-            $value = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
-            $label = $field['label'] !== '' ? $field['label'] : $field['id'];
-            $rows[] = [$label, $value];
+            $headers[] = $field['label'] !== '' ? (string) $field['label'] : (string) $field['id'];
+            $columnValues[] = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
         }
 
-        return $rows;
+        return [
+            'headers' => $headers,
+            'values' => $columnValues,
+        ];
     }
 
     private function buildMailBody(array $fields, array $values, ?array $ssoData): string

@@ -6,22 +6,28 @@ defined('ABSPATH') || exit;
 
 class SubmissionCsv
 {
-    /**
-     * @param list<array{0: string, 1: string}> $rows Label/value pairs in field order.
-     */
-    public static function build(array $rows): string
-    {
-        $headers = [];
-        $values = [];
+    private const DELIMITER = ',';
 
-        foreach ($rows as $row) {
-            $headers[] = (string) ($row[0] ?? '');
-            $values[] = (string) ($row[1] ?? '');
+    /**
+     * @param list<string> $headers Field labels (row 1).
+     * @param list<string> $values Submitted values in the same order (row 2).
+     */
+    public static function build(array $headers, array $values): string
+    {
+        $count = count($headers);
+        if ($count === 0) {
+            return '';
+        }
+
+        if (count($values) < $count) {
+            $values = array_pad($values, $count, '');
+        } elseif (count($values) > $count) {
+            $values = array_slice($values, 0, $count);
         }
 
         return "\xEF\xBB\xBF"
             . self::formatRow($headers)
-            . "\n"
+            . "\r\n"
             . self::formatRow($values);
     }
 
@@ -48,14 +54,14 @@ class SubmissionCsv
      */
     private static function formatRow(array $fields): string
     {
-        return implode(',', array_map([self::class, 'escapeField'], $fields));
+        return implode(self::DELIMITER, array_map([self::class, 'escapeField'], $fields));
     }
 
     private static function escapeField(string $value): string
     {
         if (
             !str_contains($value, '"')
-            && !str_contains($value, ',')
+            && !str_contains($value, self::DELIMITER)
             && !str_contains($value, "\n")
             && !str_contains($value, "\r")
         ) {

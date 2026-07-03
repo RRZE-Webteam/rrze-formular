@@ -3,18 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Verifies CSV content is non-empty for typical submission rows.
  * Run: php tests/submission-csv-build.php
  */
 
 namespace {
     if (!defined('ABSPATH')) {
         define('ABSPATH', __DIR__ . '/');
-    }
-
-    function __($text, $domain = 'default')
-    {
-        return $text;
     }
 
     function sanitize_title($title)
@@ -36,30 +30,52 @@ namespace {
 namespace RRZE\Formular\Common\Form {
     require __DIR__ . '/../includes/Common/Form/SubmissionCsv.php';
 
-    $rows = [
-        ['First name', 'Max'],
-        ['E-mail', 'max@example.com'],
+    $headers = [
+        'Vorname',
+        'Nachname',
+        'E-Mail-Adresse',
+        'Zugehörigkeit',
+        'Titel des Beitrags',
+        'Abstract',
+        'Schlagwörter',
+        'Bevorzugtes Format',
     ];
 
-    $content = SubmissionCsv::build($rows);
-    $lines = array_values(array_filter(explode("\n", trim($content, "\xEF\xBB\xBF")), static fn(string $line): bool => $line !== ''));
+    $values = [
+        'Benjamin',
+        'Klemencic',
+        'benjamin.klemencic@fau.de',
+        'RRZE AI',
+        'Das ist mein Titel',
+        'Und das ist das Abstract.',
+        'eins,zwei,drei',
+        'Beides möglich',
+    ];
 
-    if (
-        count($lines) !== 2
-        || !str_contains($lines[0], 'First name')
-        || !str_contains($lines[0], 'E-mail')
-        || !str_contains($lines[1], 'Max')
-        || !str_contains($lines[1], 'max@example.com')
-    ) {
-        fwrite(STDERR, "FAIL: CSV content invalid:\n{$content}\n");
+    $content = SubmissionCsv::build($headers, $values);
+    $lines = array_values(array_filter(preg_split('/\r\n|\n/', ltrim($content, "\xEF\xBB\xBF")) ?: [], static fn(string $line): bool => $line !== ''));
+
+    if (count($lines) !== 2) {
+        fwrite(STDERR, "FAIL: expected 2 lines, got " . count($lines) . "\n{$content}\n");
         exit(1);
     }
 
-    $filename = SubmissionCsv::filename('Kontakt');
-    if ($filename === '' || !str_ends_with(strtolower($filename), '.csv')) {
-        fwrite(STDERR, "FAIL: invalid filename: {$filename}\n");
+    if (str_contains($lines[0], 'Field') || str_contains($lines[0], 'Value')) {
+        fwrite(STDERR, "FAIL: must not contain Field/Value header columns\n{$content}\n");
         exit(1);
     }
 
-    fwrite(STDOUT, "OK: CSV build ({$filename}, " . strlen($content) . " bytes)\n");
+  foreach ($headers as $header) {
+        if (!str_contains($lines[0], $header)) {
+            fwrite(STDERR, "FAIL: header row missing {$header}\n{$lines[0]}\n");
+            exit(1);
+        }
+    }
+
+    if (!str_contains($lines[1], 'Benjamin') || !str_contains($lines[1], 'Beides möglich') || !str_contains($lines[1], '"eins,zwei,drei"')) {
+        fwrite(STDERR, "FAIL: value row invalid\n{$lines[1]}\n");
+        exit(1);
+    }
+
+    fwrite(STDOUT, "OK\n{$lines[0]}\n{$lines[1]}\n");
 }
