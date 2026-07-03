@@ -10,20 +10,18 @@ class Privacy
 
     public static function isPublished(): bool
     {
-        return self::publishedPage() !== null;
+        $url = self::getPageUrl();
+        $reachable = self::isUrlReachable($url);
+
+        /**
+         * @param bool $reachable Whether the privacy page URL returns a success response.
+         * @param string $url Checked URL without fragment.
+         */
+        return (bool) apply_filters('rrze_formular_privacy_page_reachable', $reachable, $url);
     }
 
     public static function getPageUrl(): string
     {
-        $page = self::publishedPage();
-        if ($page instanceof \WP_Post) {
-            $url = get_permalink($page);
-
-            if (is_string($url) && $url !== '') {
-                return $url;
-            }
-        }
-
         return user_trailingslashit(home_url('/' . self::slug()));
     }
 
@@ -52,13 +50,62 @@ class Privacy
 
     private static function slug(): string
     {
-        return str_starts_with(FormLocale::getSiteLocale(), 'de') ? 'datenschutz' : 'privacy';
+        $language = strtolower((string) get_bloginfo('language'));
+        if ($language === '') {
+            $language = strtolower(get_locale());
+        }
+
+        return str_starts_with($language, 'de') ? 'datenschutz' : 'privacy';
     }
 
-    private static function publishedPage(): ?\WP_Post
+    private static function isUrlReachable(string $url): bool
     {
-        $page = get_page_by_path(self::slug(), OBJECT, 'page');
+        if (!self::isSameSiteUrl($url)) {
+            return false;
+        }
 
-        return $page instanceof \WP_Post && $page->post_status === 'publish' ? $page : null;
+        $response = wp_remote_head($url, [
+            'timeout' => 5,
+            'redirection' => 3,
+        ]);
+
+        if (!is_wp_error($response)) {
+            $code = (int) wp_remote_retrieve_response_code($response);
+            if ($code >= 200 && $code < 300) {
+                return true;
+            }
+
+            if (!in_array($code, [405, 501], true)) {
+                return false;
+            }
+        }
+
+        $response = wp_remote_get($url, [
+            'timeout' => 5,
+            'redirection' => 3,
+        ]);
+
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code($response);
+
+        return $code >= 200 && $code < 300;
+    }
+
+    private static function isSameSiteUrl(string $url): bool
+    {
+        $parsed = wp_parse_url($url);
+        $site = wp_parse_url(home_url('/'));
+
+        if (!is_array($parsed) || !is_array($site)) {
+            return false;
+        }
+
+        $urlHost = strtolower((string) ($parsed['host'] ?? ''));
+        $siteHost = strtolower((string) ($site['host'] ?? ''));
+
+        return $urlHost !== '' && $urlHost === $siteHost;
     }
 }
