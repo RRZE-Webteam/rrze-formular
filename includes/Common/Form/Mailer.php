@@ -265,12 +265,16 @@ class Mailer
         return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
     }
 
+    /**
+     * @param list<array{content: string, name: string, mime?: string}> $stringAttachments
+     */
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
         string $body,
         array $headers = [],
-        string $recipientName = ''
+        string $recipientName = '',
+        array $stringAttachments = []
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
@@ -284,19 +288,64 @@ class Mailer
         $subject = self::formatSubject($subject);
 
         $defaultHeaders = [
-            'Content-Type: text/plain; charset=UTF-8',
             sprintf('From: %s', self::formatMailboxAddress($fromEmail, $fromName)),
         ];
 
+        if ($stringAttachments === []) {
+            $defaultHeaders[] = 'Content-Type: text/plain; charset=UTF-8';
+        }
+
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName): void {
+        $normalizedAttachments = [];
+
+        foreach ($stringAttachments as $attachment) {
+            if (!is_array($attachment)) {
+                continue;
+            }
+
+            $content = (string) ($attachment['content'] ?? '');
+            $name = sanitize_file_name((string) ($attachment['name'] ?? ''));
+
+            if ($content === '' || $name === '') {
+                continue;
+            }
+
+            $normalizedAttachments[] = [
+                'content' => $content,
+                'name' => $name,
+                'mime' => (string) ($attachment['mime'] ?? 'text/csv'),
+            ];
+        }
+
+        $configureMailer = static function ($phpmailer) use (
+            $recipientEmail,
+            $recipientName,
+            $normalizedAttachments
+        ): void {
             if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
                 return;
             }
 
             $phpmailer->clearAddresses();
             $phpmailer->addAddress($recipientEmail, $recipientName);
+            $phpmailer->CharSet = 'UTF-8';
+            $phpmailer->isHTML(false);
+
+            if ($normalizedAttachments !== [] && method_exists($phpmailer, 'addStringAttachment')) {
+                foreach ($normalizedAttachments as $attachment) {
+                    try {
+                        $phpmailer->addStringAttachment(
+                            $attachment['content'],
+                            $attachment['name'],
+                            'base64',
+                            $attachment['mime']
+                        );
+                    } catch (\Throwable) {
+                        continue;
+                    }
+                }
+            }
 
             // PHP mail() does not write the To header into the message body.
             if ($phpmailer->Mailer === 'mail') {
@@ -307,7 +356,7 @@ class Mailer
             }
         };
 
-        add_action('phpmailer_init', $configureRecipient, 100, 1);
+        add_action('phpmailer_init', $configureMailer, 99999, 1);
 
         $sent = (bool) wp_mail(
             self::formatMailboxAddress($recipientEmail, $recipientName),
@@ -316,7 +365,7 @@ class Mailer
             $allHeaders
         );
 
-        remove_action('phpmailer_init', $configureRecipient, 100);
+        remove_action('phpmailer_init', $configureMailer, 99999);
 
         return $sent;
     }

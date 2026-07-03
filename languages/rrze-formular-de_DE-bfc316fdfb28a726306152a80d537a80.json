@@ -36,6 +36,9 @@
       "Add option": [
         "Option hinzufügen"
       ],
+      "Adds a CSV file with the submitted field values to the e-mail sent to the recipient.": [
+        "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu."
+      ],
       "Adjust limits for honeypot, minimum fill time and rate limiting.": [
         "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
       ],
@@ -65,6 +68,9 @@
       ],
       "Apply for an internship with our team.": [
         "Bewerben Sie sich auf ein Praktikum in unserem Team."
+      ],
+      "Attach CSV to operator e-mail": [
+        "CSV an Betreiber-E-Mail anhängen"
       ],
       "Availability": [
         "Verfügbarkeit"
@@ -108,9 +114,6 @@
       "Contact": [
         "Kontakt"
       ],
-      "Contact form": [
-        "Kontaktformular"
-      ],
       "Contact our press office or communications team.": [
         "Kontaktieren Sie unsere Pressestelle oder das Kommunikationsteam."
       ],
@@ -128,9 +131,6 @@
       ],
       "Contact · Website or technical issue": [
         "Kontakt · Website- oder technisches Problem"
-      ],
-      "Content issue": [
-        "Inhaltliches Problem"
       ],
       "Continue to the next tab to see the highlighted field.": [
         "Wechseln Sie zur nächsten Registerkarte, um das hervorgehobene Feld zu sehen."
@@ -167,9 +167,6 @@
       ],
       "Describe your IT problem. For account issues, please include your IdM user name.": [
         "Beschreiben Sie Ihr IT-Problem. Bei Kontoproblemen geben Sie bitte Ihren IdM-Benutzernamen an."
-      ],
-      "Describe your issue and we will get back to you.": [
-        "Beschreiben Sie Ihr Anliegen und wir melden uns bei Ihnen."
       ],
       "Description": [
         "Beschreibung"
@@ -230,12 +227,6 @@
       ],
       "Express your interest in writing a master thesis with us.": [
         "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
-      ],
-      "Feedback": [
-        "Feedback"
-      ],
-      "Feedback form": [
-        "Feedback-Formular"
       ],
       "Field": [
         "Feld"
@@ -393,9 +384,6 @@
       "Multiselect": [
         "Mehrfachauswahl"
       ],
-      "Name": [
-        "Name"
-      ],
       "Network / VPN": [
         "Netzwerk / VPN"
       ],
@@ -434,9 +422,6 @@
       ],
       "Online": [
         "Online"
-      ],
-      "Only sent when the submitter e-mail uses an allowed confirmation domain.": [
-        "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
       ],
       "Only sent when the submitter e-mail uses an allowed domain.": [
         "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
@@ -546,6 +531,9 @@
       "Prior knowledge": [
         "Vorkenntnisse"
       ],
+      "Privacy": [
+        "Datenschutz"
+      ],
       "Problem description": [
         "Problembeschreibung"
       ],
@@ -654,9 +642,6 @@
       "Send confirmation to submitter": [
         "Bestätigung an Absender senden"
       ],
-      "Send us a message.": [
-        "Senden Sie uns eine Nachricht."
-      ],
       "Send us a message. We will reply as soon as possible.": [
         "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
       ],
@@ -680,9 +665,6 @@
       ],
       "Spam detected.": [
         "Spam erkannt."
-      ],
-      "Step": [
-        "Schritt"
       ],
       "Student assistant application": [
         "HiWi-Bewerbung"
@@ -711,9 +693,6 @@
       "Success message": [
         "Erfolgsmeldung"
       ],
-      "Support request": [
-        "Support-Anfrage"
-      ],
       "Talk": [
         "Vortrag"
       ],
@@ -731,9 +710,6 @@
       ],
       "Teaching · Student assistant application": [
         "Lehre · HiWi-Bewerbung"
-      ],
-      "Technical issue": [
-        "Technisches Problem"
       ],
       "Telephone": [
         "Telefon"
@@ -786,6 +762,9 @@
       "This form has no fields.": [
         "Dieses Formular hat keine Felder."
       ],
+      "This page cannot be published because no published %1$s page exists at %2$s.": [
+        "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlichte %1$s-Seite unter %2$s vorhanden ist."
+      ],
       "Time": [
         "Uhrzeit"
       ],
@@ -837,6 +816,9 @@
       "Up to 5 hours": [
         "Bis zu 5 Stunden"
       ],
+      "Value": [
+        "Value"
+      ],
       "Vegan": [
         "Vegan"
       ],
@@ -845,9 +827,6 @@
       ],
       "Very poor": [
         "Sehr schlecht"
-      ],
-      "We appreciate your feedback.": [
-        "Wir freuen uns über Ihr Feedback."
       ],
       "We received your submission.": [
         "Wir haben Ihre Übermittlung erhalten."

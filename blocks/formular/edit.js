@@ -169,6 +169,7 @@ export default function Edit({ attributes, setAttributes }) {
 		successMessage,
 		includeSsoInfo,
 		sendConfirmation,
+		attachCsv,
 		fields,
 	} = attributes;
 
@@ -284,6 +285,15 @@ export default function Edit({ attributes, setAttributes }) {
 						help={__('Only sent when the submitter e-mail uses an allowed domain.', 'rrze-formular')}
 						checked={!!sendConfirmation}
 						onChange={(value) => setAttributes({ sendConfirmation: value })}
+					/>
+					<ToggleControl
+						label={__('Attach CSV to operator e-mail', 'rrze-formular')}
+						help={__(
+							'Adds a CSV file with the submitted field values to the e-mail sent to the recipient.',
+							'rrze-formular'
+						)}
+						checked={!!attachCsv}
+						onChange={(value) => setAttributes({ attachCsv: value })}
 					/>
 				</PanelBody>
 				<PanelBody title={__('Fields', 'rrze-formular')} initialOpen>

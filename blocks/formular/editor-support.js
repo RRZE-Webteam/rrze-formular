@@ -1,12 +1,13 @@
-import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 import { registerPlugin } from '@wordpress/plugins';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 
-const BLOCK_NAMES = [ 'rrze-formular/formular', 'rrze-formular/form-wizard' ];
-const LOCK_NAME = 'rrze-formular-invalid-recipient';
+const BLOCK_NAMES = [ 'rrze-formular/formular' ];
+const LOCK_NAME = 'rrze-formular-publish-blocked';
+const NOTICE_ID = 'rrze-formular-publish-blocked-notice';
 
 function getEditorConfig() {
 	if ( window.RRZEFormularEditor ) {
@@ -71,25 +72,152 @@ export function getRecipientEmailError( recipientEmail ) {
 	return '';
 }
 
-function walkBlocks( blockList, invalidEmails ) {
+function walkBlocks( blockList, visitor ) {
 	blockList.forEach( ( block ) => {
-		if ( BLOCK_NAMES.includes( block.name ) ) {
-			const error = getRecipientEmailError( block.attributes?.recipientEmail );
-			if ( error ) {
-				invalidEmails.push( block.attributes?.recipientEmail || '' );
-			}
-		}
+		visitor( block );
 
 		if ( block.innerBlocks?.length ) {
-			walkBlocks( block.innerBlocks, invalidEmails );
+			walkBlocks( block.innerBlocks, visitor );
 		}
 	} );
 }
 
+function hasFormBlocks( blocks ) {
+	let found = false;
+
+	walkBlocks( blocks, ( block ) => {
+		if ( BLOCK_NAMES.includes( block.name ) ) {
+			found = true;
+		}
+	} );
+
+	return found;
+}
+
 function hasInvalidRecipientBlocks( blocks ) {
 	const invalidEmails = [];
-	walkBlocks( blocks, invalidEmails );
+
+	walkBlocks( blocks, ( block ) => {
+		if ( ! BLOCK_NAMES.includes( block.name ) ) {
+			return;
+		}
+
+		const error = getRecipientEmailError( block.attributes?.recipientEmail );
+		if ( error ) {
+			invalidEmails.push( block.attributes?.recipientEmail || '' );
+		}
+	} );
+
 	return invalidEmails.length > 0;
+}
+
+function getPrivacyPublishBlockedMessage( config ) {
+	const label = config.privacyLabel || __( 'Privacy', 'rrze-formular' );
+	const url = config.privacyUrl || '';
+
+	return sprintf(
+		config.i18n?.privacyPublishBlockedFormat ||
+			__(
+				'This page cannot be published because no published %1$s page exists at %2$s.',
+				'rrze-formular'
+			),
+		label,
+		url
+	);
+}
+
+async function checkPrivacyUrlReachable( privacyUrl ) {
+	if ( ! privacyUrl ) {
+		return false;
+	}
+
+	try {
+		let response = await fetch( privacyUrl, {
+			method: 'HEAD',
+			credentials: 'same-origin',
+		} );
+
+		if ( response.ok ) {
+			return true;
+		}
+
+		if ( response.status !== 405 && response.status !== 501 ) {
+			return false;
+		}
+
+		response = await fetch( privacyUrl, {
+			method: 'GET',
+			credentials: 'same-origin',
+		} );
+
+		return response.ok;
+	} catch {
+		return null;
+	}
+}
+
+function usePrivacyReachable() {
+	const config = getEditorConfig();
+	const privacyUrl = config.privacyUrl || '';
+	const [ reachable, setReachable ] = useState( () => {
+		if ( config.privacyPublished === true ) {
+			return true;
+		}
+
+		return privacyUrl ? null : false;
+	} );
+
+	useEffect( () => {
+		if ( ! privacyUrl ) {
+			setReachable( false );
+			return undefined;
+		}
+
+		let cancelled = false;
+
+		checkPrivacyUrlReachable( privacyUrl ).then( ( result ) => {
+			if ( cancelled ) {
+				return;
+			}
+
+			if ( result === null ) {
+				setReachable( config.privacyPublished === true );
+				return;
+			}
+
+			setReachable( result );
+		} );
+
+		return () => {
+			cancelled = true;
+		};
+	}, [ privacyUrl, config.privacyPublished ] );
+
+	return reachable;
+}
+
+function getPublishBlockMessage( blocks, privacyReachable ) {
+	if ( ! hasFormBlocks( blocks ) ) {
+		return '';
+	}
+
+	const config = getEditorConfig();
+
+	if ( privacyReachable === false ) {
+		return getPrivacyPublishBlockedMessage( config );
+	}
+
+	if ( privacyReachable !== false && hasInvalidRecipientBlocks( blocks ) ) {
+		return (
+			config.i18n?.publishBlocked ||
+			__(
+				'Publishing is blocked until all form recipient addresses use an allowed domain.',
+				'rrze-formular'
+			)
+		);
+	}
+
+	return '';
 }
 
 function SaveNotice() {
@@ -112,37 +240,29 @@ function SaveNotice() {
 
 function PublishLock() {
 	const blocks = useSelect( ( select ) => select( blockEditorStore ).getBlocks(), [] );
+	const privacyReachable = usePrivacyReachable();
 	const { lockPostSaving, unlockPostSaving } = useDispatch( editorStore );
 	const { createNotice, removeNotice } = useDispatch( 'core/notices' );
-	const noticeId = 'rrze-formular-invalid-recipient-notice';
 
 	useEffect( () => {
-		const blocked = hasInvalidRecipientBlocks( blocks );
+		const message = getPublishBlockMessage( blocks, privacyReachable );
 
-		if ( blocked ) {
+		if ( message ) {
 			lockPostSaving( LOCK_NAME );
-			createNotice(
-				'error',
-				getEditorConfig().i18n?.publishBlocked ||
-					__(
-						'Publishing is blocked until all form recipient addresses use an allowed domain.',
-						'rrze-formular'
-					),
-				{
-					id: noticeId,
-					isDismissible: false,
-				}
-			);
+			createNotice( 'error', message, {
+				id: NOTICE_ID,
+				isDismissible: false,
+			} );
 		} else {
 			unlockPostSaving( LOCK_NAME );
-			removeNotice( noticeId );
+			removeNotice( NOTICE_ID );
 		}
 
 		return () => {
 			unlockPostSaving( LOCK_NAME );
-			removeNotice( noticeId );
+			removeNotice( NOTICE_ID );
 		};
-	}, [ blocks, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
+	}, [ blocks, privacyReachable, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
 
 	return null;
 }

@@ -42,6 +42,9 @@ msgstr "Feld hinzufügen"
 msgid "Add option"
 msgstr "Option hinzufügen"
 
+msgid "Adds a CSV file with the submitted field values to the e-mail sent to the recipient."
+msgstr "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu."
+
 msgid "Adjust limits for honeypot, minimum fill time and rate limiting."
 msgstr "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
 
@@ -71,6 +74,9 @@ msgstr "Bewerben Sie sich auf eine studentische Hilfskraft-Stelle (HiWi)."
 
 msgid "Apply for an internship with our team."
 msgstr "Bewerben Sie sich auf ein Praktikum in unserem Team."
+
+msgid "Attach CSV to operator e-mail"
+msgstr "CSV an Betreiber-E-Mail anhängen"
 
 msgid "Availability"
 msgstr "Verfügbarkeit"
@@ -114,9 +120,6 @@ msgstr "Bestätigung: %s"
 msgid "Contact"
 msgstr "Kontakt"
 
-msgid "Contact form"
-msgstr "Kontaktformular"
-
 msgid "Contact our press office or communications team."
 msgstr "Kontaktieren Sie unsere Pressestelle oder das Kommunikationsteam."
 
@@ -134,9 +137,6 @@ msgstr "Kontakt · Website-Feedback"
 
 msgid "Contact · Website or technical issue"
 msgstr "Kontakt · Website- oder technisches Problem"
-
-msgid "Content issue"
-msgstr "Inhaltliches Problem"
 
 msgid "Continue to the next tab to see the highlighted field."
 msgstr "Wechseln Sie zur nächsten Registerkarte, um das hervorgehobene Feld zu sehen."
@@ -173,9 +173,6 @@ msgstr "Ausgewählte Domains löschen"
 
 msgid "Describe your IT problem. For account issues, please include your IdM user name."
 msgstr "Beschreiben Sie Ihr IT-Problem. Bei Kontoproblemen geben Sie bitte Ihren IdM-Benutzernamen an."
-
-msgid "Describe your issue and we will get back to you."
-msgstr "Beschreiben Sie Ihr Anliegen und wir melden uns bei Ihnen."
 
 msgid "Description"
 msgstr "Beschreibung"
@@ -236,12 +233,6 @@ msgstr "Bekunden Sie Ihr Interesse an einer Bachelorarbeit bei uns."
 
 msgid "Express your interest in writing a master thesis with us."
 msgstr "Bekunden Sie Ihr Interesse an einer Masterarbeit bei uns."
-
-msgid "Feedback"
-msgstr "Feedback"
-
-msgid "Feedback form"
-msgstr "Feedback-Formular"
 
 msgid "Field"
 msgstr "Feld"
@@ -399,9 +390,6 @@ msgstr "Nach oben"
 msgid "Multiselect"
 msgstr "Mehrfachauswahl"
 
-msgid "Name"
-msgstr "Name"
-
 msgid "Network / VPN"
 msgstr "Netzwerk / VPN"
 
@@ -440,9 +428,6 @@ msgstr "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müsse
 
 msgid "Online"
 msgstr "Online"
-
-msgid "Only sent when the submitter e-mail uses an allowed confirmation domain."
-msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Bestätigungs-Domain verwendet."
 
 msgid "Only sent when the submitter e-mail uses an allowed domain."
 msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
@@ -552,6 +537,9 @@ msgstr "Presseanfrage"
 msgid "Prior knowledge"
 msgstr "Vorkenntnisse"
 
+msgid "Privacy"
+msgstr "Datenschutz"
+
 msgid "Problem description"
 msgstr "Problembeschreibung"
 
@@ -660,9 +648,6 @@ msgstr "Senden"
 msgid "Send confirmation to submitter"
 msgstr "Bestätigung an Absender senden"
 
-msgid "Send us a message."
-msgstr "Senden Sie uns eine Nachricht."
-
 msgid "Send us a message. We will reply as soon as possible."
 msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 
@@ -686,9 +671,6 @@ msgstr "Spam-Schutz"
 
 msgid "Spam detected."
 msgstr "Spam erkannt."
-
-msgid "Step"
-msgstr "Schritt"
 
 msgid "Student assistant application"
 msgstr "HiWi-Bewerbung"
@@ -717,9 +699,6 @@ msgstr "Abonnieren Sie unseren Newsletter."
 msgid "Success message"
 msgstr "Erfolgsmeldung"
 
-msgid "Support request"
-msgstr "Support-Anfrage"
-
 msgid "Talk"
 msgstr "Vortrag"
 
@@ -737,9 +716,6 @@ msgstr "Lehre · Sprechstundentermin"
 
 msgid "Teaching · Student assistant application"
 msgstr "Lehre · HiWi-Bewerbung"
-
-msgid "Technical issue"
-msgstr "Technisches Problem"
 
 msgid "Telephone"
 msgstr "Telefon"
@@ -792,6 +768,9 @@ msgstr "Dieses Feld ist erforderlich."
 msgid "This form has no fields."
 msgstr "Dieses Formular hat keine Felder."
 
+msgid "This page cannot be published because no published %1$s page exists at %2$s."
+msgstr "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlichte %1$s-Seite unter %2$s vorhanden ist."
+
 msgid "Time"
 msgstr "Uhrzeit"
 
@@ -843,6 +822,9 @@ msgstr "Bis zu 15 Stunden"
 msgid "Up to 5 hours"
 msgstr "Bis zu 5 Stunden"
 
+msgid "Value"
+msgstr "Value"
+
 msgid "Vegan"
 msgstr "Vegan"
 
@@ -851,9 +833,6 @@ msgstr "Vegetarisch"
 
 msgid "Very poor"
 msgstr "Sehr schlecht"
-
-msgid "We appreciate your feedback."
-msgstr "Wir freuen uns über Ihr Feedback."
 
 msgid "We received your submission."
 msgstr "Wir haben Ihre Übermittlung erhalten."

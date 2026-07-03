@@ -25,7 +25,7 @@ class SSO
          *
          * @param array|null $data Associative array with at least name and email.
          */
-        $data = apply_filters('rrze_formwizard_sso_user_data', $data);
+        $data = apply_filters('rrze_formular_sso_user_data', $data);
 
         if (!is_array($data)) {
             return null;

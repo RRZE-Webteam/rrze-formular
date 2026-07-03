@@ -577,6 +577,23 @@ body .block-editor-block-list__block .rrze-formular {
 	margin-top: 1.5rem;
 }
 
+.rrze-formular__privacy {
+	margin: 1rem 0 0;
+	font-size: 0.9rem;
+	line-height: 1.5;
+
+	a {
+		color: $rrze-formular-accent;
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+
+		&:hover,
+		&:focus {
+			color: color-mix(in srgb, $rrze-formular-accent 75%, #000);
+		}
+	}
+}
+
 .rrze-formular__submit {
 	display: flex;
 	align-items: stretch;
