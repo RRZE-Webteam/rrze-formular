@@ -49,11 +49,11 @@ class FormRenderer
                            autocomplete="off">
                 </div>
 
-                <fieldset class="rrze-formular__fields">
+                <div class="rrze-formular__fields">
                     <?php foreach ($fields as $field) : ?>
                         <?php echo self::renderField($field, $formId); ?>
                     <?php endforeach; ?>
-                </fieldset>
+                </div>
 
                 <div class="rrze-formular__actions">
                     <button type="submit" class="rrze-formular__submit">
