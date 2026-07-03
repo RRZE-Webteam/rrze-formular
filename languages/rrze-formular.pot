@@ -63,6 +63,9 @@ msgstr "Nachmittags (12–17 Uhr)"
 msgid "Age"
 msgstr "Alter"
 
+msgid "Allowed confirmation domains"
+msgstr "Erlaubte Bestätigungs-Domains"
+
 msgid "Allowed e-mail domains"
 msgstr "Erlaubte E-Mail-Domains"
 
@@ -113,6 +116,12 @@ msgstr "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderung
 
 msgid "Confirm selection"
 msgstr "Auswahl bestätigen"
+
+msgid "Confirmation mails per address per hour"
+msgstr "Bestätigungs-E-Mails pro Adresse und Stunde"
+
+msgid "Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option."
+msgstr "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
 
 msgid "Confirmation: %s"
 msgstr "Bestätigung: %s"
@@ -255,6 +264,9 @@ msgstr "Formularübermittlung: %s"
 msgid "Form template"
 msgstr "Formular-Vorlage"
 
+msgid "Form: %s"
+msgstr "Formular: %s"
+
 msgid "General"
 msgstr "Allgemein"
 
@@ -360,6 +372,9 @@ msgstr "Matrikelnummer"
 msgid "Maximum number of accepted submissions from one IP address per hour."
 msgstr "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
 
+msgid "Maximum number of confirmation mails sent to the same submitter e-mail address per hour."
+msgstr "Maximale Anzahl von Bestätigungs-E-Mails an dieselbe Absender-Adresse pro Stunde."
+
 msgid "Media outlet"
 msgstr "Medium / Redaktion"
 
@@ -429,9 +444,6 @@ msgstr "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müsse
 msgid "Online"
 msgstr "Online"
 
-msgid "Only sent when the submitter e-mail uses an allowed domain."
-msgstr "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
-
 msgid "Open the General tab to configure default form behaviour."
 msgstr "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
 
@@ -461,6 +473,12 @@ msgstr "Optional. Leer lassen, um die Website-E-Mail-Adresse zu verwenden. Bei E
 
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
+
+msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains above. If no domains are configured anywhere, confirmation mails are never sent."
+msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die oben konfigurierten erlaubten Empfänger-Domains zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
+
+msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains from RRZE Settings. If no domains are configured anywhere, confirmation mails are never sent."
+msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die erlaubten Empfänger-Domains aus den RRZE-Einstellungen zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
 
 msgid "Organisation / company"
 msgstr "Organisation / Unternehmen"
@@ -654,6 +672,9 @@ msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 msgid "Sending…"
 msgstr "Wird gesendet…"
 
+msgid "Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches."
+msgstr "Sendet eine kurze Empfangsbestätigung ohne übermittelte Feldwerte. Wird nur zugestellt, wenn erlaubte Bestätigungs-Domains konfiguriert sind und die Absender-Adresse passt."
+
 msgid "Settings issues detected."
 msgstr "Probleme in den Einstellungen erkannt."
 
@@ -821,9 +842,6 @@ msgstr "Bis zu 15 Stunden"
 
 msgid "Up to 5 hours"
 msgstr "Bis zu 5 Stunden"
-
-msgid "Value"
-msgstr "Value"
 
 msgid "Vegan"
 msgstr "Vegan"

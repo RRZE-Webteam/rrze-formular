@@ -93,7 +93,7 @@ class FormAPI
             'website' => $request->get_param('website'),
             'token' => $request->get_param('token'),
             'pageUrl' => $request->get_param('pageUrl'),
-            'locale' => $request->get_param('locale'),
+            'formLocale' => $this->extractFormLocale($request),
         ];
 
         $handler = new FormHandler();
@@ -103,6 +103,18 @@ class FormAPI
         unset($result['status']);
 
         return new WP_REST_Response($result, $status);
+    }
+
+    private function extractFormLocale(WP_REST_Request $request): string
+    {
+        $json = $request->get_json_params();
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        $locale = $json['formLocale'] ?? $json['locale'] ?? '';
+
+        return sanitize_text_field((string) $locale);
     }
 
     /**
@@ -180,13 +192,6 @@ class FormAPI
                 'sanitize_callback' => 'esc_url_raw',
                 'validate_callback' => [$this, 'validateOptionalUrl'],
             ],
-            'locale' => [
-                'required' => false,
-                'type' => 'string',
-                'default' => '',
-                'sanitize_callback' => 'sanitize_text_field',
-                'validate_callback' => [$this, 'validateOptionalLocale'],
-            ],
         ];
     }
 
@@ -263,21 +268,5 @@ class FormAPI
         }
 
         return filter_var($value, FILTER_VALIDATE_URL) !== false;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    public function validateOptionalLocale($value, WP_REST_Request $request, string $param): bool
-    {
-        if ($value === '' || $value === null) {
-            return true;
-        }
-
-        if (!is_string($value)) {
-            return false;
-        }
-
-        return (bool) preg_match('/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/i', $value);
     }
 }
