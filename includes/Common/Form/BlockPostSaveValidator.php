@@ -16,7 +16,6 @@ class BlockPostSaveValidator
      */
     private const BLOCK_NAMES = [
         'rrze-formular/formular',
-        'rrze-formular/form-wizard',
     ];
 
     /**
@@ -337,7 +336,7 @@ class BlockPostSaveValidator
             return self::blocksContainForm(parse_blocks($content));
         }
 
-        return (bool) preg_match('/wp:rrze-formular\/(?:formular|form-wizard)/', $content);
+        return (bool) preg_match('/wp:rrze-formular\/formular/', $content);
     }
 
     /**

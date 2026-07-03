@@ -5,7 +5,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 
-const BLOCK_NAMES = [ 'rrze-formular/formular', 'rrze-formular/form-wizard' ];
+const BLOCK_NAMES = [ 'rrze-formular/formular' ];
 const LOCK_NAME = 'rrze-formular-publish-blocked';
 const NOTICE_ID = 'rrze-formular-publish-blocked-notice';
 
