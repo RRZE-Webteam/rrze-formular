@@ -242,11 +242,15 @@ class BlockPostSaveValidator
 
         $allowedDomains = AllowedDomains::getAllowedDomains();
 
+        $options = Mailer::getOptions();
+
         return self::$editorConfigCache = [
             'allowedDomains' => $allowedDomains,
             'domainsConfigured' => $allowedDomains !== [],
             'confirmationDomains' => AllowedDomains::getConfirmationDomains(),
             'confirmationDomainsConfigured' => AllowedDomains::hasConfirmationDomainsConfigured(),
+            'defaultRecipientEmail' => sanitize_email((string) ($options['default_recipient_email'] ?? '')),
+            'administratorEmail' => Mailer::getAdministratorEmail(),
             'privacyPublished' => Privacy::isPublished(),
             'privacyUrl' => Privacy::getPageUrl(),
             'privacyLabel' => __('Privacy', 'rrze-formular'),
@@ -430,7 +434,8 @@ class BlockPostSaveValidator
 
             $name = (string) ($block['blockName'] ?? '');
             if (in_array($name, self::BLOCK_NAMES, true)) {
-                $email = trim((string) ($block['attrs']['recipientEmail'] ?? ''));
+                $attrs = is_array($block['attrs'] ?? null) ? $block['attrs'] : [];
+                $email = self::resolveBlockRecipientEmail($attrs);
                 if ($email !== '' && !AllowedDomains::isBlockRecipientAllowed($email)) {
                     $invalid[] = $email;
                 }
@@ -481,5 +486,18 @@ class BlockPostSaveValidator
     private static function noticeKey(int $userId): string
     {
         return self::NOTICE_TRANSIENT . '_' . $userId;
+    }
+
+    /**
+     * @param array<string, mixed> $attrs
+     */
+    private static function resolveBlockRecipientEmail(array $attrs): string
+    {
+        $email = trim((string) ($attrs['recipientEmail'] ?? ''));
+        if ($email !== '') {
+            return $email;
+        }
+
+        return Mailer::resolveRecipient($attrs)['email'];
     }
 }

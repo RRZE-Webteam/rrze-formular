@@ -77,14 +77,11 @@ class AllowedDomains
             return self::$allowedDomains;
         }
 
-        if (self::isRrzeSettingsActive()) {
-            $raw = self::getRrzeSettingsDomainsRaw();
-        } else {
-            $options = Mailer::getOptions();
-            $raw = $options['allowed_domains'] ?? '';
-        }
+        $domains = self::loadPrimaryRecipientDomains();
 
-        $domains = self::parseDomains($raw);
+        if ($domains === []) {
+            $domains = self::parseDomains(self::getPluginConfirmationDomainsRaw());
+        }
 
         /**
          * @param list<string> $domains
@@ -94,6 +91,36 @@ class AllowedDomains
         return self::$allowedDomains = is_array($domains)
             ? array_values(array_unique(array_map('strval', $domains)))
             : [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function loadPrimaryRecipientDomains(): array
+    {
+        $raw = self::isRrzeSettingsActive() ? self::getRrzeSettingsDomainsRaw() : '';
+
+        $domains = self::parseDomains($raw);
+
+        if ($domains !== []) {
+            return $domains;
+        }
+
+        return self::parseDomains(self::getPluginRecipientDomainsRaw());
+    }
+
+    private static function getPluginRecipientDomainsRaw(): string
+    {
+        $options = Mailer::getOptions();
+
+        return (string) ($options['allowed_domains'] ?? '');
+    }
+
+    private static function getPluginConfirmationDomainsRaw(): string
+    {
+        $options = Mailer::getOptions();
+
+        return (string) ($options['allowed_confirmation_domains'] ?? '');
     }
 
     public static function hasConfiguredDomains(): bool
@@ -120,12 +147,10 @@ class AllowedDomains
             return self::$confirmationDomains;
         }
 
-        $options = Mailer::getOptions();
-        $raw = $options['allowed_confirmation_domains'] ?? '';
-        $domains = self::parseDomains($raw);
+        $domains = self::parseDomains(self::getPluginConfirmationDomainsRaw());
 
         if ($domains === []) {
-            $domains = self::getAllowedDomains();
+            $domains = self::loadPrimaryRecipientDomains();
         }
 
         /**

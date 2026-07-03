@@ -4,7 +4,7 @@ Tags: form, contact, block, mail, spam-protection
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,7 +18,7 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 
 * Block editor integration (no shortcodes required)
 * Form field types with section headings for longer forms
-* Templates for FAU websites (contact, teaching, events, research, IT, public relations and more)
+* Templates for university websites (contact, teaching, events, research, public relations and more)
 * Fixed sender address and name from the website configuration
 * Recipient resolution: block setting, plugin default, or site administrator e-mail
 * Optional recipient name for block and default recipient
