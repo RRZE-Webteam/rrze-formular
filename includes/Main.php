@@ -15,8 +15,8 @@ defined('ABSPATH') || exit;
 
 class Main
 {
-    public Defaults $defaults;
-    public Settings $settings;
+    public ?Defaults $defaults = null;
+    public ?Settings $settings = null;
     private FormAPI $formApi;
 
     public function __construct()
@@ -26,12 +26,19 @@ class Main
 
     public function onInit(): void
     {
-        $this->defaults = new Defaults();
-        $this->settings();
         $this->formApi = new FormAPI();
         BlockPostSaveValidator::register();
-
         $this->registerAssets();
+
+        if (is_admin()) {
+            $this->bootstrapSettings();
+        }
+    }
+
+    private function bootstrapSettings(): void
+    {
+        $this->defaults = new Defaults();
+        $this->settings();
     }
 
     public function registerAssets(): void
@@ -73,6 +80,10 @@ class Main
 
     public function settings(): void
     {
+        if ($this->defaults === null) {
+            $this->defaults = new Defaults();
+        }
+
         $this->settings = new Settings($this->defaults->get('settings')['page_title']);
 
         $this->settings->setCapability($this->defaults->get('settings')['capability'])

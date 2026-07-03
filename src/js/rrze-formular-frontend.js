@@ -1,12 +1,14 @@
 import { initDropdowns, resetDropdowns } from './dropdowns';
 
+const tokenRequests = new WeakMap();
+
 document.addEventListener( 'DOMContentLoaded', () => {
 	document.querySelectorAll( '.rrze-formular' ).forEach( ( root ) => {
-		void initFormular( root );
+		initFormular( root );
 	} );
 } );
 
-async function initFormular( root ) {
+function initFormular( root ) {
 	const form = root.querySelector( '.rrze-formular__form' );
 	if ( ! form ) {
 		return;
@@ -16,11 +18,13 @@ async function initFormular( root ) {
 
 	const messageBox = root.querySelector( '.rrze-formular__message' );
 
-	try {
-		await refreshFormToken( form, root );
-	} catch {
-		// Token is requested again on submit.
-	}
+	form.addEventListener(
+		'focusin',
+		() => {
+			void ensureFormToken( form, root );
+		},
+		{ once: true }
+	);
 
 	form.addEventListener( 'submit', async ( event ) => {
 		event.preventDefault();
@@ -42,10 +46,7 @@ async function initFormular( root ) {
 		}
 
 		try {
-			const tokenInput = form.querySelector( '[name="token"]' );
-			if ( ! tokenInput?.value ) {
-				await refreshFormToken( form, root );
-			}
+			await ensureFormToken( form, root );
 
 			const payload = {
 				formConfig: form.querySelector( '[name="formConfig"]' )?.value || '',
@@ -92,6 +93,25 @@ async function initFormular( root ) {
 			}
 		}
 	} );
+}
+
+function ensureFormToken( form, root ) {
+	const tokenInput = form.querySelector( '[name="token"]' );
+	if ( tokenInput?.value ) {
+		return Promise.resolve();
+	}
+
+	if ( tokenRequests.has( form ) ) {
+		return tokenRequests.get( form );
+	}
+
+	const request = refreshFormToken( form, root ).finally( () => {
+		tokenRequests.delete( form );
+	} );
+
+	tokenRequests.set( form, request );
+
+	return request;
 }
 
 async function refreshFormToken( form, root ) {

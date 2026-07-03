@@ -71,7 +71,7 @@ class SpamProtection
             return null;
         }
 
-        $options = get_option('rrze-formular', []);
+        $options = Mailer::getOptions();
         $minSeconds = max(1, (int) ($options['min_submit_seconds'] ?? 3));
         if (($now - $issuedAt) < $minSeconds) {
             return null;
@@ -134,24 +134,10 @@ class SpamProtection
 
     public static function tryAcquireSubmissionSlot(): bool
     {
-        $options = get_option('rrze-formular', []);
+        $options = Mailer::getOptions();
         $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
 
         return self::tryIncrementCounter(self::getRateLimitKey(), HOUR_IN_SECONDS, $limit);
-    }
-
-    public static function isWithinRateLimit(): bool
-    {
-        $options = get_option('rrze-formular', []);
-        $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
-        $key = self::getRateLimitKey();
-
-        return self::getCounterValue($key) < $limit;
-    }
-
-    public static function recordSubmission(): void
-    {
-        self::tryAcquireSubmissionSlot();
     }
 
     public static function tryAcquireConfirmationSlot(string $email): bool
@@ -161,28 +147,10 @@ class SpamProtection
             return false;
         }
 
-        $options = get_option('rrze-formular', []);
+        $options = Mailer::getOptions();
         $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
 
         return self::tryIncrementCounter(self::getConfirmationRateLimitKey($email), HOUR_IN_SECONDS, $limit);
-    }
-
-    public static function isWithinConfirmationRateLimit(string $email): bool
-    {
-        $email = sanitize_email($email);
-        if (!is_email($email)) {
-            return false;
-        }
-
-        $options = get_option('rrze-formular', []);
-        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
-
-        return self::getCounterValue(self::getConfirmationRateLimitKey($email)) < $limit;
-    }
-
-    public static function recordConfirmationSend(string $email): void
-    {
-        self::tryAcquireConfirmationSlot($email);
     }
 
     /**
@@ -270,14 +238,12 @@ class SpamProtection
             $name
         ));
 
-        return self::getCounterValue($storageKey) <= $limit;
-    }
+        $count = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1",
+            $name
+        ));
 
-    private static function getCounterValue(string $storageKey): int
-    {
-        $name = 'rrze_fw_cnt_' . md5($storageKey);
-
-        return max(0, (int) get_option($name, 0));
+        return $count > 0 && $count <= $limit;
     }
 
     private static function getNonceKey(string $nonce): string

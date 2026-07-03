@@ -63,6 +63,22 @@ namespace {
 
             return 1;
         }
+
+        public function get_var($query)
+        {
+            global $options;
+
+            if (!is_array($query)) {
+                return '0';
+            }
+
+            [$sql, $name] = $query;
+            if (!is_string($sql) || !str_contains($sql, 'SELECT option_value')) {
+                return '0';
+            }
+
+            return (string) ($options[(string) $name] ?? '0');
+        }
     }
 
     $GLOBALS['wpdb'] = new RRZE_Test_WPDB();

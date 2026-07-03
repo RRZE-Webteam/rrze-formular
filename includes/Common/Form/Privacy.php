@@ -8,8 +8,14 @@ class Privacy
 {
     private const CONTACT_FRAGMENT = 'contact';
 
+    private static ?bool $publishedCache = null;
+
     public static function isPublished(): bool
     {
+        if (self::$publishedCache !== null) {
+            return self::$publishedCache;
+        }
+
         $url = self::getPageUrl();
 
         if (self::isRrzeLegalPrivacyAvailable()) {
@@ -24,7 +30,7 @@ class Privacy
          * @param bool $reachable Whether the privacy page URL returns a success response.
          * @param string $url Checked URL without fragment.
          */
-        return (bool) apply_filters('rrze_formular_privacy_page_reachable', $reachable, $url);
+        return self::$publishedCache = (bool) apply_filters('rrze_formular_privacy_page_reachable', $reachable, $url);
     }
 
     public static function getPageUrl(): string

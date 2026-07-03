@@ -10,6 +10,18 @@ class AllowedDomains
     private const SETTINGS_OPTION = 'rrze_settings';
     private const SETTINGS_DOMAINS_KEY = 'rrze_formular_allowedDomains';
 
+    private static ?bool $rrzeSettingsActive = null;
+
+    /**
+     * @var list<string>|null
+     */
+    private static ?array $allowedDomains = null;
+
+    /**
+     * @var list<string>|null
+     */
+    private static ?array $confirmationDomains = null;
+
     /**
      * @var list<string>
      */
@@ -20,12 +32,16 @@ class AllowedDomains
 
     public static function isRrzeSettingsActive(): bool
     {
+        if (self::$rrzeSettingsActive !== null) {
+            return self::$rrzeSettingsActive;
+        }
+
         if (!function_exists('is_plugin_active')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
         if (is_plugin_active(self::SETTINGS_PLUGIN)) {
-            return true;
+            return self::$rrzeSettingsActive = true;
         }
 
         if (
@@ -33,7 +49,7 @@ class AllowedDomains
             && function_exists('is_plugin_active_for_network')
             && is_plugin_active_for_network(self::SETTINGS_PLUGIN)
         ) {
-            return true;
+            return self::$rrzeSettingsActive = true;
         }
 
         /**
@@ -41,7 +57,7 @@ class AllowedDomains
          */
         $legacy = (bool) apply_filters('rrze_formular_rrze_cms_active', false);
 
-        return $legacy || (bool) apply_filters('rrze_formular_rrze_settings_active', false);
+        return self::$rrzeSettingsActive = $legacy || (bool) apply_filters('rrze_formular_rrze_settings_active', false);
     }
 
     /**
@@ -57,11 +73,15 @@ class AllowedDomains
      */
     public static function getAllowedDomains(): array
     {
+        if (self::$allowedDomains !== null) {
+            return self::$allowedDomains;
+        }
+
         if (self::isRrzeSettingsActive()) {
             $raw = self::getRrzeSettingsDomainsRaw();
         } else {
-            $options = get_option('rrze-formular', []);
-            $raw = is_array($options) ? ($options['allowed_domains'] ?? '') : '';
+            $options = Mailer::getOptions();
+            $raw = $options['allowed_domains'] ?? '';
         }
 
         $domains = self::parseDomains($raw);
@@ -71,7 +91,9 @@ class AllowedDomains
          */
         $domains = apply_filters('rrze_formular_allowed_domains', $domains);
 
-        return is_array($domains) ? array_values(array_unique(array_map('strval', $domains))) : [];
+        return self::$allowedDomains = is_array($domains)
+            ? array_values(array_unique(array_map('strval', $domains)))
+            : [];
     }
 
     public static function hasConfiguredDomains(): bool
@@ -94,8 +116,12 @@ class AllowedDomains
      */
     public static function getConfirmationDomains(): array
     {
-        $options = get_option('rrze-formular', []);
-        $raw = is_array($options) ? ($options['allowed_confirmation_domains'] ?? '') : '';
+        if (self::$confirmationDomains !== null) {
+            return self::$confirmationDomains;
+        }
+
+        $options = Mailer::getOptions();
+        $raw = $options['allowed_confirmation_domains'] ?? '';
         $domains = self::parseDomains($raw);
 
         if ($domains === []) {
@@ -107,7 +133,9 @@ class AllowedDomains
          */
         $domains = apply_filters('rrze_formular_confirmation_domains', $domains);
 
-        return is_array($domains) ? array_values(array_unique(array_map('strval', $domains))) : [];
+        return self::$confirmationDomains = is_array($domains)
+            ? array_values(array_unique(array_map('strval', $domains)))
+            : [];
     }
 
     public static function hasConfirmationDomainsConfigured(): bool

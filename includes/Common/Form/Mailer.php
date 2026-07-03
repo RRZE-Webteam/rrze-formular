@@ -6,10 +6,19 @@ defined('ABSPATH') || exit;
 
 class Mailer
 {
+    /**
+     * @var array<string, mixed>|null
+     */
+    private static ?array $optionsCache = null;
+
     public static function getOptions(): array
     {
-        $options = get_option('rrze-formular', []);
-        return is_array($options) ? $options : [];
+        if (self::$optionsCache === null) {
+            $options = get_option('rrze-formular', []);
+            self::$optionsCache = is_array($options) ? $options : [];
+        }
+
+        return self::$optionsCache;
     }
 
     public static function getAdministratorEmail(): string

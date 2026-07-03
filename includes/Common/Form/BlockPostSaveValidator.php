@@ -12,6 +12,11 @@ class BlockPostSaveValidator
     private const NOTICE_TRANSIENT = 'rrze_formular_recipient_save_notice';
 
     /**
+     * @var array<string, mixed>|null
+     */
+    private static ?array $editorConfigCache = null;
+
+    /**
      * @var list<string>
      */
     private const BLOCK_NAMES = [
@@ -37,10 +42,23 @@ class BlockPostSaveValidator
 
     public static function registerRestFilters(): void
     {
-        foreach (array_keys(get_post_types(['show_in_rest' => true])) as $postType) {
+        foreach (self::getValidatedPostTypes() as $postType) {
             add_filter("rest_pre_insert_{$postType}", [self::class, 'filterRestPost'], 99, 2);
             add_action("rest_after_insert_{$postType}", [self::class, 'enforceDraftAfterRestSave'], 20, 3);
         }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function getValidatedPostTypes(): array
+    {
+        $types = apply_filters('rrze_formular_validated_post_types', ['post', 'page']);
+
+        return array_values(array_unique(array_filter(array_map(
+            static fn ($type): string => sanitize_key((string) $type),
+            is_array($types) ? $types : []
+        ))));
     }
 
     /**
@@ -211,6 +229,10 @@ class BlockPostSaveValidator
      */
     private static function editorConfig(): array
     {
+        if (self::$editorConfigCache !== null) {
+            return self::$editorConfigCache;
+        }
+
         $userId = get_current_user_id();
         $notice = $userId > 0 ? get_transient(self::noticeKey($userId)) : false;
 
@@ -218,9 +240,11 @@ class BlockPostSaveValidator
             delete_transient(self::noticeKey($userId));
         }
 
-        return [
-            'allowedDomains' => AllowedDomains::getAllowedDomains(),
-            'domainsConfigured' => AllowedDomains::hasConfiguredDomains(),
+        $allowedDomains = AllowedDomains::getAllowedDomains();
+
+        return self::$editorConfigCache = [
+            'allowedDomains' => $allowedDomains,
+            'domainsConfigured' => $allowedDomains !== [],
             'confirmationDomains' => AllowedDomains::getConfirmationDomains(),
             'confirmationDomainsConfigured' => AllowedDomains::hasConfirmationDomainsConfigured(),
             'privacyPublished' => Privacy::isPublished(),

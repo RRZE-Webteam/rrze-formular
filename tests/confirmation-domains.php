@@ -51,9 +51,11 @@ namespace {
         return false;
     }
 
+    require dirname(__DIR__) . '/includes/Common/Form/Mailer.php';
     require dirname(__DIR__) . '/includes/Common/Form/AllowedDomains.php';
 
     use RRZE\Formular\Common\Form\AllowedDomains;
+    use RRZE\Formular\Common\Form\Mailer;
 
     $failures = 0;
 
@@ -67,6 +69,20 @@ namespace {
         }
     }
 
+    function reset_domain_caches(): void
+    {
+        foreach ([Mailer::class, AllowedDomains::class] as $class) {
+            $reflection = new ReflectionClass($class);
+            foreach ($reflection->getProperties() as $property) {
+                if (!$property->isStatic()) {
+                    continue;
+                }
+
+                $property->setValue(null, null);
+            }
+        }
+    }
+
     assert_true(
         !AllowedDomains::isConfirmationEmailAllowed('user@example.com'),
         'No configured domains must block confirmations'
@@ -76,6 +92,7 @@ namespace {
         'No configured domains must report confirmations disabled'
     );
 
+    reset_domain_caches();
     $rrze_test_options['rrze-formular']['allowed_domains'] = "uni-example.de\n";
     assert_true(
         AllowedDomains::isConfirmationEmailAllowed('user@uni-example.de'),
@@ -86,6 +103,7 @@ namespace {
         'Non-allowed confirmation domains must be rejected'
     );
 
+    reset_domain_caches();
     $rrze_test_options['rrze-formular']['allowed_confirmation_domains'] = "staff.example.org\n";
     assert_true(
         AllowedDomains::isConfirmationEmailAllowed('user@staff.example.org'),
