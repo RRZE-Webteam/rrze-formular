@@ -35,7 +35,7 @@ class FormRenderer
             <form class="rrze-formular__form"
                   method="post"
                   action="#"
-                  novalidate>
+                  novalidate<?php echo !empty($trustedConfig['attachCsv']) ? ' data-attach-csv="1"' : ''; ?>>
                 <input type="hidden" name="token" value="<?php echo esc_attr($tokenData['token']); ?>">
                 <input type="hidden" name="formConfig" value="<?php echo esc_attr($signedConfig['payload']); ?>">
                 <input type="hidden" name="formConfigSig" value="<?php echo esc_attr($signedConfig['signature']); ?>">

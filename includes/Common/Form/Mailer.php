@@ -266,7 +266,7 @@ class Mailer
     }
 
     /**
-     * @param list<string> $attachments Absolute paths to files attached to the operator mail.
+     * @param list<array{content: string, name: string, mime?: string}> $stringAttachments
      */
     public static function sendOperatorMail(
         string $recipient,
@@ -274,7 +274,7 @@ class Mailer
         string $body,
         array $headers = [],
         string $recipientName = '',
-        array $attachments = []
+        array $stringAttachments = []
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
@@ -288,48 +288,40 @@ class Mailer
         $subject = self::formatSubject($subject);
 
         $defaultHeaders = [
-            'Content-Type: text/plain; charset=UTF-8',
             sprintf('From: %s', self::formatMailboxAddress($fromEmail, $fromName)),
         ];
 
+        if ($stringAttachments === []) {
+            $defaultHeaders[] = 'Content-Type: text/plain; charset=UTF-8';
+        }
+
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        $attachmentPaths = [];
-        $attachmentNames = [];
+        $normalizedAttachments = [];
 
-        foreach ($attachments as $attachment) {
-            $path = '';
-            $name = '';
-
-            if (is_array($attachment)) {
-                $path = (string) ($attachment['path'] ?? '');
-                $name = (string) ($attachment['name'] ?? '');
-            } elseif (is_string($attachment)) {
-                $path = $attachment;
-            }
-
-            if ($path === '' || !is_readable($path)) {
+        foreach ($stringAttachments as $attachment) {
+            if (!is_array($attachment)) {
                 continue;
             }
 
-            $attachmentPaths[] = $path;
-            if ($name !== '') {
-                $attachmentNames[$path] = $name;
+            $content = (string) ($attachment['content'] ?? '');
+            $name = sanitize_file_name((string) ($attachment['name'] ?? ''));
+
+            if ($content === '' || $name === '') {
+                continue;
             }
+
+            $normalizedAttachments[] = [
+                'content' => $content,
+                'name' => $name,
+                'mime' => (string) ($attachment['mime'] ?? 'text/csv'),
+            ];
         }
 
-        if ($attachmentPaths !== []) {
-            $allHeaders = array_values(array_filter(
-                $allHeaders,
-                static fn(string $header): bool => stripos($header, 'Content-Type:') !== 0
-            ));
-        }
-
-        $configureRecipient = static function ($phpmailer) use (
+        $configureMailer = static function ($phpmailer) use (
             $recipientEmail,
             $recipientName,
-            $attachmentPaths,
-            $attachmentNames
+            $normalizedAttachments
         ): void {
             if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
                 return;
@@ -340,12 +332,14 @@ class Mailer
             $phpmailer->CharSet = 'UTF-8';
             $phpmailer->isHTML(false);
 
-            if ($attachmentPaths !== [] && method_exists($phpmailer, 'clearAttachments')) {
-                $phpmailer->clearAttachments();
-
-                foreach ($attachmentPaths as $path) {
-                    $name = $attachmentNames[$path] ?? '';
-                    $phpmailer->addAttachment($path, $name);
+            if ($normalizedAttachments !== [] && method_exists($phpmailer, 'addStringAttachment')) {
+                foreach ($normalizedAttachments as $attachment) {
+                    $phpmailer->addStringAttachment(
+                        $attachment['content'],
+                        $attachment['name'],
+                        'base64',
+                        $attachment['mime']
+                    );
                 }
             }
 
@@ -358,17 +352,16 @@ class Mailer
             }
         };
 
-        add_action('phpmailer_init', $configureRecipient, 100, 1);
+        add_action('phpmailer_init', $configureMailer, 99999, 1);
 
         $sent = (bool) wp_mail(
             self::formatMailboxAddress($recipientEmail, $recipientName),
             $subject,
             $body,
-            $allHeaders,
-            $attachmentPaths
+            $allHeaders
         );
 
-        remove_action('phpmailer_init', $configureRecipient, 100);
+        remove_action('phpmailer_init', $configureMailer, 99999);
 
         return $sent;
     }

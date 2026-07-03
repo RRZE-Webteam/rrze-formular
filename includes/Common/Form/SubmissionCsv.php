@@ -17,10 +17,10 @@ class SubmissionCsv
         }
 
         fwrite($handle, "\xEF\xBB\xBF");
-        fputcsv($handle, [__('Field', 'rrze-formular'), __('Value', 'rrze-formular')]);
+        fputcsv($handle, [__('Field', 'rrze-formular'), __('Value', 'rrze-formular')], ',', '"', '\\');
 
         foreach ($rows as $row) {
-            fputcsv($handle, [(string) ($row[0] ?? ''), (string) ($row[1] ?? '')]);
+            fputcsv($handle, [(string) ($row[0] ?? ''), (string) ($row[1] ?? '')], ',', '"', '\\');
         }
 
         rewind($handle);

@@ -95,20 +95,17 @@ class FormHandler
 
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
-        $attachments = [];
-        $tempFiles = [];
+        $stringAttachments = [];
 
-        if (!empty($attributes['attachCsv'])) {
-            $csvFilename = SubmissionCsv::filename((string) ($attributes['formTitle'] ?? ''));
+        if (!empty($trustedConfig['attachCsv'])) {
             $csvContent = SubmissionCsv::build($this->buildSubmissionRows($inputFields, $sanitized));
-            $csvPath = SubmissionCsv::writeTempFile($csvContent, $csvFilename);
 
-            if ($csvPath !== null) {
-                $attachments[] = [
-                    'path' => $csvPath,
-                    'name' => $csvFilename,
+            if ($csvContent !== '') {
+                $stringAttachments[] = [
+                    'content' => $csvContent,
+                    'name' => SubmissionCsv::filename((string) ($attributes['formTitle'] ?? '')),
+                    'mime' => 'text/csv',
                 ];
-                $tempFiles[] = $csvPath;
             }
         }
 
@@ -118,12 +115,8 @@ class FormHandler
             $mailBody,
             $operatorHeaders,
             $recipient['name'],
-            $attachments
+            $stringAttachments
         );
-
-        foreach ($tempFiles as $tempFile) {
-            wp_delete_file($tempFile);
-        }
 
         if (!$sent) {
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
