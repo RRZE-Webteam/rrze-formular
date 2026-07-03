@@ -7,25 +7,22 @@ defined('ABSPATH') || exit;
 class SubmissionCsv
 {
     /**
-     * @param list<array{0: string, 1: string}> $rows Label/value pairs.
+     * @param list<array{0: string, 1: string}> $rows Label/value pairs in field order.
      */
     public static function build(array $rows): string
     {
-        $lines = [
-            self::formatRow([
-                __('Field', 'rrze-formular'),
-                __('Value', 'rrze-formular'),
-            ]),
-        ];
+        $headers = [];
+        $values = [];
 
         foreach ($rows as $row) {
-            $lines[] = self::formatRow([
-                (string) ($row[0] ?? ''),
-                (string) ($row[1] ?? ''),
-            ]);
+            $headers[] = (string) ($row[0] ?? '');
+            $values[] = (string) ($row[1] ?? '');
         }
 
-        return "\xEF\xBB\xBF" . implode("\n", $lines);
+        return "\xEF\xBB\xBF"
+            . self::formatRow($headers)
+            . "\n"
+            . self::formatRow($values);
     }
 
     public static function filename(string $formTitle): string

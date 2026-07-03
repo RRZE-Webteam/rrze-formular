@@ -62,7 +62,7 @@ When enabled on the block and the submitter provides a valid e-mail address. If 
 
 ### When is a CSV file attached?
 
-When **Attach CSV to operator e-mail** is enabled on the block. The CSV contains one row per form field (label and submitted value) and is sent only with the operator mail, not with confirmation mails.
+When **Attach CSV to operator e-mail** is enabled on the block. The CSV contains field names in the first row and submitted values in the second row. It is sent only with the operator mail, not with confirmation mails.
 
 ### Why can I not publish a page with a form?
 

@@ -42,7 +42,15 @@ namespace RRZE\Formular\Common\Form {
     ];
 
     $content = SubmissionCsv::build($rows);
-    if ($content === '' || !str_contains($content, 'Max') || !str_contains($content, 'Field')) {
+    $lines = array_values(array_filter(explode("\n", trim($content, "\xEF\xBB\xBF")), static fn(string $line): bool => $line !== ''));
+
+    if (
+        count($lines) !== 2
+        || !str_contains($lines[0], 'First name')
+        || !str_contains($lines[0], 'E-mail')
+        || !str_contains($lines[1], 'Max')
+        || !str_contains($lines[1], 'max@example.com')
+    ) {
         fwrite(STDERR, "FAIL: CSV content invalid:\n{$content}\n");
         exit(1);
     }
