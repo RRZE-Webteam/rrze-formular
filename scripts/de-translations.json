@@ -18,6 +18,8 @@
   "Allowed e-mail domains": "Erlaubte E-Mail-Domains",
   "Allowed confirmation domains": "Erlaubte Bestätigungs-Domains",
   "Allowed recipient domains": "Erlaubte Empfänger-Domains",
+  "Adds a CSV file with the submitted field values to the e-mail sent to the recipient.": "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu.",
+  "Attach CSV to operator e-mail": "CSV an Betreiber-E-Mail anhängen",
   "Alumni contact": "Alumni-Kontakt",
   "Apply for a student assistant (HiWi) position.": "Bewerben Sie sich auf eine studentische Hilfskraft-Stelle (HiWi).",
   "Apply for an internship with our team.": "Bewerben Sie sich auf ein Praktikum in unserem Team.",

@@ -95,14 +95,36 @@ class FormHandler
 
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
+        $attachments = [];
+        $tempFiles = [];
+
+        if (!empty($attributes['attachCsv'])) {
+            $csvFilename = SubmissionCsv::filename((string) ($attributes['formTitle'] ?? ''));
+            $csvContent = SubmissionCsv::build($this->buildSubmissionRows($inputFields, $sanitized));
+            $csvPath = SubmissionCsv::writeTempFile($csvContent, $csvFilename);
+
+            if ($csvPath !== null) {
+                $attachments[] = [
+                    'path' => $csvPath,
+                    'name' => $csvFilename,
+                ];
+                $tempFiles[] = $csvPath;
+            }
+        }
 
         $sent = Mailer::sendOperatorMail(
             $recipient['email'],
             $subject,
             $mailBody,
             $operatorHeaders,
-            $recipient['name']
+            $recipient['name'],
+            $attachments
         );
+
+        foreach ($tempFiles as $tempFile) {
+            wp_delete_file($tempFile);
+        }
+
         if (!$sent) {
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
@@ -151,6 +173,7 @@ class FormHandler
             'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
             'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
+            'attachCsv' => !empty($trustedConfig['attachCsv']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
@@ -250,6 +273,19 @@ class FormHandler
             : get_bloginfo('name');
 
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
+    }
+
+    private function buildSubmissionRows(array $fields, array $values): array
+    {
+        $rows = [];
+
+        foreach ($fields as $field) {
+            $value = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
+            $label = $field['label'] !== '' ? $field['label'] : $field['id'];
+            $rows[] = [$label, $value];
+        }
+
+        return $rows;
     }
 
     private function buildMailBody(array $fields, array $values, ?array $ssoData): string

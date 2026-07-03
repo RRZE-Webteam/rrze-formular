@@ -4,7 +4,7 @@ Tags: form, contact, block, mail, spam-protection
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.2.8
+Stable tag: 1.2.9
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,6 +28,7 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 * Publishing is blocked when a page contains a form block but the required privacy page is not published
 * Publishing is blocked when a block recipient uses a domain that is not allowed
 * Optional confirmation e-mails to the submitter
+* Optional CSV attachment with submitted field values in operator e-mails (per block)
 * Invisible anti-spam measures (honeypot, time token, rate limiting)
 * SSO / logged-in user data via WordPress login or filter hook
 
@@ -46,7 +47,8 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 1. Add the block to a page or post.
 2. Choose a template or build your own fields.
 3. Optionally set a recipient e-mail and name on an allowed domain.
-4. Publish the page (requires a published privacy page and valid recipient configuration).
+4. Optionally enable **Attach CSV to operator e-mail** in the block settings.
+5. Publish the page (requires a published privacy page and valid recipient configuration).
 
 == Frequently Asked Questions ==
 
@@ -61,6 +63,10 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 = When are confirmation mails sent? =
 
 When enabled on the block and the submitter provides a valid e-mail address. If allowed domains are configured, the submitter address must match one of them.
+
+= When is a CSV file attached? =
+
+When **Attach CSV to operator e-mail** is enabled on the block. The CSV contains one row per form field (label and submitted value) and is sent only with the operator mail, not with confirmation mails.
 
 = Why can I not publish a page with a form? =
 
@@ -79,4 +85,5 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 * `rrze_formular_templates` – form templates in the block editor
 * `rrze_formular_token_ttl` – anti-spam token lifetime
 * `rrze_formular_allowed_confirmation_email` – whether a confirmation mail may be sent
+* `rrze_formular_privacy_page_reachable` – override privacy page availability check
 

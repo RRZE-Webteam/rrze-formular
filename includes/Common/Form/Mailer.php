@@ -265,12 +265,16 @@ class Mailer
         return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
     }
 
+    /**
+     * @param list<string> $attachments Absolute paths to files attached to the operator mail.
+     */
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
         string $body,
         array $headers = [],
-        string $recipientName = ''
+        string $recipientName = '',
+        array $attachments = []
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
@@ -290,13 +294,31 @@ class Mailer
 
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName): void {
+        $configureRecipient = static function ($phpmailer) use ($recipientEmail, $recipientName, $attachments): void {
             if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
                 return;
             }
 
             $phpmailer->clearAddresses();
             $phpmailer->addAddress($recipientEmail, $recipientName);
+
+            foreach ($attachments as $attachment) {
+                $path = '';
+                $name = '';
+
+                if (is_array($attachment)) {
+                    $path = (string) ($attachment['path'] ?? '');
+                    $name = (string) ($attachment['name'] ?? '');
+                } elseif (is_string($attachment)) {
+                    $path = $attachment;
+                }
+
+                if ($path === '' || !is_readable($path)) {
+                    continue;
+                }
+
+                $phpmailer->addAttachment($path, $name);
+            }
 
             // PHP mail() does not write the To header into the message body.
             if ($phpmailer->Mailer === 'mail') {
