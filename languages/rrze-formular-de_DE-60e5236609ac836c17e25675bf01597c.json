@@ -57,6 +57,9 @@
       "Age": [
         "Alter"
       ],
+      "Allowed confirmation domains": [
+        "Erlaubte Bestätigungs-Domains"
+      ],
       "Allowed e-mail domains": [
         "Erlaubte E-Mail-Domains"
       ],
@@ -107,6 +110,12 @@
       ],
       "Confirm selection": [
         "Auswahl bestätigen"
+      ],
+      "Confirmation mails per address per hour": [
+        "Bestätigungs-E-Mails pro Adresse und Stunde"
+      ],
+      "Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option.": [
+        "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
       ],
       "Confirmation: %s": [
         "Bestätigung: %s"
@@ -249,6 +258,9 @@
       "Form template": [
         "Formular-Vorlage"
       ],
+      "Form: %s": [
+        "Formular: %s"
+      ],
       "General": [
         "Allgemein"
       ],
@@ -354,6 +366,9 @@
       "Maximum number of accepted submissions from one IP address per hour.": [
         "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
       ],
+      "Maximum number of confirmation mails sent to the same submitter e-mail address per hour.": [
+        "Maximale Anzahl von Bestätigungs-E-Mails an dieselbe Absender-Adresse pro Stunde."
+      ],
       "Media outlet": [
         "Medium / Redaktion"
       ],
@@ -423,9 +438,6 @@
       "Online": [
         "Online"
       ],
-      "Only sent when the submitter e-mail uses an allowed domain.": [
-        "Wird nur gesendet, wenn die Absender-E-Mail eine erlaubte Domain verwendet."
-      ],
       "Open the General tab to configure default form behaviour.": [
         "Öffnen Sie die Registerkarte Allgemein, um das Standardverhalten der Formulare zu konfigurieren."
       ],
@@ -455,6 +467,12 @@
       ],
       "Optional. Must use an allowed domain. Otherwise the default recipient is used.": [
         "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
+      ],
+      "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains above. If no domains are configured anywhere, confirmation mails are never sent.": [
+        "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die oben konfigurierten erlaubten Empfänger-Domains zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
+      ],
+      "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains from RRZE Settings. If no domains are configured anywhere, confirmation mails are never sent.": [
+        "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die erlaubten Empfänger-Domains aus den RRZE-Einstellungen zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
       ],
       "Organisation / company": [
         "Organisation / Unternehmen"
@@ -648,6 +666,9 @@
       "Sending…": [
         "Wird gesendet…"
       ],
+      "Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches.": [
+        "Sendet eine kurze Empfangsbestätigung ohne übermittelte Feldwerte. Wird nur zugestellt, wenn erlaubte Bestätigungs-Domains konfiguriert sind und die Absender-Adresse passt."
+      ],
       "Settings issues detected.": [
         "Probleme in den Einstellungen erkannt."
       ],
@@ -815,9 +836,6 @@
       ],
       "Up to 5 hours": [
         "Bis zu 5 Stunden"
-      ],
-      "Value": [
-        "Value"
       ],
       "Vegan": [
         "Vegan"
