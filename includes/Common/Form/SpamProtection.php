@@ -115,7 +115,11 @@ class SpamProtection
     {
         $nonce = trim($nonce);
 
-        return $nonce !== '' && self::deleteTransientIfExists(self::getNonceKey($nonce));
+        if ($nonce === '') {
+            return false;
+        }
+
+        return (bool) delete_transient(self::getNonceKey($nonce));
     }
 
     /**
@@ -189,33 +193,6 @@ class SpamProtection
     private static function isNonceValid(string $nonce): bool
     {
         return get_transient(self::getNonceKey($nonce)) !== false;
-    }
-
-    private static function deleteTransientIfExists(string $transient): bool
-    {
-        global $wpdb;
-
-        $option = '_transient_' . $transient;
-        $deleted = (int) $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$wpdb->options} WHERE option_name = %s",
-            $option
-        ));
-
-        if ($deleted <= 0) {
-            return false;
-        }
-
-        $timeout = '_transient_timeout_' . $transient;
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$wpdb->options} WHERE option_name = %s",
-            $timeout
-        ));
-
-        wp_cache_delete($option, 'options');
-        wp_cache_delete($timeout, 'options');
-        wp_cache_delete($transient, 'transient');
-
-        return true;
     }
 
     private static function tryIncrementCounter(string $storageKey, int $ttl, int $limit): bool
