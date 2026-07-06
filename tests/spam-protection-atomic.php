@@ -22,6 +22,8 @@ namespace {
         ],
     ];
     $wpdb_rows = [];
+    $object_cache_rows = [];
+    $use_ext_object_cache = false;
 
     class RRZE_Test_WPDB
     {
@@ -108,7 +110,13 @@ namespace {
 
     function set_transient($transient, $value, $expiration)
     {
-        global $wpdb_rows;
+        global $wpdb_rows, $object_cache_rows, $use_ext_object_cache;
+        if ($use_ext_object_cache) {
+            $object_cache_rows[$transient] = $value;
+
+            return true;
+        }
+
         $wpdb_rows['_transient_' . $transient] = $value;
 
         return true;
@@ -116,13 +124,34 @@ namespace {
 
     function get_transient($transient)
     {
-        global $wpdb_rows;
+        global $wpdb_rows, $object_cache_rows, $use_ext_object_cache;
+        if ($use_ext_object_cache) {
+            return $object_cache_rows[$transient] ?? false;
+        }
 
         return $wpdb_rows['_transient_' . $transient] ?? false;
     }
 
-    function wp_cache_delete($key, $group = '')
+    function delete_transient($transient)
     {
+        global $wpdb_rows, $object_cache_rows, $use_ext_object_cache;
+        if ($use_ext_object_cache) {
+            if (!isset($object_cache_rows[$transient])) {
+                return false;
+            }
+
+            unset($object_cache_rows[$transient]);
+
+            return true;
+        }
+
+        $option = '_transient_' . $transient;
+        if (!isset($wpdb_rows[$option])) {
+            return false;
+        }
+
+        unset($wpdb_rows[$option], $wpdb_rows['_transient_timeout_' . $transient]);
+
         return true;
     }
 
@@ -164,6 +193,15 @@ namespace {
     assert_true(SpamProtection::claimTokenNonce($nonce), 'First claim must succeed');
     assert_true(!SpamProtection::claimTokenNonce($nonce), 'Second claim must fail');
     assert_true(!SpamProtection::claimTokenNonce($nonce), 'Parallel-style second claim must stay rejected');
+
+    $use_ext_object_cache = true;
+    $objectCacheNonce = 'nonce-object-cache';
+    set_transient('rrze_fw_nonce_' . hash('sha256', $objectCacheNonce), 1, 60);
+
+    assert_true(SpamProtection::claimTokenNonce($objectCacheNonce), 'Object-cache transient claim must succeed');
+    assert_true(!SpamProtection::claimTokenNonce($objectCacheNonce), 'Object-cache transient claim must be one-time');
+
+    $use_ext_object_cache = false;
 
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'First submission slot must be acquired');
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'Second submission slot must be acquired');

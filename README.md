@@ -84,7 +84,7 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 Protection is enforced server-side in `FormHandler`:
 
 - **Signed form configuration** (`formConfig` + `formConfigSig`) — only fields defined in the block can be submitted
-- **One-time submission token** (`token`) — issued via `POST /wp-json/rrze-formular/v1/token` when the page loads in the browser (not during HTML rendering), HMAC-signed, bound to the form config, atomically consumed before mail delivery
+- **One-time submission token** (`token`) — issued lazily via `POST /wp-json/rrze-formular/v1/token` when a visitor interacts with or submits the form (not during HTML rendering), HMAC-signed, bound to the form config, consumed before mail delivery
 - **Minimum submit delay** — rejects submissions faster than the configured threshold
 - **Honeypot** (`website`) — must stay empty
 - **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
@@ -92,6 +92,12 @@ Protection is enforced server-side in `FormHandler`:
 - **Field validation** — required fields, e-mail format, allowed recipient domains
 
 The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.
+
+### Cache compatibility
+
+Form rendering is designed to be cache-safe. Rendered HTML contains an empty token field plus a signed form configuration, but it does not create or persist submission tokens. This keeps normal page rendering, REST-rendered post output and feed-rendered output free of token transient writes.
+
+Full-page caches may cache pages that contain forms. The per-submission token is fetched later in the browser via the public token REST endpoint and is consumed through the WordPress Transients API during submission.
 
 ## Hooks
 

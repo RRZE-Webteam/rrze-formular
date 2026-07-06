@@ -13,6 +13,7 @@ namespace {
     }
 
     $transient_writes = 0;
+    $rrze_formular_test_is_feed = false;
 
     function __($text, $domain = 'default')
     {
@@ -75,6 +76,13 @@ namespace {
     function get_the_ID()
     {
         return 42;
+    }
+
+    function is_feed()
+    {
+        global $rrze_formular_test_is_feed;
+
+        return $rrze_formular_test_is_feed;
     }
 
     function wp_json_encode($data, $options = 0, $depth = 512)
@@ -156,6 +164,28 @@ namespace {
     assert_true(str_contains($html, 'name="token" value=""'), 'Rendered form must ship with an empty token field');
     assert_true(str_contains($html, 'data-post-id="42"'), 'Rendered form must expose the post ID for token issuance');
     assert_true(!preg_match('/name="token" value="[^"]+"/', $html), 'Rendered HTML must not contain a prefilled token');
+
+    define('REST_REQUEST', true);
+    $transient_writes = 0;
+    $restHtml = FormRenderer::render([
+        'formTitle' => 'REST Contact',
+        'fields' => [
+            ['id' => 'email', 'type' => 'email', 'label' => 'E-mail', 'placeholder' => '', 'required' => true],
+        ],
+    ]);
+    assert_true($transient_writes === 0, 'REST-rendered form output must not write submission token transients');
+    assert_true(str_contains($restHtml, 'name="token" value=""'), 'REST-rendered form output must ship with an empty token field');
+
+    $rrze_formular_test_is_feed = true;
+    $transient_writes = 0;
+    $feedHtml = FormRenderer::render([
+        'formTitle' => 'Feed Contact',
+        'fields' => [
+            ['id' => 'email', 'type' => 'email', 'label' => 'E-mail', 'placeholder' => '', 'required' => true],
+        ],
+    ]);
+    assert_true($transient_writes === 0, 'Feed-rendered form output must not write submission token transients');
+    assert_true(str_contains($feedHtml, 'name="token" value=""'), 'Feed-rendered form output must ship with an empty token field');
 
     if ($failures === 0) {
         echo "OK: form renderer is tokenless\n";
