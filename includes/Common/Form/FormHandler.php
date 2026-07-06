@@ -29,7 +29,7 @@ class FormHandler
         }
 
         $configHash = FormConfigAuth::configHash($trustedConfig);
-        $tokenData = SpamProtection::verifyToken(
+        $tokenData = SpamProtection::claimToken(
             $token,
             $configHash,
             (string) ($payload['pageUrl'] ?? '')
@@ -68,10 +68,6 @@ class FormHandler
         );
         if ($recipientError !== null) {
             return $this->error($recipientError, 422);
-        }
-
-        if (!SpamProtection::claimTokenNonce((string) ($tokenData['nonce'] ?? ''))) {
-            return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
         }
 
         if (!SpamProtection::tryAcquireSubmissionSlot()) {

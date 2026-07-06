@@ -19,6 +19,7 @@ namespace {
     $options = [
         'rrze-formular' => [
             'rate_limit_per_hour' => '2',
+            'min_submit_seconds' => '1',
         ],
     ];
     $wpdb_rows = [];
@@ -160,6 +161,26 @@ namespace {
         return (string) $str;
     }
 
+    function sanitize_key($key)
+    {
+        return strtolower(preg_replace('/[^a-z0-9_\-]/', '', (string) $key) ?? '');
+    }
+
+    function wp_json_encode($data, $options = 0, $depth = 512)
+    {
+        return json_encode($data, $options, $depth);
+    }
+
+    function wp_salt($scheme = 'auth')
+    {
+        return 'test-salt-' . $scheme;
+    }
+
+    function url_to_postid($url)
+    {
+        return 0;
+    }
+
     function sanitize_email($email)
     {
         return trim((string) $email);
@@ -187,6 +208,20 @@ namespace {
         }
     }
 
+    function build_test_token(string $nonce, string $configHash): string
+    {
+        $payload = wp_json_encode([
+            'issued_at' => time() - 5,
+            'expires_at' => time() + 300,
+            'form_id' => 'rrze-fw-test',
+            'post_id' => 0,
+            'config' => $configHash,
+            'nonce' => $nonce,
+        ], JSON_UNESCAPED_SLASHES);
+
+        return base64_encode($payload . '.' . hash_hmac('sha256', (string) $payload, wp_salt('rrze-formular-token')));
+    }
+
     $nonce = 'nonce-123';
     set_transient('rrze_fw_nonce_' . hash('sha256', $nonce), 1, 60);
 
@@ -202,6 +237,15 @@ namespace {
     assert_true(!SpamProtection::claimTokenNonce($objectCacheNonce), 'Object-cache transient claim must be one-time');
 
     $use_ext_object_cache = false;
+
+    $claimNonce = 'nonce-claim-token';
+    $configHash = 'config-hash';
+    $token = build_test_token($claimNonce, $configHash);
+    set_transient('rrze_fw_nonce_' . hash('sha256', $claimNonce), 1, 60);
+
+    assert_true(is_array(SpamProtection::claimToken($token, $configHash)), 'Token claim must validate and consume in one step');
+    assert_true(SpamProtection::claimToken($token, $configHash) === null, 'Second token claim must fail');
+    assert_true(SpamProtection::verifyToken($token, $configHash) === null, 'Consumed token must no longer verify');
 
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'First submission slot must be acquired');
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'Second submission slot must be acquired');

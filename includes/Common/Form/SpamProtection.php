@@ -91,7 +91,25 @@ class SpamProtection
     }
 
     /**
+     * @return array<string, mixed>|null Decoded token payload when valid and claimed.
+     */
+    public static function claimToken(string $token, string $configHash, string $pageUrl = ''): ?array
+    {
+        $data = self::validateTokenPayload($token, $configHash, $pageUrl);
+        if ($data === null) {
+            return null;
+        }
+
+        if (!self::claimTokenNonce((string) ($data['nonce'] ?? ''))) {
+            return null;
+        }
+
+        return $data;
+    }
+
+    /**
      * @return array<string, mixed>|null Decoded token payload when valid and nonce unused.
+     * @deprecated Use claimToken() for submission processing.
      */
     public static function verifyToken(string $token, string $configHash, string $pageUrl = ''): ?array
     {
@@ -100,12 +118,7 @@ class SpamProtection
             return null;
         }
 
-        $nonce = (string) ($data['nonce'] ?? '');
-        if ($nonce === '' || !self::isNonceValid($nonce)) {
-            return null;
-        }
-
-        return $data;
+        return self::isNonceValid((string) ($data['nonce'] ?? '')) ? $data : null;
     }
 
     /**
