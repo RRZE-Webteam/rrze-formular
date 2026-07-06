@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Standalone checks for recipient domain resolution fallbacks.
+ * Standalone checks for recipient domain allowlist behavior.
  * Run: php tests/allowed-domains-fallback.php
  */
 
@@ -19,6 +19,8 @@ namespace {
         ],
         'admin_email' => 'admin@uni-example.de',
     ];
+    $rrze_test_site_options = [];
+    $rrze_test_filters = [];
 
     function get_option(string $name, mixed $default = false): mixed
     {
@@ -29,7 +31,7 @@ namespace {
 
     function apply_filters(string $hook, mixed $value, mixed ...$args): mixed
     {
-        return $value;
+        return $GLOBALS['rrze_test_filters'][$hook] ?? $value;
     }
 
     function sanitize_email(string $email): string
@@ -54,7 +56,7 @@ namespace {
 
     function get_site_option(string $name, mixed $default = false): mixed
     {
-        return $default;
+        return $GLOBALS['rrze_test_site_options'][$name] ?? $default;
     }
 
     function get_user_by(string $field, mixed $value): false
@@ -107,12 +109,16 @@ namespace RRZE\Formular\Common\Form {
     $GLOBALS['rrze_test_options']['rrze-formular']['allowed_confirmation_domains'] = "uni-example.de\n";
     reset_allowed_domains_cache();
     assert_true(
-        AllowedDomains::getAllowedDomains() === ['uni-example.de'],
-        'Confirmation domains are used when recipient domains are empty'
+        AllowedDomains::getAllowedDomains() === [],
+        'Confirmation domains are not used for recipient allowlists'
     );
     assert_true(
-        AllowedDomains::isBlockRecipientAllowed('team@uni-example.de'),
-        'Recipient on confirmation fallback domain is allowed'
+        !AllowedDomains::isBlockRecipientAllowed('team@uni-example.de'),
+        'Recipient on confirmation-only domain is not allowed'
+    );
+    assert_true(
+        AllowedDomains::getConfirmationDomains() === ['uni-example.de'],
+        'Confirmation domains remain available only for confirmations'
     );
 
     $GLOBALS['rrze_test_options']['rrze-formular']['allowed_domains'] = "fau.de\n";
@@ -125,6 +131,47 @@ namespace RRZE\Formular\Common\Form {
     assert_true(
         AllowedDomains::getConfirmationDomains() === [],
         'Confirmation domains require a dedicated allowlist'
+    );
+
+    assert_true(
+        AllowedDomains::parseDomains("Example.ORG\nexample.org\n@MAIL.EXAMPLE.ORG.\nsub.example.org\n") === [
+            'example.org',
+            'mail.example.org',
+            'sub.example.org',
+        ],
+        'Domain parsing normalizes, trims and deduplicates valid domains'
+    );
+    assert_true(
+        AllowedDomains::parseDomains("http://example.org\nbad domain\n_invalid.example.org\nexample\nvalid.example.org\n") === [
+            'valid.example.org',
+        ],
+        'Domain parsing rejects syntactically invalid domains'
+    );
+    assert_true(
+        AllowedDomains::invalidDomains("http://example.org\nbad domain\nvalid.example.org\n") === [
+            'http://example.org',
+            'bad domain',
+        ],
+        'Invalid configured domains are reported'
+    );
+    assert_true(
+        AllowedDomains::sanitizeDomainList("Example.ORG\nexample.org\n@MAIL.EXAMPLE.ORG.\n") === "example.org\nmail.example.org",
+        'Domain list sanitization stores normalized unique lines'
+    );
+
+    $GLOBALS['rrze_test_options']['rrze-formular']['allowed_domains'] = "plugin.example.org\n";
+    $GLOBALS['rrze_test_filters']['rrze_formular_rrze_settings_active'] = true;
+    reset_allowed_domains_cache();
+    assert_true(
+        AllowedDomains::getAllowedDomains() === [],
+        'Active RRZE Settings with no domains does not fall back to plugin domains'
+    );
+
+    $GLOBALS['rrze_test_site_options']['rrze_formular_allowedDomains'] = "settings.example.org\n";
+    reset_allowed_domains_cache();
+    assert_true(
+        AllowedDomains::getAllowedDomains() === ['settings.example.org'],
+        'Active RRZE Settings uses rrze_formular_allowedDomains'
     );
 
     echo "OK: allowed-domains-fallback\n";

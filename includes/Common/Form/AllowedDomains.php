@@ -79,18 +79,12 @@ class AllowedDomains
 
         $domains = self::loadPrimaryRecipientDomains();
 
-        if ($domains === []) {
-            $domains = self::parseDomains(self::getPluginConfirmationDomainsRaw());
-        }
-
         /**
          * @param list<string> $domains
          */
         $domains = apply_filters('rrze_formular_allowed_domains', $domains);
 
-        return self::$allowedDomains = is_array($domains)
-            ? array_values(array_unique(array_map('strval', $domains)))
-            : [];
+        return self::$allowedDomains = self::parseDomains($domains);
     }
 
     /**
@@ -98,12 +92,8 @@ class AllowedDomains
      */
     private static function loadPrimaryRecipientDomains(): array
     {
-        $raw = self::isRrzeSettingsActive() ? self::getRrzeSettingsDomainsRaw() : '';
-
-        $domains = self::parseDomains($raw);
-
-        if ($domains !== []) {
-            return $domains;
+        if (self::isRrzeSettingsActive()) {
+            return self::parseDomains(self::getRrzeSettingsDomainsRaw());
         }
 
         return self::parseDomains(self::getPluginRecipientDomainsRaw());
@@ -154,9 +144,7 @@ class AllowedDomains
          */
         $domains = apply_filters('rrze_formular_confirmation_domains', $domains);
 
-        return self::$confirmationDomains = is_array($domains)
-            ? array_values(array_unique(array_map('strval', $domains)))
-            : [];
+        return self::$confirmationDomains = self::parseDomains($domains);
     }
 
     public static function hasConfirmationDomainsConfigured(): bool
@@ -202,6 +190,40 @@ class AllowedDomains
      */
     public static function parseDomains(mixed $raw): array
     {
+        return self::normalizeDomains(self::domainLines($raw));
+    }
+
+    public static function sanitizeDomainList(mixed $raw): string
+    {
+        return implode(PHP_EOL, self::parseDomains($raw));
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function invalidDomains(mixed $raw): array
+    {
+        $invalid = [];
+
+        foreach (self::domainLines($raw) as $line) {
+            $domain = self::normalizeDomain((string) $line);
+            if ($domain === '') {
+                continue;
+            }
+
+            if (!self::isValidDomain($domain)) {
+                $invalid[] = $domain;
+            }
+        }
+
+        return array_values(array_unique($invalid));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function domainLines(mixed $raw): array
+    {
         $lines = [];
 
         if (is_array($raw)) {
@@ -224,17 +246,67 @@ class AllowedDomains
             $lines = preg_split('/\R/', (string) $raw) ?: [];
         }
 
+        return array_values(array_map('strval', $lines));
+    }
+
+    /**
+     * @param list<string> $lines
+     * @return list<string>
+     */
+    private static function normalizeDomains(array $lines): array
+    {
         $domains = [];
 
         foreach ($lines as $line) {
-            $line = strtolower(trim((string) $line));
-            $line = trim($line, '@.');
-            if ($line !== '') {
-                $domains[] = $line;
+            $domain = self::normalizeDomain($line);
+            if ($domain !== '' && self::isValidDomain($domain)) {
+                $domains[] = $domain;
             }
         }
 
         return array_values(array_unique($domains));
+    }
+
+    private static function normalizeDomain(string $domain): string
+    {
+        $domain = strtolower(trim($domain));
+        $domain = trim($domain, '@.');
+
+        if ($domain === '') {
+            return '';
+        }
+
+        if (function_exists('idn_to_ascii') && defined('IDNA_DEFAULT') && defined('INTL_IDNA_VARIANT_UTS46')) {
+            $ascii = idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+            if (is_string($ascii) && $ascii !== '') {
+                $domain = strtolower($ascii);
+            }
+        }
+
+        return $domain;
+    }
+
+    private static function isValidDomain(string $domain): bool
+    {
+        if ($domain === '' || strlen($domain) > 253 || !str_contains($domain, '.')) {
+            return false;
+        }
+
+        if (preg_match('/[\s\/@:]/', $domain)) {
+            return false;
+        }
+
+        foreach (explode('.', $domain) as $label) {
+            if ($label === '' || strlen($label) > 63) {
+                return false;
+            }
+
+            if (!preg_match('/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/', $label)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function getRrzeSettingsDomainsRaw(): mixed

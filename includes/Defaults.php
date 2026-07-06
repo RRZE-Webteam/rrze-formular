@@ -109,6 +109,13 @@ class Defaults
                 'description' => __('One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains.', 'rrze-formular'),
                 'type' => 'textarea',
                 'default' => '',
+                'sanitize' => static fn($value): string => AllowedDomains::sanitizeDomainList($value),
+                'validate' => [
+                    [
+                        'callback' => static fn($value): bool => AllowedDomains::invalidDomains($value) === [],
+                        'feedback' => __('Please enter one valid domain per line.', 'rrze-formular'),
+                    ],
+                ],
             ];
         }
 
@@ -118,6 +125,13 @@ class Defaults
             'description' => __('One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails.', 'rrze-formular'),
             'type' => 'textarea',
             'default' => '',
+            'sanitize' => static fn($value): string => AllowedDomains::sanitizeDomainList($value),
+            'validate' => [
+                [
+                    'callback' => static fn($value): bool => AllowedDomains::invalidDomains($value) === [],
+                    'feedback' => __('Please enter one valid domain per line.', 'rrze-formular'),
+                ],
+            ],
         ];
 
         return $fields;
