@@ -7,6 +7,7 @@ defined('ABSPATH') || exit;
 class SpamProtection
 {
     private const DEFAULT_TOKEN_TTL = 1800;
+    private const CACHE_GROUP = 'rrze_formular_spam';
 
     /**
      * @return array{token: string, issuedAt: int}
@@ -132,6 +133,10 @@ class SpamProtection
             return false;
         }
 
+        if (self::usePersistentObjectCache()) {
+            return (bool) wp_cache_delete(self::getNonceKey($nonce), self::CACHE_GROUP);
+        }
+
         return (bool) delete_transient(self::getNonceKey($nonce));
     }
 
@@ -155,6 +160,14 @@ class SpamProtection
         $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 10));
 
         return self::tryIncrementCounter(self::getRateLimitKey(), HOUR_IN_SECONDS, $limit);
+    }
+
+    public static function tryAcquireTokenIssueSlot(): bool
+    {
+        $limit = (int) apply_filters('rrze_formular_token_rate_limit_per_minute', 30);
+        $limit = max(1, min($limit, 600));
+
+        return self::tryIncrementCounter(self::getTokenIssueRateLimitKey(), MINUTE_IN_SECONDS, $limit);
     }
 
     public static function tryAcquireConfirmationSlot(string $email): bool
@@ -200,15 +213,51 @@ class SpamProtection
     private static function storeNonce(string $nonce, int $expiresAt): void
     {
         $ttl = max(60, $expiresAt - time());
+
+        if (self::usePersistentObjectCache()) {
+            wp_cache_add(self::getNonceKey($nonce), 1, self::CACHE_GROUP, $ttl);
+            return;
+        }
+
         set_transient(self::getNonceKey($nonce), 1, $ttl);
     }
 
     private static function isNonceValid(string $nonce): bool
     {
+        if (self::usePersistentObjectCache()) {
+            return wp_cache_get(self::getNonceKey($nonce), self::CACHE_GROUP) !== false;
+        }
+
         return get_transient(self::getNonceKey($nonce)) !== false;
     }
 
     private static function tryIncrementCounter(string $storageKey, int $ttl, int $limit): bool
+    {
+        if (self::usePersistentObjectCache()) {
+            return self::tryIncrementCacheCounter($storageKey, $ttl, $limit);
+        }
+
+        return self::tryIncrementOptionCounter($storageKey, $ttl, $limit);
+    }
+
+    private static function tryIncrementCacheCounter(string $storageKey, int $ttl, int $limit): bool
+    {
+        $name = 'rrze_fw_cnt_' . md5($storageKey);
+
+        if (wp_cache_add($name, 1, self::CACHE_GROUP, $ttl)) {
+            return true;
+        }
+
+        $count = wp_cache_incr($name, 1, self::CACHE_GROUP);
+        if ($count === false) {
+            wp_cache_set($name, 1, self::CACHE_GROUP, $ttl);
+            $count = 1;
+        }
+
+        return (int) $count <= $limit;
+    }
+
+    private static function tryIncrementOptionCounter(string $storageKey, int $ttl, int $limit): bool
     {
         global $wpdb;
 
@@ -236,6 +285,11 @@ class SpamProtection
         return $count > 0 && $count <= $limit;
     }
 
+    private static function usePersistentObjectCache(): bool
+    {
+        return function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache();
+    }
+
     private static function getNonceKey(string $nonce): string
     {
         return 'rrze_fw_nonce_' . hash('sha256', $nonce);
@@ -249,6 +303,11 @@ class SpamProtection
     private static function getConfirmationRateLimitKey(string $email): string
     {
         return 'rrze_fw_confirm_' . md5(strtolower($email));
+    }
+
+    private static function getTokenIssueRateLimitKey(): string
+    {
+        return 'rrze_fw_token_' . md5(self::getClientIp());
     }
 
     private static function getClientIp(): string

@@ -16,6 +16,10 @@ namespace {
         define('HOUR_IN_SECONDS', 3600);
     }
 
+    if (!defined('MINUTE_IN_SECONDS')) {
+        define('MINUTE_IN_SECONDS', 60);
+    }
+
     $options = [
         'rrze-formular' => [
             'rate_limit_per_hour' => '2',
@@ -25,6 +29,7 @@ namespace {
     $wpdb_rows = [];
     $object_cache_rows = [];
     $use_ext_object_cache = false;
+    $test_filters = [];
 
     class RRZE_Test_WPDB
     {
@@ -156,6 +161,78 @@ namespace {
         return true;
     }
 
+    function wp_using_ext_object_cache()
+    {
+        global $use_ext_object_cache;
+
+        return $use_ext_object_cache;
+    }
+
+    function wp_cache_key(string $key, string $group = ''): string
+    {
+        return $group . ':' . $key;
+    }
+
+    function wp_cache_add($key, $value, $group = '', $expiration = 0)
+    {
+        global $object_cache_rows;
+
+        $cacheKey = wp_cache_key((string) $key, (string) $group);
+        if (array_key_exists($cacheKey, $object_cache_rows)) {
+            return false;
+        }
+
+        $object_cache_rows[$cacheKey] = $value;
+
+        return true;
+    }
+
+    function wp_cache_set($key, $value, $group = '', $expiration = 0)
+    {
+        global $object_cache_rows;
+
+        $object_cache_rows[wp_cache_key((string) $key, (string) $group)] = $value;
+
+        return true;
+    }
+
+    function wp_cache_get($key, $group = '')
+    {
+        global $object_cache_rows;
+
+        $cacheKey = wp_cache_key((string) $key, (string) $group);
+
+        return $object_cache_rows[$cacheKey] ?? false;
+    }
+
+    function wp_cache_incr($key, $offset = 1, $group = '')
+    {
+        global $object_cache_rows;
+
+        $cacheKey = wp_cache_key((string) $key, (string) $group);
+        if (!array_key_exists($cacheKey, $object_cache_rows)) {
+            return false;
+        }
+
+        $object_cache_rows[$cacheKey] = (int) $object_cache_rows[$cacheKey] + (int) $offset;
+
+        return $object_cache_rows[$cacheKey];
+    }
+
+    function wp_cache_delete($key, $group = '')
+    {
+        global $object_cache_rows;
+
+        $cacheKey = wp_cache_key((string) $key, (string) $group);
+        if (!array_key_exists($cacheKey, $object_cache_rows)) {
+            return false;
+        }
+
+        unset($object_cache_rows[$cacheKey]);
+
+        return true;
+    }
+
     function sanitize_text_field($str)
     {
         return (string) $str;
@@ -176,6 +253,11 @@ namespace {
         return 'test-salt-' . $scheme;
     }
 
+    function wp_generate_uuid4()
+    {
+        return '00000000-0000-4000-8000-000000000001';
+    }
+
     function url_to_postid($url)
     {
         return 0;
@@ -189,6 +271,13 @@ namespace {
     function is_email($email)
     {
         return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    function apply_filters($hook, $value, ...$args)
+    {
+        global $test_filters;
+
+        return $test_filters[$hook] ?? $value;
     }
 
     require dirname(__DIR__) . '/includes/Common/Form/Mailer.php';
@@ -231,10 +320,21 @@ namespace {
 
     $use_ext_object_cache = true;
     $objectCacheNonce = 'nonce-object-cache';
-    set_transient('rrze_fw_nonce_' . hash('sha256', $objectCacheNonce), 1, 60);
+    wp_cache_add(
+        'rrze_fw_nonce_' . hash('sha256', $objectCacheNonce),
+        1,
+        'rrze_formular_spam',
+        60
+    );
 
     assert_true(SpamProtection::claimTokenNonce($objectCacheNonce), 'Object-cache transient claim must succeed');
     assert_true(!SpamProtection::claimTokenNonce($objectCacheNonce), 'Object-cache transient claim must be one-time');
+
+    $wpdb_rows = [];
+    $object_cache_rows = [];
+    SpamProtection::createToken('rrze-fw-test', 'config-hash', 0);
+    assert_true($wpdb_rows === [], 'Object-cache token creation must not write transient rows');
+    assert_true($object_cache_rows !== [], 'Object-cache token creation must store nonce in object cache');
 
     $use_ext_object_cache = false;
 
@@ -250,6 +350,21 @@ namespace {
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'First submission slot must be acquired');
     assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'Second submission slot must be acquired');
     assert_true(!SpamProtection::tryAcquireSubmissionSlot(), 'Third submission slot must be rejected with limit 2');
+
+    $optionsBeforeObjectCacheCounters = $options;
+    $object_cache_rows = [];
+    $use_ext_object_cache = true;
+
+    assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'Object-cache submission slot 1 must be acquired');
+    assert_true(SpamProtection::tryAcquireSubmissionSlot(), 'Object-cache submission slot 2 must be acquired');
+    assert_true(!SpamProtection::tryAcquireSubmissionSlot(), 'Object-cache submission slot 3 must be rejected');
+    assert_true($options === $optionsBeforeObjectCacheCounters, 'Object-cache counters must not write options');
+
+    $test_filters['rrze_formular_token_rate_limit_per_minute'] = 2;
+    assert_true(SpamProtection::tryAcquireTokenIssueSlot(), 'Object-cache token slot 1 must be acquired');
+    assert_true(SpamProtection::tryAcquireTokenIssueSlot(), 'Object-cache token slot 2 must be acquired');
+    assert_true(!SpamProtection::tryAcquireTokenIssueSlot(), 'Object-cache token slot 3 must be rejected');
+    assert_true($options === $optionsBeforeObjectCacheCounters, 'Token issue limiter must not write options with object cache');
 
     if ($failures === 0) {
         echo "OK: spam protection atomic checks passed\n";

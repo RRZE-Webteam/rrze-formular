@@ -71,6 +71,13 @@ class FormAPI
             ], 400);
         }
 
+        if (!SpamProtection::tryAcquireTokenIssueSlot()) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => __('Too many requests. Please try again later.', 'rrze-formular'),
+            ], 429);
+        }
+
         $tokenData = SpamProtection::createToken(
             $formId,
             FormConfigAuth::configHash($trustedConfig),
