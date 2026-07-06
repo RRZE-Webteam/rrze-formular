@@ -95,8 +95,8 @@ namespace {
     reset_domain_caches();
     $rrze_test_options['rrze-formular']['allowed_domains'] = "uni-example.de\n";
     assert_true(
-        AllowedDomains::isConfirmationEmailAllowed('user@uni-example.de'),
-        'Recipient domains should be used as confirmation fallback'
+        !AllowedDomains::isConfirmationEmailAllowed('user@uni-example.de'),
+        'Recipient domains must not enable confirmation mails'
     );
     assert_true(
         !AllowedDomains::isConfirmationEmailAllowed('user@other.example'),

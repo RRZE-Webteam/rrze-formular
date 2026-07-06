@@ -123,8 +123,8 @@ namespace RRZE\Formular\Common\Form {
         'Plugin recipient domains take precedence over confirmation domains'
     );
     assert_true(
-        AllowedDomains::getConfirmationDomains() === ['fau.de'],
-        'Confirmation domains fall back to recipient domains when unset'
+        AllowedDomains::getConfirmationDomains() === [],
+        'Confirmation domains require a dedicated allowlist'
     );
 
     echo "OK: allowed-domains-fallback\n";

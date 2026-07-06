@@ -115,9 +115,7 @@ class Defaults
         $fields[] = [
             'name' => 'allowed_confirmation_domains',
             'label' => __('Allowed confirmation domains', 'rrze-formular'),
-            'description' => AllowedDomains::isRrzeSettingsActive()
-                ? __('Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains from RRZE Settings. If no domains are configured anywhere, confirmation mails are never sent.', 'rrze-formular')
-                : __('Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains above. If no domains are configured anywhere, confirmation mails are never sent.', 'rrze-formular'),
+            'description' => __('One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails.', 'rrze-formular'),
             'type' => 'textarea',
             'default' => '',
         ];

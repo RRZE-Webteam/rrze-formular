@@ -129,6 +129,12 @@ class FormHandler
 
         $sendConfirmation = !empty($attributes['sendConfirmation']);
         if ($sendConfirmation && $submitterEmail !== '') {
+            if (!AllowedDomains::isConfirmationEmailAllowed($submitterEmail)) {
+                $sendConfirmation = false;
+            }
+        }
+
+        if ($sendConfirmation && $submitterEmail !== '') {
             if (!SpamProtection::tryAcquireConfirmationSlot($submitterEmail)) {
                 return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
             }

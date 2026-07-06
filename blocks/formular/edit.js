@@ -300,7 +300,7 @@ export default function Edit({ attributes, setAttributes }) {
 						<Notice status="warning" isDismissible={ false }>
 							{ editorConfig.i18n?.confirmationDomainsRequired ||
 								__(
-									'Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option.',
+									'Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option.',
 									'rrze-formular'
 								) }
 						</Notice>

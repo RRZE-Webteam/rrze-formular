@@ -136,8 +136,8 @@ class AllowedDomains
     /**
      * Domains that may receive automatic confirmation mails.
      *
-     * Uses the dedicated confirmation allowlist when configured; otherwise falls
-     * back to the recipient allowed domains. An empty result disables confirmations.
+     * Uses only the dedicated confirmation allowlist. An empty result disables
+     * confirmations.
      *
      * @return list<string>
      */
@@ -148,10 +148,6 @@ class AllowedDomains
         }
 
         $domains = self::parseDomains(self::getPluginConfirmationDomainsRaw());
-
-        if ($domains === []) {
-            $domains = self::loadPrimaryRecipientDomains();
-        }
 
         /**
          * @param list<string> $domains

@@ -61,7 +61,7 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 ### When are confirmation mails sent?
 
-When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains**. If no domains are configured anywhere, confirmation mails are never sent.
+When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the dedicated **allowed confirmation domains** list. If no confirmation domains are configured, confirmation mails are never sent.
 
 Confirmation mails contain only a short receipt (form title, site link, date) — not submitted field values — and are rate-limited per submitter address.
 
@@ -88,7 +88,7 @@ Protection is enforced server-side in `FormHandler`:
 - **Minimum submit delay** — rejects submissions faster than the configured threshold
 - **Honeypot** (`website`) — must stay empty
 - **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
-- **Confirmation domain allowlist** — confirmation mails are only sent when allowed domains are configured; submitted content is not included in confirmation mails
+- **Confirmation domain allowlist** — confirmation mails are only sent when dedicated confirmation domains are configured; submitted content is not included in confirmation mails
 - **Field validation** — required fields, e-mail format, allowed recipient domains
 
 The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.

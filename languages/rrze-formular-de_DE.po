@@ -96,8 +96,8 @@ msgstr "Auswahl bestätigen"
 msgid "Confirmation mails per address per hour"
 msgstr "Bestätigungs-E-Mails pro Adresse und Stunde"
 
-msgid "Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option."
-msgstr "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
+msgid "Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option."
+msgstr "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Bestätigungs-Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
 
 msgid "Confirmation: %s"
 msgstr "Bestätigung: %s"
@@ -354,6 +354,9 @@ msgstr "Sprechstundentermin"
 msgid "One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains."
 msgstr "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müssen zu einer dieser Domains gehören."
 
+msgid "One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails."
+msgstr "Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um Bestätigungs-E-Mails zu deaktivieren."
+
 msgid "Online"
 msgstr "Online"
 
@@ -386,12 +389,6 @@ msgstr "Optional. Leer lassen, um die Website-E-Mail-Adresse zu verwenden. Bei E
 
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
-
-msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains above. If no domains are configured anywhere, confirmation mails are never sent."
-msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die oben konfigurierten erlaubten Empfänger-Domains zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
-
-msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains from RRZE Settings. If no domains are configured anywhere, confirmation mails are never sent."
-msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die erlaubten Empfänger-Domains aus den RRZE-Einstellungen zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
 
 msgid "Organisation / company"
 msgstr "Organisation / Unternehmen"
