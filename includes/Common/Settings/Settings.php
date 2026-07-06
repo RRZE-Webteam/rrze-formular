@@ -457,9 +457,11 @@ class Settings
         $default = $this->tabs[0] ?? false;
 
         if (isset($_GET['tab'])) {
-            return in_array($_GET['tab'], array_map(function ($tab) {
+            $requestedTab = (string) wp_unslash($_GET['tab']);
+
+            return in_array($requestedTab, array_map(function ($tab) {
                 return $tab->slug;
-            }, $this->tabs)) ? $this->getTabBySlug($_GET['tab']) : $default;
+            }, $this->tabs), true) ? $this->getTabBySlug($requestedTab) : $default;
         }
 
         return $default;
@@ -642,12 +644,13 @@ class Settings
      */
     public function save()
     {
+        $nonce = isset($_POST['rrze-formular_settings_save'])
+            ? (string) wp_unslash($_POST['rrze-formular_settings_save'])
+            : '';
+
         if (
-            !isset($_POST['rrze-formular_settings_save'])
-            || !wp_verify_nonce(
-                wp_unslash((string) $_POST['rrze-formular_settings_save']),
-                'rrze-formular_settings_save_' . $this->optionName
-            )
+            $nonce === ''
+            || !wp_verify_nonce($nonce, 'rrze-formular_settings_save_' . $this->optionName)
         ) {
             return;
         }
@@ -657,11 +660,14 @@ class Settings
         }
 
         $currentOptions = $this->getOptions();
+        $rawSubmittedOptions = $_POST[$this->optionName] ?? [];
+        $rawSubmittedOptions = is_array($rawSubmittedOptions) ? $rawSubmittedOptions : [];
         $submittedOptions = apply_filters(
             'rrze-formular_settings_new_options',
-            wp_unslash($_POST[$this->optionName] ?? []),
+            wp_unslash($rawSubmittedOptions),
             $currentOptions
         );
+        $submittedOptions = is_array($submittedOptions) ? $submittedOptions : [];
         $newOptions = $currentOptions;
 
         foreach ($this->getActiveTab()->getActiveSections() as $section) {
