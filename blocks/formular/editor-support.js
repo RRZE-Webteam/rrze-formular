@@ -1,5 +1,5 @@
-import { __, sprintf } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 import { registerPlugin } from '@wordpress/plugins';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
@@ -129,111 +129,14 @@ function getInvalidRecipientErrors( blocks ) {
 	return errors;
 }
 
-function hasInvalidRecipientBlocks( blocks ) {
-	return getInvalidRecipientErrors( blocks ).length > 0;
-}
-
-function getPrivacyPublishBlockedMessage( config ) {
-	const label = config.privacyLabel || __( 'Privacy', 'rrze-formular' );
-	const url = config.privacyUrl || '';
-
-	return sprintf(
-		config.i18n?.privacyPublishBlockedFormat ||
-			__(
-				'This page cannot be published because no published %1$s page exists at %2$s.',
-				'rrze-formular'
-			),
-		label,
-		url
-	);
-}
-
-async function checkPrivacyUrlReachable( privacyUrl ) {
-	if ( ! privacyUrl ) {
-		return false;
-	}
-
-	try {
-		let response = await fetch( privacyUrl, {
-			method: 'HEAD',
-			credentials: 'same-origin',
-		} );
-
-		if ( response.ok ) {
-			return true;
-		}
-
-		if ( response.status !== 405 && response.status !== 501 ) {
-			return false;
-		}
-
-		response = await fetch( privacyUrl, {
-			method: 'GET',
-			credentials: 'same-origin',
-		} );
-
-		return response.ok;
-	} catch {
-		return null;
-	}
-}
-
-function usePrivacyReachable() {
-	const config = getEditorConfig();
-	const privacyUrl = config.privacyUrl || '';
-	const [ reachable, setReachable ] = useState( () => {
-		if ( config.privacyPublished === true ) {
-			return true;
-		}
-
-		return privacyUrl ? null : false;
-	} );
-
-	useEffect( () => {
-		if ( ! privacyUrl ) {
-			setReachable( false );
-			return undefined;
-		}
-
-		let cancelled = false;
-
-		checkPrivacyUrlReachable( privacyUrl ).then( ( result ) => {
-			if ( cancelled ) {
-				return;
-			}
-
-			if ( result === null ) {
-				setReachable( config.privacyPublished === true );
-				return;
-			}
-
-			setReachable( result );
-		} );
-
-		return () => {
-			cancelled = true;
-		};
-	}, [ privacyUrl, config.privacyPublished ] );
-
-	return reachable;
-}
-
-function getPublishBlockMessage( blocks, privacyReachable ) {
+function getPublishBlockMessage( blocks ) {
 	if ( ! hasFormBlocks( blocks ) ) {
 		return '';
 	}
 
-	const config = getEditorConfig();
-
-	if ( privacyReachable === false ) {
-		return getPrivacyPublishBlockedMessage( config );
-	}
-
-	if ( privacyReachable !== false ) {
-		const recipientErrors = getInvalidRecipientErrors( blocks );
-		if ( recipientErrors.length > 0 ) {
-			return recipientErrors[ 0 ];
-		}
+	const recipientErrors = getInvalidRecipientErrors( blocks );
+	if ( recipientErrors.length > 0 ) {
+		return recipientErrors[ 0 ];
 	}
 
 	return '';
@@ -259,12 +162,11 @@ function SaveNotice() {
 
 function PublishLock() {
 	const blocks = useSelect( ( select ) => select( blockEditorStore ).getBlocks(), [] );
-	const privacyReachable = usePrivacyReachable();
 	const { lockPostSaving, unlockPostSaving } = useDispatch( editorStore );
 	const { createNotice, removeNotice } = useDispatch( 'core/notices' );
 
 	useEffect( () => {
-		const message = getPublishBlockMessage( blocks, privacyReachable );
+		const message = getPublishBlockMessage( blocks );
 
 		if ( message ) {
 			lockPostSaving( LOCK_NAME );
@@ -281,7 +183,7 @@ function PublishLock() {
 			unlockPostSaving( LOCK_NAME );
 			removeNotice( NOTICE_ID );
 		};
-	}, [ blocks, privacyReachable, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
+	}, [ blocks, lockPostSaving, unlockPostSaving, createNotice, removeNotice ] );
 
 	return null;
 }
