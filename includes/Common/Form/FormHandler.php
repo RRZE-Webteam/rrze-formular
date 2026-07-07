@@ -108,32 +108,6 @@ class FormHandler
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
         }
 
-        $sendConfirmation = !empty($attributes['sendConfirmation']);
-        if ($sendConfirmation && $submitterEmail !== '') {
-            if (!AllowedDomains::isConfirmationEmailAllowed($submitterEmail)) {
-                $sendConfirmation = false;
-            }
-        }
-
-        if ($sendConfirmation && $submitterEmail !== '') {
-            if (!SpamProtection::tryAcquireConfirmationSlot($submitterEmail)) {
-                return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
-            }
-
-            $confirmationSent = Mailer::maybeSendConfirmation(
-                true,
-                $submitterEmail,
-                sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
-                $this->buildConfirmationBody($attributes),
-                $websiteHeaders,
-                $submitterName
-            );
-
-            if (!$confirmationSent) {
-                return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
-            }
-        }
-
         $successMessage = $attributes['successMessage'] !== ''
             ? $attributes['successMessage']
             : __('Thank you. Your message has been sent.', 'rrze-formular');
@@ -154,7 +128,6 @@ class FormHandler
             'recipientEmail' => sanitize_text_field((string) ($trustedConfig['recipientEmail'] ?? '')),
             'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
-            'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
@@ -300,32 +273,6 @@ class FormHandler
             $lines[] = SSO::formatCompactLine($ssoData);
         }
 
-        $lines[] = Mailer::formatSiteLinkLine();
-        $lines[] = Mailer::formatMailDateLine();
-
-        return implode("\n", $lines);
-    }
-
-    /**
-     * @param array<string, mixed> $attributes
-     */
-    private function buildConfirmationBody(array $attributes): string
-    {
-        $lines = [
-            __('We received your submission.', 'rrze-formular'),
-            '',
-        ];
-
-        $formTitle = sanitize_text_field((string) ($attributes['formTitle'] ?? ''));
-        if ($formTitle !== '') {
-            $lines[] = sprintf(
-                /* translators: %s: form title */
-                __('Form: %s', 'rrze-formular'),
-                $formTitle
-            );
-        }
-
-        $lines[] = '';
         $lines[] = Mailer::formatSiteLinkLine();
         $lines[] = Mailer::formatMailDateLine();
 

@@ -41,10 +41,6 @@
 			"type": "boolean",
 			"default": true
 		},
-		"sendConfirmation": {
-			"type": "boolean",
-			"default": false
-		},
 		"fields": {
 			"type": "array",
 			"default": [],

@@ -247,8 +247,6 @@ class BlockPostSaveValidator
         return self::$editorConfigCache = [
             'allowedDomains' => $allowedDomains,
             'domainsConfigured' => $allowedDomains !== [],
-            'confirmationDomains' => AllowedDomains::getConfirmationDomains(),
-            'confirmationDomainsConfigured' => AllowedDomains::hasConfirmationDomainsConfigured(),
             'defaultRecipientEmail' => sanitize_email((string) ($options['default_recipient_email'] ?? '')),
             'administratorEmail' => Mailer::getAdministratorEmail(),
             'privacyUrl' => Privacy::getPageUrl(),
@@ -259,7 +257,6 @@ class BlockPostSaveValidator
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
                 'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
-                'confirmationDomainsRequired' => __('Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option.', 'rrze-formular'),
             ],
         ];
     }

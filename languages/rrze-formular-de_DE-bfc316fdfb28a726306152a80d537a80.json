@@ -42,9 +42,6 @@
       "Age": [
         "Alter"
       ],
-      "Allowed confirmation domains": [
-        "Erlaubte Bestätigungs-Domains"
-      ],
       "Allowed e-mail domains": [
         "Erlaubte E-Mail-Domains"
       ],
@@ -80,15 +77,6 @@
       ],
       "Confirm selection": [
         "Auswahl bestätigen"
-      ],
-      "Confirmation mails per address per hour": [
-        "Bestätigungs-E-Mails pro Adresse und Stunde"
-      ],
-      "Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option.": [
-        "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Bestätigungs-Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
-      ],
-      "Confirmation: %s": [
-        "Bestätigung: %s"
       ],
       "Contact": [
         "Kontakt"
@@ -204,9 +192,6 @@
       "Form template": [
         "Formular-Vorlage"
       ],
-      "Form: %s": [
-        "Formular: %s"
-      ],
       "General": [
         "Allgemein"
       ],
@@ -285,9 +270,6 @@
       "Maximum number of accepted submissions from one IP address per hour.": [
         "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
       ],
-      "Maximum number of confirmation mails sent to the same submitter e-mail address per hour.": [
-        "Maximale Anzahl von Bestätigungs-E-Mails an dieselbe Absender-Adresse pro Stunde."
-      ],
       "Media outlet": [
         "Medium / Redaktion"
       ],
@@ -347,9 +329,6 @@
       ],
       "One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains.": [
         "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müssen zu einer dieser Domains gehören."
-      ],
-      "One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails.": [
-        "Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um Bestätigungs-E-Mails zu deaktivieren."
       ],
       "Online": [
         "Online"
@@ -534,17 +513,11 @@
       "Send": [
         "Senden"
       ],
-      "Send confirmation to submitter": [
-        "Bestätigung an Absender senden"
-      ],
       "Send us a message. We will reply as soon as possible.": [
         "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
       ],
       "Sending…": [
         "Wird gesendet…"
-      ],
-      "Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches.": [
-        "Sendet eine kurze Empfangsbestätigung ohne übermittelte Feldwerte. Wird nur zugestellt, wenn erlaubte Bestätigungs-Domains konfiguriert sind und die Absender-Adresse passt."
       ],
       "Settings issues detected.": [
         "Probleme in den Einstellungen erkannt."
@@ -663,9 +636,6 @@
       "Title": [
         "Titel"
       ],
-      "Too many confirmation e-mails. Please try again later.": [
-        "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
-      ],
       "Too many requests. Please try again later.": [
         "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
       ],
@@ -710,9 +680,6 @@
       ],
       "Vegetarian": [
         "Vegetarisch"
-      ],
-      "We received your submission.": [
-        "Wir haben Ihre Übermittlung erhalten."
       ],
       "Website": [
         "Website"

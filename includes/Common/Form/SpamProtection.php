@@ -206,19 +206,6 @@ class SpamProtection
         return self::tryIncrementCounter(self::getTokenIssueRateLimitKey(), MINUTE_IN_SECONDS, $limit);
     }
 
-    public static function tryAcquireConfirmationSlot(string $email): bool
-    {
-        $email = sanitize_email($email);
-        if (!is_email($email)) {
-            return false;
-        }
-
-        $options = Mailer::getOptions();
-        $limit = max(1, (int) ($options['confirmation_rate_limit_per_hour'] ?? 3));
-
-        return self::tryIncrementCounter(self::getConfirmationRateLimitKey($email), HOUR_IN_SECONDS, $limit);
-    }
-
     /**
      * @return array<string, mixed>|null
      */
@@ -334,11 +321,6 @@ class SpamProtection
     private static function getRateLimitKey(): string
     {
         return 'rrze_fw_rate_' . md5(self::getClientIp());
-    }
-
-    private static function getConfirmationRateLimitKey(string $email): string
-    {
-        return 'rrze_fw_confirm_' . md5(strtolower($email));
     }
 
     private static function getTokenIssueRateLimitKey(): string

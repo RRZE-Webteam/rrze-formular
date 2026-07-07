@@ -12,7 +12,6 @@ import {
 	SelectControl,
 	Button,
 	Disabled,
-	Notice,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
@@ -173,14 +172,11 @@ export default function Edit({ attributes, setAttributes }) {
 		submitLabel,
 		successMessage,
 		includeSsoInfo,
-		sendConfirmation,
 		fields,
 	} = attributes;
 
 	const blockProps = useBlockProps({ className: 'rrze-formular-block-editor' });
-	const editorConfig = getEditorConfig();
 	const recipientError = getRecipientEmailError(recipientEmail);
-	const confirmationDomainsConfigured = editorConfig.confirmationDomainsConfigured === true;
 	const previewKey = JSON.stringify(
 		(fields || []).map((field) => ({
 			id: field.id,
@@ -281,31 +277,13 @@ export default function Edit({ attributes, setAttributes }) {
 						value={successMessage}
 						onChange={(value) => setAttributes({ successMessage: value })}
 					/>
-					<ToggleControl
-						label={__('Include SSO / logged-in user data', 'rrze-formular')}
-						checked={!!includeSsoInfo}
-						onChange={(value) => setAttributes({ includeSsoInfo: value })}
-					/>
-					<ToggleControl
-						label={__('Send confirmation to submitter', 'rrze-formular')}
-						help={__(
-							'Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches.',
-							'rrze-formular'
-						)}
-						checked={!!sendConfirmation}
-						onChange={(value) => setAttributes({ sendConfirmation: value })}
-					/>
-					{ sendConfirmation && ! confirmationDomainsConfigured && (
-						<Notice status="warning" isDismissible={ false }>
-							{ editorConfig.i18n?.confirmationDomainsRequired ||
-								__(
-									'Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option.',
-									'rrze-formular'
-								) }
-						</Notice>
-					) }
-				</PanelBody>
-				<PanelBody title={__('Fields', 'rrze-formular')} initialOpen>
+						<ToggleControl
+							label={__('Include SSO / logged-in user data', 'rrze-formular')}
+							checked={!!includeSsoInfo}
+							onChange={(value) => setAttributes({ includeSsoInfo: value })}
+						/>
+					</PanelBody>
+					<PanelBody title={__('Fields', 'rrze-formular')} initialOpen>
 					{(fields || []).map((field, index) => (
 						<FieldEditor
 							key={field.id || index}

@@ -18,11 +18,6 @@ class AllowedDomains
     private static ?array $allowedDomains = null;
 
     /**
-     * @var list<string>|null
-     */
-    private static ?array $confirmationDomains = null;
-
-    /**
      * @var list<string>
      */
     private const SETTINGS_DOMAIN_OPTION_KEYS = [
@@ -106,13 +101,6 @@ class AllowedDomains
         return (string) ($options['allowed_domains'] ?? '');
     }
 
-    private static function getPluginConfirmationDomainsRaw(): string
-    {
-        $options = Mailer::getOptions();
-
-        return (string) ($options['allowed_confirmation_domains'] ?? '');
-    }
-
     public static function hasConfiguredDomains(): bool
     {
         return self::getAllowedDomains() !== [];
@@ -121,40 +109,6 @@ class AllowedDomains
     public static function isEmailDomainAllowed(string $email): bool
     {
         return self::isEmailInDomains($email, self::getAllowedDomains());
-    }
-
-    /**
-     * Domains that may receive automatic confirmation mails.
-     *
-     * Uses only the dedicated confirmation allowlist. An empty result disables
-     * confirmations.
-     *
-     * @return list<string>
-     */
-    public static function getConfirmationDomains(): array
-    {
-        if (self::$confirmationDomains !== null) {
-            return self::$confirmationDomains;
-        }
-
-        $domains = self::parseDomains(self::getPluginConfirmationDomainsRaw());
-
-        /**
-         * @param list<string> $domains
-         */
-        $domains = apply_filters('rrze_formular_confirmation_domains', $domains);
-
-        return self::$confirmationDomains = self::parseDomains($domains);
-    }
-
-    public static function hasConfirmationDomainsConfigured(): bool
-    {
-        return self::getConfirmationDomains() !== [];
-    }
-
-    public static function isConfirmationEmailAllowed(string $email): bool
-    {
-        return self::isEmailInDomains($email, self::getConfirmationDomains());
     }
 
     public static function isBlockRecipientAllowed(string $email): bool

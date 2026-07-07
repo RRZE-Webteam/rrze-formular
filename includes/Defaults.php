@@ -119,21 +119,6 @@ class Defaults
             ];
         }
 
-        $fields[] = [
-            'name' => 'allowed_confirmation_domains',
-            'label' => __('Allowed confirmation domains', 'rrze-formular'),
-            'description' => __('One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails.', 'rrze-formular'),
-            'type' => 'textarea',
-            'default' => '',
-            'sanitize' => static fn($value): string => AllowedDomains::sanitizeDomainList($value),
-            'validate' => [
-                [
-                    'callback' => static fn($value): bool => AllowedDomains::invalidDomains($value) === [],
-                    'feedback' => __('Please enter one valid domain per line.', 'rrze-formular'),
-                ],
-            ],
-        ];
-
         return $fields;
     }
 
@@ -153,13 +138,6 @@ class Defaults
                 'description' => __('Maximum number of accepted submissions from one IP address per hour.', 'rrze-formular'),
                 'type' => 'text',
                 'default' => '10',
-            ],
-            [
-                'name' => 'confirmation_rate_limit_per_hour',
-                'label' => __('Confirmation mails per address per hour', 'rrze-formular'),
-                'description' => __('Maximum number of confirmation mails sent to the same submitter e-mail address per hour.', 'rrze-formular'),
-                'type' => 'text',
-                'default' => '3',
             ],
         ];
     }

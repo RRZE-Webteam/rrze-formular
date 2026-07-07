@@ -48,9 +48,6 @@ msgstr "Nachmittags (12–17 Uhr)"
 msgid "Age"
 msgstr "Alter"
 
-msgid "Allowed confirmation domains"
-msgstr "Erlaubte Bestätigungs-Domains"
-
 msgid "Allowed e-mail domains"
 msgstr "Erlaubte E-Mail-Domains"
 
@@ -86,15 +83,6 @@ msgstr "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderung
 
 msgid "Confirm selection"
 msgstr "Auswahl bestätigen"
-
-msgid "Confirmation mails per address per hour"
-msgstr "Bestätigungs-E-Mails pro Adresse und Stunde"
-
-msgid "Confirmation mails require configured allowed confirmation domains. Configure them in the plugin settings before enabling this option."
-msgstr "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Bestätigungs-Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
-
-msgid "Confirmation: %s"
-msgstr "Bestätigung: %s"
 
 msgid "Contact"
 msgstr "Kontakt"
@@ -210,9 +198,6 @@ msgstr "Formulareinsendungen sind derzeit nicht verfügbar, weil diese Installat
 msgid "Form template"
 msgstr "Formular-Vorlage"
 
-msgid "Form: %s"
-msgstr "Formular: %s"
-
 msgid "General"
 msgstr "Allgemein"
 
@@ -291,9 +276,6 @@ msgstr "Matrikelnummer"
 msgid "Maximum number of accepted submissions from one IP address per hour."
 msgstr "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
 
-msgid "Maximum number of confirmation mails sent to the same submitter e-mail address per hour."
-msgstr "Maximale Anzahl von Bestätigungs-E-Mails an dieselbe Absender-Adresse pro Stunde."
-
 msgid "Media outlet"
 msgstr "Medium / Redaktion"
 
@@ -353,9 +335,6 @@ msgstr "Sprechstundentermin"
 
 msgid "One domain per line, e.g. uni-erlangen.de. Recipient addresses must match one of these domains."
 msgstr "Eine Domain pro Zeile, z. B. uni-erlangen.de. Empfänger-Adressen müssen zu einer dieser Domains gehören."
-
-msgid "One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to disable confirmation mails."
-msgstr "Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um Bestätigungs-E-Mails zu deaktivieren."
 
 msgid "Online"
 msgstr "Online"
@@ -540,17 +519,11 @@ msgstr "Seminarraum"
 msgid "Send"
 msgstr "Senden"
 
-msgid "Send confirmation to submitter"
-msgstr "Bestätigung an Absender senden"
-
 msgid "Send us a message. We will reply as soon as possible."
 msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 
 msgid "Sending…"
 msgstr "Wird gesendet…"
-
-msgid "Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches."
-msgstr "Sendet eine kurze Empfangsbestätigung ohne übermittelte Feldwerte. Wird nur zugestellt, wenn erlaubte Bestätigungs-Domains konfiguriert sind und die Absender-Adresse passt."
 
 msgid "Settings issues detected."
 msgstr "Probleme in den Einstellungen erkannt."
@@ -669,9 +642,6 @@ msgstr "Uhrzeit"
 msgid "Title"
 msgstr "Titel"
 
-msgid "Too many confirmation e-mails. Please try again later."
-msgstr "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
-
 msgid "Too many requests. Please try again later."
 msgstr "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
 
@@ -716,9 +686,6 @@ msgstr "Vegan"
 
 msgid "Vegetarian"
 msgstr "Vegetarisch"
-
-msgid "We received your submission."
-msgstr "Wir haben Ihre Übermittlung erhalten."
 
 msgid "Website"
 msgstr "Website"

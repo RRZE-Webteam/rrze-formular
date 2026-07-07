@@ -15,7 +15,6 @@ namespace {
     $rrze_test_options = [
         'rrze-formular' => [
             'allowed_domains' => '',
-            'allowed_confirmation_domains' => '',
         ],
         'admin_email' => 'admin@uni-example.de',
     ];
@@ -78,7 +77,7 @@ namespace RRZE\Formular\Common\Form {
     {
         $reflection = new \ReflectionClass(AllowedDomains::class);
 
-        foreach (['allowedDomains', 'confirmationDomains', 'rrzeSettingsActive'] as $property) {
+        foreach (['allowedDomains', 'rrzeSettingsActive'] as $property) {
             if ($reflection->hasProperty($property)) {
                 $prop = $reflection->getProperty($property);
                 $prop->setValue(null, null);
@@ -106,31 +105,11 @@ namespace RRZE\Formular\Common\Form {
         'No domains configured anywhere'
     );
 
-    $GLOBALS['rrze_test_options']['rrze-formular']['allowed_confirmation_domains'] = "uni-example.de\n";
-    reset_allowed_domains_cache();
-    assert_true(
-        AllowedDomains::getAllowedDomains() === [],
-        'Confirmation domains are not used for recipient allowlists'
-    );
-    assert_true(
-        !AllowedDomains::isBlockRecipientAllowed('team@uni-example.de'),
-        'Recipient on confirmation-only domain is not allowed'
-    );
-    assert_true(
-        AllowedDomains::getConfirmationDomains() === ['uni-example.de'],
-        'Confirmation domains remain available only for confirmations'
-    );
-
     $GLOBALS['rrze_test_options']['rrze-formular']['allowed_domains'] = "fau.de\n";
-    $GLOBALS['rrze_test_options']['rrze-formular']['allowed_confirmation_domains'] = '';
     reset_allowed_domains_cache();
     assert_true(
         AllowedDomains::getAllowedDomains() === ['fau.de'],
-        'Plugin recipient domains take precedence over confirmation domains'
-    );
-    assert_true(
-        AllowedDomains::getConfirmationDomains() === [],
-        'Confirmation domains require a dedicated allowlist'
+        'Plugin recipient domains are used when RRZE Settings is inactive'
     );
 
     assert_true(

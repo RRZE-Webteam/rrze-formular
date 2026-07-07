@@ -258,22 +258,6 @@ class Mailer
         return $urlHost !== '' && $urlHost === $siteHost;
     }
 
-    private static function isAllowedConfirmationRecipient(string $email): bool
-    {
-        if (!AllowedDomains::isConfirmationEmailAllowed($email)) {
-            return false;
-        }
-
-        /**
-         * Filter whether a confirmation mail may be sent to the given address.
-         * Return false to block the recipient even when the domain is allowed.
-         *
-         * @param bool $allowed Default true when the domain is allowed.
-         * @param string $email Sanitized recipient address.
-         */
-        return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
-    }
-
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
@@ -344,33 +328,4 @@ class Mailer
         return sanitize_email($address);
     }
 
-    public static function maybeSendConfirmation(
-        bool $enabled,
-        string $submitterEmail,
-        string $subject,
-        string $body,
-        array $headers = [],
-        string $submitterName = ''
-    ): bool {
-        if (!$enabled) {
-            return false;
-        }
-
-        $submitterEmail = sanitize_email($submitterEmail);
-        if (!is_email($submitterEmail)) {
-            return false;
-        }
-
-        if (!self::isAllowedConfirmationRecipient($submitterEmail)) {
-            return false;
-        }
-
-        return self::sendOperatorMail(
-            $submitterEmail,
-            $subject,
-            $body,
-            $headers,
-            $submitterName
-        );
-    }
 }
