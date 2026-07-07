@@ -34,7 +34,7 @@ class FormRenderer
             <form class="rrze-formular__form"
                   method="post"
                   action="#"
-                  novalidate<?php echo !empty($trustedConfig['attachCsv']) ? ' data-attach-csv="1"' : ''; ?>>
+                  novalidate>
                 <input type="hidden" name="token" value="">
                 <input type="hidden" name="formConfig" value="<?php echo esc_attr($signedConfig['payload']); ?>">
                 <input type="hidden" name="formConfigSig" value="<?php echo esc_attr($signedConfig['signature']); ?>">
@@ -85,7 +85,6 @@ class FormRenderer
             'recipientName' => sanitize_text_field((string) ($attributes['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($attributes['includeSsoInfo']),
             'sendConfirmation' => !empty($attributes['sendConfirmation']),
-            'attachCsv' => !empty($attributes['attachCsv']),
             'template' => sanitize_key((string) ($attributes['template'] ?? 'blank')),
             'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
         ];

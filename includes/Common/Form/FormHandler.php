@@ -95,32 +95,13 @@ class FormHandler
 
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
-        $stringAttachments = [];
-
-        if (!empty($trustedConfig['attachCsv'])) {
-            try {
-                $columns = $this->buildSubmissionColumns($inputFields, $sanitized);
-                $csvContent = SubmissionCsv::build($columns['headers'], $columns['values']);
-
-                if ($csvContent !== '') {
-                    $stringAttachments[] = [
-                        'content' => $csvContent,
-                        'name' => SubmissionCsv::filename((string) ($attributes['formTitle'] ?? '')),
-                        'mime' => 'text/csv',
-                    ];
-                }
-            } catch (\Throwable) {
-                // CSV must not block form delivery.
-            }
-        }
 
         $sent = Mailer::sendOperatorMail(
             $recipient['email'],
             $subject,
             $mailBody,
             $operatorHeaders,
-            $recipient['name'],
-            $stringAttachments
+            $recipient['name']
         );
 
         if (!$sent) {
@@ -174,7 +155,6 @@ class FormHandler
             'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
             'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
-            'attachCsv' => !empty($trustedConfig['attachCsv']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
@@ -274,25 +254,6 @@ class FormHandler
             : get_bloginfo('name');
 
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
-    }
-
-    /**
-     * @return array{headers: list<string>, values: list<string>}
-     */
-    private function buildSubmissionColumns(array $fields, array $values): array
-    {
-        $headers = [];
-        $columnValues = [];
-
-        foreach ($fields as $field) {
-            $headers[] = $field['label'] !== '' ? (string) $field['label'] : (string) $field['id'];
-            $columnValues[] = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
-        }
-
-        return [
-            'headers' => $headers,
-            'values' => $columnValues,
-        ];
     }
 
     private function buildMailBody(array $fields, array $values, ?array $ssoData): string

@@ -174,7 +174,6 @@ export default function Edit({ attributes, setAttributes }) {
 		successMessage,
 		includeSsoInfo,
 		sendConfirmation,
-		attachCsv,
 		fields,
 	} = attributes;
 
@@ -305,15 +304,6 @@ export default function Edit({ attributes, setAttributes }) {
 								) }
 						</Notice>
 					) }
-					<ToggleControl
-						label={__('Attach CSV to operator e-mail', 'rrze-formular')}
-						help={__(
-							'Adds a CSV file with the submitted field values to the e-mail sent to the recipient.',
-							'rrze-formular'
-						)}
-						checked={!!attachCsv}
-						onChange={(value) => setAttributes({ attachCsv: value })}
-					/>
 				</PanelBody>
 				<PanelBody title={__('Fields', 'rrze-formular')} initialOpen>
 					{(fields || []).map((field, index) => (

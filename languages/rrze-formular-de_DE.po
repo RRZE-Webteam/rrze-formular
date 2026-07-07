@@ -36,9 +36,6 @@ msgstr "Feld hinzufügen"
 msgid "Add option"
 msgstr "Option hinzufügen"
 
-msgid "Adds a CSV file with the submitted field values to the e-mail sent to the recipient."
-msgstr "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu."
-
 msgid "Adjust limits for honeypot, minimum fill time and rate limiting."
 msgstr "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
 
@@ -65,9 +62,6 @@ msgstr "Bewerben Sie sich auf eine studentische Hilfskraft-Stelle (HiWi)."
 
 msgid "Apply for an internship with our team."
 msgstr "Bewerben Sie sich auf ein Praktikum in unserem Team."
-
-msgid "Attach CSV to operator e-mail"
-msgstr "CSV an Betreiber-E-Mail anhängen"
 
 msgid "Availability"
 msgstr "Verfügbarkeit"

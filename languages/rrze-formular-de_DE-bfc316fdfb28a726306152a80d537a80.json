@@ -30,9 +30,6 @@
       "Add option": [
         "Option hinzufügen"
       ],
-      "Adds a CSV file with the submitted field values to the e-mail sent to the recipient.": [
-        "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu."
-      ],
       "Adjust limits for honeypot, minimum fill time and rate limiting.": [
         "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
       ],
@@ -59,9 +56,6 @@
       ],
       "Apply for an internship with our team.": [
         "Bewerben Sie sich auf ein Praktikum in unserem Team."
-      ],
-      "Attach CSV to operator e-mail": [
-        "CSV an Betreiber-E-Mail anhängen"
       ],
       "Availability": [
         "Verfügbarkeit"

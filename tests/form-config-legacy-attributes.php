@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Verifies attachCsv survives signing without a database connection.
- * Run: php tests/attach-csv-config-roundtrip.php
+ * Verifies removed legacy block attributes are ignored by trusted config.
+ * Run: php tests/form-config-legacy-attributes.php
  */
 
 namespace {
@@ -36,11 +36,6 @@ namespace {
     {
         return 'rrze-formular-test-salt';
     }
-
-    function __($text, $domain = 'default')
-    {
-        return $text;
-    }
 }
 
 namespace RRZE\Formular\Common\Form {
@@ -71,38 +66,17 @@ namespace RRZE\Formular\Common\Form {
     ];
 
     $trusted = FormConfigAuth::buildTrustedConfig($attributes);
-    if (empty($trusted['attachCsv'])) {
-        fwrite(STDERR, "FAIL: buildTrustedConfig dropped attachCsv\n");
+    if (array_key_exists('attachCsv', $trusted)) {
+        fwrite(STDERR, "FAIL: legacy attachCsv attribute is still trusted\n");
         exit(1);
     }
 
     $signed = FormConfigAuth::sign($trusted);
     $verified = FormConfigAuth::verify($signed['payload'], $signed['signature']);
-    if ($verified === null || empty($verified['attachCsv'])) {
-        fwrite(STDERR, "FAIL: attachCsv lost in sign/verify round-trip\n");
+    if ($verified === null || array_key_exists('attachCsv', $verified)) {
+        fwrite(STDERR, "FAIL: legacy attachCsv survived sign/verify round-trip\n");
         exit(1);
     }
 
-  // Simulate the previous FormRenderer bug (missing attachCsv in normalize output).
-    $brokenNormalize = [
-        'formTitle' => $attributes['formTitle'],
-        'fields' => $attributes['fields'],
-        'includeSsoInfo' => true,
-        'sendConfirmation' => false,
-    ];
-    $brokenTrusted = FormConfigAuth::buildTrustedConfig($brokenNormalize);
-    if (!empty($brokenTrusted['attachCsv'])) {
-        fwrite(STDERR, "FAIL: broken normalize unexpectedly has attachCsv\n");
-        exit(1);
-    }
-
-    $fixedNormalize = $brokenNormalize;
-    $fixedNormalize['attachCsv'] = !empty($attributes['attachCsv']);
-    $fixedTrusted = FormConfigAuth::buildTrustedConfig($fixedNormalize);
-    if (empty($fixedTrusted['attachCsv'])) {
-        fwrite(STDERR, "FAIL: fixed normalize still drops attachCsv\n");
-        exit(1);
-    }
-
-    fwrite(STDOUT, "OK: attachCsv config round-trip\n");
+    fwrite(STDOUT, "OK: legacy form config attributes ignored\n");
 }
