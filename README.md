@@ -99,7 +99,7 @@ Form rendering is designed to be cache-safe. Rendered HTML contains an empty tok
 
 Full-page caches may cache pages that contain forms. The per-submission token is fetched later in the browser via the public token REST endpoint and consumed before mail delivery.
 
-On Multisite, public form endpoints require a persistent object cache by default. Without Redis, Memcached or another persistent object cache, `/wp-json/rrze-formular/v1/token` and `/wp-json/rrze-formular/v1/submit` return HTTP 503 instead of writing anonymous token and rate-limit state to the database. This can be overridden with `rrze_formular_require_persistent_object_cache`, but production Multisite installations should keep the requirement enabled and add edge/WAF rate limiting for the public REST routes.
+The plugin can require a persistent object cache for public form endpoints so anonymous token and rate-limit state is not written to the database. This package currently sets `$GLOBALS['rrze_formular_require_persistent_object_cache'] = false` in the main plugin file, so database fallback is allowed when infrastructure-level rate limiting protects the public REST routes. Set the global to `true` or use the `rrze_formular_require_persistent_object_cache` filter to make `/wp-json/rrze-formular/v1/token` and `/wp-json/rrze-formular/v1/submit` return HTTP 503 when Redis, Memcached or another persistent object cache is unavailable.
 
 ## Hooks
 
@@ -114,7 +114,7 @@ On Multisite, public form endpoints require a persistent object cache by default
 | `rrze_formular_allowed_confirmation_email` | Whether a confirmation mail may be sent (after domain check) |
 | `rrze_formular_confirmation_domains` | Allowed domains for confirmation mails |
 | `rrze_formular_privacy_page_reachable` | Override privacy page availability check |
-| `rrze_formular_require_persistent_object_cache` | Require persistent object cache for public form endpoints; defaults to true on Multisite |
+| `rrze_formular_require_persistent_object_cache` | Require persistent object cache for public form endpoints; overrides the plugin-level global |
 
 ## Links
 

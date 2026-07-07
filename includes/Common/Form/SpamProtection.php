@@ -22,11 +22,15 @@ class SpamProtection
     {
         $required = function_exists('is_multisite') && is_multisite();
 
+        if (array_key_exists('rrze_formular_require_persistent_object_cache', $GLOBALS)) {
+            $required = (bool) $GLOBALS['rrze_formular_require_persistent_object_cache'];
+        }
+
         /**
          * Whether public form endpoints require a persistent object cache.
          *
-         * The default is enabled on Multisite so anonymous token issuance and
-         * rate limiting cannot create database write load through transients.
+         * The plugin-level global can define the site default; this filter is
+         * the last override point for environment-specific deployments.
          */
         return (bool) apply_filters('rrze_formular_require_persistent_object_cache', $required);
     }

@@ -378,8 +378,16 @@ namespace {
     $is_multisite = false;
     assert_true(SpamProtection::publicEndpointsAvailable(), 'Single-site may use DB fallback when no persistent object cache exists');
 
+    $GLOBALS['rrze_formular_require_persistent_object_cache'] = true;
+    assert_true(!SpamProtection::publicEndpointsAvailable(), 'Global can require persistent object cache on single-site');
+    unset($GLOBALS['rrze_formular_require_persistent_object_cache']);
+
     $is_multisite = true;
     assert_true(!SpamProtection::publicEndpointsAvailable(), 'Multisite must block public endpoints without persistent object cache by default');
+
+    $GLOBALS['rrze_formular_require_persistent_object_cache'] = false;
+    assert_true(SpamProtection::publicEndpointsAvailable(), 'Plugin global may explicitly allow DB fallback on Multisite');
+    unset($GLOBALS['rrze_formular_require_persistent_object_cache']);
 
     $use_ext_object_cache = true;
     assert_true(SpamProtection::publicEndpointsAvailable(), 'Multisite may use public endpoints with persistent object cache');

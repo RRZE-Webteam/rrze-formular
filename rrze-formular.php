@@ -23,6 +23,10 @@ defined('ABSPATH') || exit;
 
 const RRZE_FORMULAR_PLUGIN = 'rrze-formular/rrze-formular.php';
 
+if (!array_key_exists('rrze_formular_require_persistent_object_cache', $GLOBALS)) {
+    $GLOBALS['rrze_formular_require_persistent_object_cache'] = false;
+}
+
 spl_autoload_register(function ($class) {
     $prefix = __NAMESPACE__;
     $baseDir = __DIR__ . '/includes/';
