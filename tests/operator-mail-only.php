@@ -31,6 +31,7 @@ namespace {
     ];
     $rrze_test_transients = [];
     $rrze_test_mail_log = [];
+    $rrze_test_actions = [];
 
     class RRZE_Operator_Mail_Test_WPDB
     {
@@ -75,6 +76,50 @@ namespace {
     }
 
     $GLOBALS['wpdb'] = new RRZE_Operator_Mail_Test_WPDB();
+
+    class RRZE_Operator_Mail_Test_PHPMailer
+    {
+        public string $Mailer = 'mail';
+        public string $CharSet = '';
+        public bool $html = true;
+
+        /**
+         * @var list<array{0: string, 1: string}>
+         */
+        public array $addresses = [];
+
+        /**
+         * @var list<array{0: string, 1: string}>
+         */
+        public array $customHeaders = [];
+
+        public function clearAddresses(): void
+        {
+            $this->addresses = [];
+        }
+
+        public function addAddress(string $email, string $name = ''): void
+        {
+            $this->addresses[] = [$email, $name];
+        }
+
+        public function addCustomHeader(string $name, string $value): void
+        {
+            $this->customHeaders[] = [$name, $value];
+        }
+
+        public function addrFormat(array $address): string
+        {
+            [$email, $name] = $address + ['', ''];
+
+            return $name !== '' ? sprintf('%s <%s>', $name, $email) : (string) $email;
+        }
+
+        public function isHTML(bool $isHtml): void
+        {
+            $this->html = $isHtml;
+        }
+    }
 
     function __($text, $domain = 'default')
     {
@@ -266,16 +311,38 @@ namespace {
 
     function add_action($hook, $callback, $priority = 10, $accepted_args = 1): void
     {
+        $GLOBALS['rrze_test_actions'][$hook][] = $callback;
     }
 
     function remove_action($hook, $callback, $priority = 10): void
     {
+        if (empty($GLOBALS['rrze_test_actions'][$hook])) {
+            return;
+        }
+
+        $GLOBALS['rrze_test_actions'][$hook] = array_values(array_filter(
+            $GLOBALS['rrze_test_actions'][$hook],
+            static fn($registered): bool => $registered !== $callback
+        ));
     }
 
     function wp_mail($to, $subject, $message, $headers = [], $attachments = []): bool
     {
         global $rrze_test_mail_log;
-        $rrze_test_mail_log[] = compact('to', 'subject', 'message', 'headers', 'attachments');
+        $phpmailer = new RRZE_Operator_Mail_Test_PHPMailer();
+        foreach ($GLOBALS['rrze_test_actions']['phpmailer_init'] ?? [] as $callback) {
+            $callback($phpmailer);
+        }
+
+        $rrze_test_mail_log[] = [
+            'to' => $to,
+            'subject' => $subject,
+            'message' => $message,
+            'headers' => $headers,
+            'attachments' => $attachments,
+            'addresses' => $phpmailer->addresses,
+            'customHeaders' => $phpmailer->customHeaders,
+        ];
 
         return true;
     }
@@ -389,6 +456,17 @@ namespace RRZE\Formular\Common\Form {
     assert_true(
         !str_contains((string) $GLOBALS['rrze_test_mail_log'][0]['to'], 'victim@outside.example'),
         'The submitter address must never be used as mail recipient'
+    );
+    assert_true(
+        $GLOBALS['rrze_test_mail_log'][0]['addresses'] === [['team@example.org', 'Team']],
+        'PHPMailer must receive exactly one operator address'
+    );
+    assert_true(
+        array_filter(
+            $GLOBALS['rrze_test_mail_log'][0]['customHeaders'],
+            static fn(array $header): bool => strtolower((string) $header[0]) === 'to'
+        ) === [],
+        'Mailer must not add a second manual To header'
     );
 
     echo "OK: operator mail only\n";

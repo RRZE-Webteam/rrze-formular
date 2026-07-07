@@ -295,14 +295,6 @@ class Mailer
             $phpmailer->addAddress($recipientEmail, $recipientName);
             $phpmailer->CharSet = 'UTF-8';
             $phpmailer->isHTML(false);
-
-            // PHP mail() does not write the To header into the message body.
-            if ($phpmailer->Mailer === 'mail') {
-                $toHeader = $recipientName !== ''
-                    ? $phpmailer->addrFormat([$recipientEmail, $recipientName])
-                    : $recipientEmail;
-                $phpmailer->addCustomHeader('To', $toHeader);
-            }
         };
 
         add_action('phpmailer_init', $configureMailer, 99999, 1);
