@@ -29,6 +29,7 @@ namespace {
     $wpdb_rows = [];
     $object_cache_rows = [];
     $use_ext_object_cache = false;
+    $is_multisite = false;
     $test_filters = [];
 
     class RRZE_Test_WPDB
@@ -166,6 +167,13 @@ namespace {
         global $use_ext_object_cache;
 
         return $use_ext_object_cache;
+    }
+
+    function is_multisite(): bool
+    {
+        global $is_multisite;
+
+        return $is_multisite;
     }
 
     function wp_cache_key(string $key, string $group = ''): string
@@ -365,6 +373,20 @@ namespace {
     assert_true(SpamProtection::tryAcquireTokenIssueSlot(), 'Object-cache token slot 2 must be acquired');
     assert_true(!SpamProtection::tryAcquireTokenIssueSlot(), 'Object-cache token slot 3 must be rejected');
     assert_true($options === $optionsBeforeObjectCacheCounters, 'Token issue limiter must not write options with object cache');
+
+    $use_ext_object_cache = false;
+    $is_multisite = false;
+    assert_true(SpamProtection::publicEndpointsAvailable(), 'Single-site may use DB fallback when no persistent object cache exists');
+
+    $is_multisite = true;
+    assert_true(!SpamProtection::publicEndpointsAvailable(), 'Multisite must block public endpoints without persistent object cache by default');
+
+    $use_ext_object_cache = true;
+    assert_true(SpamProtection::publicEndpointsAvailable(), 'Multisite may use public endpoints with persistent object cache');
+
+    $use_ext_object_cache = false;
+    $test_filters['rrze_formular_require_persistent_object_cache'] = false;
+    assert_true(SpamProtection::publicEndpointsAvailable(), 'Filter may explicitly allow DB fallback for public endpoints');
 
     if ($failures === 0) {
         echo "OK: spam protection atomic checks passed\n";

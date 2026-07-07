@@ -55,6 +55,10 @@ class FormAPI
 
     public function issueToken(WP_REST_Request $request): WP_REST_Response
     {
+        if (!SpamProtection::publicEndpointsAvailable()) {
+            return $this->storageUnavailableResponse();
+        }
+
         $trustedConfig = $this->resolveTrustedConfig($request);
         if ($trustedConfig === null) {
             return new WP_REST_Response([
@@ -93,6 +97,10 @@ class FormAPI
 
     public function submit(WP_REST_Request $request): WP_REST_Response
     {
+        if (!SpamProtection::publicEndpointsAvailable()) {
+            return $this->storageUnavailableResponse();
+        }
+
         $payload = [
             'formConfig' => $request->get_param('formConfig'),
             'formConfigSig' => $request->get_param('formConfigSig'),
@@ -110,6 +118,15 @@ class FormAPI
         unset($result['status']);
 
         return new WP_REST_Response($result, $status);
+    }
+
+    private function storageUnavailableResponse(): WP_REST_Response
+    {
+        return new WP_REST_Response([
+            'success' => false,
+            'code' => 'persistent_object_cache_required',
+            'message' => SpamProtection::publicEndpointUnavailableMessage(),
+        ], 503);
     }
 
     private function extractFormLocale(WP_REST_Request $request): string

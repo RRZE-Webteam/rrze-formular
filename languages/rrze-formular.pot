@@ -165,6 +165,9 @@ msgstr "E-Mail-Adresse"
 msgid "Either"
 msgstr "Beides möglich"
 
+msgid "Enable a persistent object cache such as Redis or Memcached, or explicitly override the rrze_formular_require_persistent_object_cache filter for this environment."
+msgstr "Aktivieren Sie einen persistenten Object Cache wie Redis oder Memcached oder überschreiben Sie den Filter rrze_formular_require_persistent_object_cache ausdrücklich für diese Umgebung."
+
 msgid "Enquiry"
 msgstr "Anfrage"
 
@@ -200,6 +203,9 @@ msgstr "Formular-Einstellungen"
 
 msgid "Form submission: %s"
 msgstr "Formularübermittlung: %s"
+
+msgid "Form submissions are currently unavailable because this installation requires a persistent object cache for public form tokens."
+msgstr "Formulareinsendungen sind derzeit nicht verfügbar, weil diese Installation einen persistenten Object Cache für öffentliche Formular-Tokens erfordert."
 
 msgid "Form template"
 msgstr "Formular-Vorlage"
@@ -413,6 +419,9 @@ msgstr "Bitte geben Sie eine gültige E-Mail-Adresse aus einer erlaubten Domain 
 
 msgid "Please enter a valid e-mail address."
 msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+
+msgid "Please enter one valid domain per line."
+msgstr "Bitte geben Sie pro Zeile eine gültige Domain ein."
 
 msgid "Please fill in all required fields correctly."
 msgstr "Bitte füllen Sie alle Pflichtfelder korrekt aus."
@@ -654,9 +663,6 @@ msgstr "Dieses Feld ist erforderlich."
 msgid "This form has no fields."
 msgstr "Dieses Formular hat keine Felder."
 
-msgid "This page cannot be published because no published %1$s page exists at %2$s."
-msgstr "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlichte %1$s-Seite unter %2$s vorhanden ist."
-
 msgid "Time"
 msgstr "Uhrzeit"
 
@@ -665,6 +671,9 @@ msgstr "Titel"
 
 msgid "Too many confirmation e-mails. Please try again later."
 msgstr "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
+
+msgid "Too many requests. Please try again later."
+msgstr "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
 
 msgid "Too many submissions. Please try again later."
 msgstr "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut."

@@ -9,6 +9,38 @@ class SpamProtection
     private const DEFAULT_TOKEN_TTL = 1800;
     private const CACHE_GROUP = 'rrze_formular_spam';
 
+    public static function publicEndpointsAvailable(): bool
+    {
+        if (!self::requiresPersistentObjectCacheForPublicEndpoints()) {
+            return true;
+        }
+
+        return self::usePersistentObjectCache();
+    }
+
+    public static function requiresPersistentObjectCacheForPublicEndpoints(): bool
+    {
+        $required = function_exists('is_multisite') && is_multisite();
+
+        /**
+         * Whether public form endpoints require a persistent object cache.
+         *
+         * The default is enabled on Multisite so anonymous token issuance and
+         * rate limiting cannot create database write load through transients.
+         */
+        return (bool) apply_filters('rrze_formular_require_persistent_object_cache', $required);
+    }
+
+    public static function publicEndpointUnavailableMessage(): string
+    {
+        return __('The form could not be sent. Please try again later.', 'rrze-formular');
+    }
+
+    public static function persistentObjectCacheRequiredMessage(): string
+    {
+        return __('Form submissions are currently unavailable because this installation requires a persistent object cache for public form tokens.', 'rrze-formular');
+    }
+
     /**
      * @return array{token: string, issuedAt: int}
      */
