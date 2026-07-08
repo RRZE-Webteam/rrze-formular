@@ -258,32 +258,12 @@ class Mailer
         return $urlHost !== '' && $urlHost === $siteHost;
     }
 
-    private static function isAllowedConfirmationRecipient(string $email): bool
-    {
-        if (!AllowedDomains::isConfirmationEmailAllowed($email)) {
-            return false;
-        }
-
-        /**
-         * Filter whether a confirmation mail may be sent to the given address.
-         * Return false to block the recipient even when the domain is allowed.
-         *
-         * @param bool $allowed Default true when the domain is allowed.
-         * @param string $email Sanitized recipient address.
-         */
-        return (bool) apply_filters('rrze_formular_allowed_confirmation_email', true, $email);
-    }
-
-    /**
-     * @param list<array{content: string, name: string, mime?: string}> $stringAttachments
-     */
     public static function sendOperatorMail(
         string $recipient,
         string $subject,
         string $body,
         array $headers = [],
-        string $recipientName = '',
-        array $stringAttachments = []
+        string $recipientName = ''
     ): bool {
         $fromEmail = self::getSenderAddress();
         $fromName = self::getSenderName();
@@ -298,39 +278,14 @@ class Mailer
 
         $defaultHeaders = [
             sprintf('From: %s', self::formatMailboxAddress($fromEmail, $fromName)),
+            'Content-Type: text/plain; charset=UTF-8',
         ];
-
-        if ($stringAttachments === []) {
-            $defaultHeaders[] = 'Content-Type: text/plain; charset=UTF-8';
-        }
 
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        $normalizedAttachments = [];
-
-        foreach ($stringAttachments as $attachment) {
-            if (!is_array($attachment)) {
-                continue;
-            }
-
-            $content = (string) ($attachment['content'] ?? '');
-            $name = sanitize_file_name((string) ($attachment['name'] ?? ''));
-
-            if ($content === '' || $name === '') {
-                continue;
-            }
-
-            $normalizedAttachments[] = [
-                'content' => $content,
-                'name' => $name,
-                'mime' => (string) ($attachment['mime'] ?? 'text/csv'),
-            ];
-        }
-
         $configureMailer = static function ($phpmailer) use (
             $recipientEmail,
-            $recipientName,
-            $normalizedAttachments
+            $recipientName
         ): void {
             if (!is_object($phpmailer) || !method_exists($phpmailer, 'clearAddresses')) {
                 return;
@@ -340,29 +295,6 @@ class Mailer
             $phpmailer->addAddress($recipientEmail, $recipientName);
             $phpmailer->CharSet = 'UTF-8';
             $phpmailer->isHTML(false);
-
-            if ($normalizedAttachments !== [] && method_exists($phpmailer, 'addStringAttachment')) {
-                foreach ($normalizedAttachments as $attachment) {
-                    try {
-                        $phpmailer->addStringAttachment(
-                            $attachment['content'],
-                            $attachment['name'],
-                            'base64',
-                            $attachment['mime']
-                        );
-                    } catch (\Throwable) {
-                        continue;
-                    }
-                }
-            }
-
-            // PHP mail() does not write the To header into the message body.
-            if ($phpmailer->Mailer === 'mail') {
-                $toHeader = $recipientName !== ''
-                    ? $phpmailer->addrFormat([$recipientEmail, $recipientName])
-                    : $recipientEmail;
-                $phpmailer->addCustomHeader('To', $toHeader);
-            }
         };
 
         add_action('phpmailer_init', $configureMailer, 99999, 1);
@@ -388,33 +320,4 @@ class Mailer
         return sanitize_email($address);
     }
 
-    public static function maybeSendConfirmation(
-        bool $enabled,
-        string $submitterEmail,
-        string $subject,
-        string $body,
-        array $headers = [],
-        string $submitterName = ''
-    ): bool {
-        if (!$enabled) {
-            return false;
-        }
-
-        $submitterEmail = sanitize_email($submitterEmail);
-        if (!is_email($submitterEmail)) {
-            return false;
-        }
-
-        if (!self::isAllowedConfirmationRecipient($submitterEmail)) {
-            return false;
-        }
-
-        return self::sendOperatorMail(
-            $submitterEmail,
-            $subject,
-            $body,
-            $headers,
-            $submitterName
-        );
-    }
 }

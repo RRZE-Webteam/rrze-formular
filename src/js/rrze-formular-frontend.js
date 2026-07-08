@@ -75,6 +75,13 @@ function initFormular( root ) {
 						showFieldError( root, fieldId, text );
 					} );
 				}
+				const tokenInput = form.querySelector( '[name="token"]' );
+				if ( tokenInput ) {
+					tokenInput.value = '';
+					try {
+						await refreshFormToken( form, root );
+					} catch {}
+				}
 				return;
 			}
 

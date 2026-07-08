@@ -23,8 +23,6 @@ class FormConfigAuth
             ),
             'recipientName' => sanitize_text_field((string) ($attributes['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($attributes['includeSsoInfo']),
-            'sendConfirmation' => !empty($attributes['sendConfirmation']),
-            'attachCsv' => !empty($attributes['attachCsv']),
             'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
         ];
 
@@ -35,8 +33,6 @@ class FormConfigAuth
             'recipientEmail' => $normalized['recipientEmail'],
             'recipientName' => $normalized['recipientName'],
             'includeSsoInfo' => $normalized['includeSsoInfo'],
-            'sendConfirmation' => $normalized['sendConfirmation'],
-            'attachCsv' => $normalized['attachCsv'],
             'fields' => FieldTypes::sanitizeFields($normalized['fields']),
         ];
     }

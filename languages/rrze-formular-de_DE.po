@@ -36,9 +36,6 @@ msgstr "Feld hinzufügen"
 msgid "Add option"
 msgstr "Option hinzufügen"
 
-msgid "Adds a CSV file with the submitted field values to the e-mail sent to the recipient."
-msgstr "Fügt der E-Mail an den Empfänger eine CSV-Datei mit den übermittelten Feldwerten hinzu."
-
 msgid "Adjust limits for honeypot, minimum fill time and rate limiting."
 msgstr "Grenzen für Honeypot, Mindest-Ausfüllzeit und Ratenbegrenzung anpassen."
 
@@ -51,9 +48,6 @@ msgstr "Nachmittags (12–17 Uhr)"
 msgid "Age"
 msgstr "Alter"
 
-msgid "Allowed confirmation domains"
-msgstr "Erlaubte Bestätigungs-Domains"
-
 msgid "Allowed e-mail domains"
 msgstr "Erlaubte E-Mail-Domains"
 
@@ -65,9 +59,6 @@ msgstr "Bewerben Sie sich auf eine studentische Hilfskraft-Stelle (HiWi)."
 
 msgid "Apply for an internship with our team."
 msgstr "Bewerben Sie sich auf ein Praktikum in unserem Team."
-
-msgid "Attach CSV to operator e-mail"
-msgstr "CSV an Betreiber-E-Mail anhängen"
 
 msgid "Availability"
 msgstr "Verfügbarkeit"
@@ -92,15 +83,6 @@ msgstr "Klicken Sie nach dem Bearbeiten auf jeder Registerkarte auf „Änderung
 
 msgid "Confirm selection"
 msgstr "Auswahl bestätigen"
-
-msgid "Confirmation mails per address per hour"
-msgstr "Bestätigungs-E-Mails pro Adresse und Stunde"
-
-msgid "Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option."
-msgstr "Bestätigungs-E-Mails erfordern konfigurierte erlaubte Domains. Konfigurieren Sie diese in den Plugin-Einstellungen, bevor Sie diese Option aktivieren."
-
-msgid "Confirmation: %s"
-msgstr "Bestätigung: %s"
 
 msgid "Contact"
 msgstr "Kontakt"
@@ -171,6 +153,9 @@ msgstr "E-Mail-Adresse"
 msgid "Either"
 msgstr "Beides möglich"
 
+msgid "Enable a persistent object cache such as Redis or Memcached, or explicitly override the rrze_formular_require_persistent_object_cache filter for this environment."
+msgstr "Aktivieren Sie einen persistenten Object Cache wie Redis oder Memcached oder überschreiben Sie den Filter rrze_formular_require_persistent_object_cache ausdrücklich für diese Umgebung."
+
 msgid "Enquiry"
 msgstr "Anfrage"
 
@@ -207,11 +192,11 @@ msgstr "Formular-Einstellungen"
 msgid "Form submission: %s"
 msgstr "Formularübermittlung: %s"
 
+msgid "Form submissions are currently unavailable because this installation requires a persistent object cache for public form tokens."
+msgstr "Formulareinsendungen sind derzeit nicht verfügbar, weil diese Installation einen persistenten Object Cache für öffentliche Formular-Tokens erfordert."
+
 msgid "Form template"
 msgstr "Formular-Vorlage"
-
-msgid "Form: %s"
-msgstr "Formular: %s"
 
 msgid "General"
 msgstr "Allgemein"
@@ -290,9 +275,6 @@ msgstr "Matrikelnummer"
 
 msgid "Maximum number of accepted submissions from one IP address per hour."
 msgstr "Maximale Anzahl akzeptierter Übermittlungen von einer IP-Adresse pro Stunde."
-
-msgid "Maximum number of confirmation mails sent to the same submitter e-mail address per hour."
-msgstr "Maximale Anzahl von Bestätigungs-E-Mails an dieselbe Absender-Adresse pro Stunde."
 
 msgid "Media outlet"
 msgstr "Medium / Redaktion"
@@ -387,12 +369,6 @@ msgstr "Optional. Leer lassen, um die Website-E-Mail-Adresse zu verwenden. Bei E
 msgid "Optional. Must use an allowed domain. Otherwise the default recipient is used."
 msgstr "Optional. Muss eine erlaubte Domain verwenden. Andernfalls wird der Standard-Empfänger verwendet."
 
-msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains above. If no domains are configured anywhere, confirmation mails are never sent."
-msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die oben konfigurierten erlaubten Empfänger-Domains zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
-
-msgid "Optional. One domain per line. Confirmation mails are only sent to submitter addresses on these domains. Leave empty to use the allowed recipient domains from RRZE Settings. If no domains are configured anywhere, confirmation mails are never sent."
-msgstr "Optional. Eine Domain pro Zeile. Bestätigungs-E-Mails werden nur an Absender-Adressen auf diesen Domains gesendet. Leer lassen, um die erlaubten Empfänger-Domains aus den RRZE-Einstellungen zu verwenden. Wenn nirgends Domains konfiguriert sind, werden keine Bestätigungs-E-Mails versendet."
-
 msgid "Organisation / company"
 msgstr "Organisation / Unternehmen"
 
@@ -422,6 +398,9 @@ msgstr "Bitte geben Sie eine gültige E-Mail-Adresse aus einer erlaubten Domain 
 
 msgid "Please enter a valid e-mail address."
 msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+
+msgid "Please enter one valid domain per line."
+msgstr "Bitte geben Sie pro Zeile eine gültige Domain ein."
 
 msgid "Please fill in all required fields correctly."
 msgstr "Bitte füllen Sie alle Pflichtfelder korrekt aus."
@@ -540,17 +519,11 @@ msgstr "Seminarraum"
 msgid "Send"
 msgstr "Senden"
 
-msgid "Send confirmation to submitter"
-msgstr "Bestätigung an Absender senden"
-
 msgid "Send us a message. We will reply as soon as possible."
 msgstr "Senden Sie uns eine Nachricht. Wir antworten so schnell wie möglich."
 
 msgid "Sending…"
 msgstr "Wird gesendet…"
-
-msgid "Sends a short receipt without submitted field values. Only delivered when allowed confirmation domains are configured and the submitter address matches."
-msgstr "Sendet eine kurze Empfangsbestätigung ohne übermittelte Feldwerte. Wird nur zugestellt, wenn erlaubte Bestätigungs-Domains konfiguriert sind und die Absender-Adresse passt."
 
 msgid "Settings issues detected."
 msgstr "Probleme in den Einstellungen erkannt."
@@ -663,17 +636,14 @@ msgstr "Dieses Feld ist erforderlich."
 msgid "This form has no fields."
 msgstr "Dieses Formular hat keine Felder."
 
-msgid "This page cannot be published because no published %1$s page exists at %2$s."
-msgstr "Diese Seite kann nicht veröffentlicht werden, weil keine veröffentlichte %1$s-Seite unter %2$s vorhanden ist."
-
 msgid "Time"
 msgstr "Uhrzeit"
 
 msgid "Title"
 msgstr "Titel"
 
-msgid "Too many confirmation e-mails. Please try again later."
-msgstr "Zu viele Bestätigungs-E-Mails. Bitte versuchen Sie es später erneut."
+msgid "Too many requests. Please try again later."
+msgstr "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
 
 msgid "Too many submissions. Please try again later."
 msgstr "Zu viele Übermittlungen. Bitte versuchen Sie es später erneut."
@@ -716,9 +686,6 @@ msgstr "Vegan"
 
 msgid "Vegetarian"
 msgstr "Vegetarisch"
-
-msgid "We received your submission."
-msgstr "Wir haben Ihre Übermittlung erhalten."
 
 msgid "Website"
 msgstr "Website"

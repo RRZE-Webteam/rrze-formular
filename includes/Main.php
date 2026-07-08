@@ -8,6 +8,7 @@ use RRZE\Formular\Common\{
     API\FormAPI,
     Form\BlockPostSaveValidator,
     Form\FormLocale,
+    Form\SpamProtection,
     Settings\Settings
 };
 
@@ -32,7 +33,38 @@ class Main
 
         if (is_admin()) {
             $this->bootstrapSettings();
+            $this->registerOperationalNotices();
         }
+    }
+
+    private function registerOperationalNotices(): void
+    {
+        if (SpamProtection::publicEndpointsAvailable()) {
+            return;
+        }
+
+        add_action('admin_notices', [$this, 'renderObjectCacheNotice']);
+        add_action('network_admin_notices', [$this, 'renderObjectCacheNotice']);
+    }
+
+    public function renderObjectCacheNotice(): void
+    {
+        $capability = function_exists('is_network_admin') && is_network_admin()
+            ? 'manage_network_options'
+            : 'manage_options';
+
+        if (!current_user_can($capability)) {
+            return;
+        }
+
+        printf(
+            '<div class="notice notice-error"><p>%s</p></div>',
+            esc_html(
+                SpamProtection::persistentObjectCacheRequiredMessage()
+                . ' '
+                . __('Enable a persistent object cache such as Redis or Memcached, or explicitly override the rrze_formular_require_persistent_object_cache filter for this environment.', 'rrze-formular')
+            )
+        );
     }
 
     private function bootstrapSettings(): void

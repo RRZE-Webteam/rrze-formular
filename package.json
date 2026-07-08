@@ -1,6 +1,6 @@
 {
   "name": "rrze-formular",
-  "version": "1.4.5",
+  "version": "1.4.7",
   "description": "Simple forms for the block editor with automatic design, spam protection and secure mail delivery.",
   "author": "RRZE Webteam",
   "license": "GPL-2.0-or-later",
@@ -16,9 +16,9 @@
     "lint:js": "wp-scripts lint-js"
   },
   "devDependencies": {
-    "@wordpress/i18n": "^5.9.0",
-    "@wordpress/scripts": "^30.7.0",
+    "@wordpress/i18n": "^6.23.0",
+    "@wordpress/scripts": "^32.6.0",
     "npm-run-all": "^4.1.5",
-    "sass": "^1.87.0"
+    "sass": "^1.101.0"
   }
 }

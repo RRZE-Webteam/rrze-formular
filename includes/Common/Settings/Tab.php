@@ -156,7 +156,7 @@ class Tab
         }
 
         if (isset($_REQUEST['section'])) {
-            return $this->getSectionByName($_REQUEST['section']);
+            return $this->getSectionByName((string) wp_unslash($_REQUEST['section']));
         }
 
         if ($this->containsOnlySectionLinks()) {
@@ -179,9 +179,13 @@ class Tab
             return [$this->sections[0]];
         }
 
-        return \array_filter($this->sections, function ($section) {
+        $requestedSection = isset($_REQUEST['section'])
+            ? (string) wp_unslash($_REQUEST['section'])
+            : '';
+
+        return \array_filter($this->sections, function ($section) use ($requestedSection) {
             if (isset($_REQUEST['section'])) {
-                return $section->asLink && $_REQUEST['section'] == $section->slug;
+                return $section->asLink && $requestedSection === $section->slug;
             }
 
             return !$section->asLink;

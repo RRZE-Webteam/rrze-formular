@@ -3,7 +3,7 @@
 /*
 Plugin Name:        RRZE Formular
 Plugin URI:         https://github.com/RRZE-Webteam/rrze-formular
-Version:            1.4.5
+Version:            1.4.7
 Description:        Simple forms for the block editor with automatic design, spam protection and secure mail delivery.
 Author:             RRZE Webteam
 Author URI:         https://www.wp.rrze.fau.de/
@@ -22,6 +22,10 @@ use RRZE\Formular\Common\Plugin\Plugin;
 defined('ABSPATH') || exit;
 
 const RRZE_FORMULAR_PLUGIN = 'rrze-formular/rrze-formular.php';
+
+if (!array_key_exists('rrze_formular_require_persistent_object_cache', $GLOBALS)) {
+    $GLOBALS['rrze_formular_require_persistent_object_cache'] = false;
+}
 
 spl_autoload_register(function ($class) {
     $prefix = __NAMESPACE__;

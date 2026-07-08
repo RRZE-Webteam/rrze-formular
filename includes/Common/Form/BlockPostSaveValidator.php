@@ -247,11 +247,8 @@ class BlockPostSaveValidator
         return self::$editorConfigCache = [
             'allowedDomains' => $allowedDomains,
             'domainsConfigured' => $allowedDomains !== [],
-            'confirmationDomains' => AllowedDomains::getConfirmationDomains(),
-            'confirmationDomainsConfigured' => AllowedDomains::hasConfirmationDomainsConfigured(),
             'defaultRecipientEmail' => sanitize_email((string) ($options['default_recipient_email'] ?? '')),
             'administratorEmail' => Mailer::getAdministratorEmail(),
-            'privacyPublished' => Privacy::isPublished(),
             'privacyUrl' => Privacy::getPageUrl(),
             'privacyLabel' => __('Privacy', 'rrze-formular'),
             'saveNotice' => is_string($notice) ? $notice : '',
@@ -260,11 +257,6 @@ class BlockPostSaveValidator
                 'recipientDomainNotAllowed' => __('The recipient e-mail domain is not allowed.', 'rrze-formular'),
                 'recipientDomainsRequired' => __('A recipient e-mail requires configured allowed domains.', 'rrze-formular'),
                 'publishBlocked' => __('Publishing is blocked until all form recipient addresses use an allowed domain.', 'rrze-formular'),
-                'confirmationDomainsRequired' => __('Confirmation mails require configured allowed domains. Configure them in the plugin settings before enabling this option.', 'rrze-formular'),
-                'privacyPublishBlockedFormat' => __(
-                    'This page cannot be published because no published %1$s page exists at %2$s.',
-                    'rrze-formular'
-                ),
             ],
         ];
     }
@@ -343,10 +335,6 @@ class BlockPostSaveValidator
     {
         if (!self::contentHasFormBlocks($content)) {
             return null;
-        }
-
-        if (!Privacy::isPublished()) {
-            return Privacy::getPublishBlockedMessage();
         }
 
         $invalidEmails = self::findInvalidRecipientEmails($content);

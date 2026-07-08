@@ -29,7 +29,7 @@ class FormHandler
         }
 
         $configHash = FormConfigAuth::configHash($trustedConfig);
-        $tokenData = SpamProtection::verifyToken(
+        $tokenData = SpamProtection::claimToken(
             $token,
             $configHash,
             (string) ($payload['pageUrl'] ?? '')
@@ -70,10 +70,6 @@ class FormHandler
             return $this->error($recipientError, 422);
         }
 
-        if (!SpamProtection::claimTokenNonce((string) ($tokenData['nonce'] ?? ''))) {
-            return $this->error(__('Invalid or too fast submission.', 'rrze-formular'), 400);
-        }
-
         if (!SpamProtection::tryAcquireSubmissionSlot()) {
             return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
@@ -99,56 +95,17 @@ class FormHandler
 
         $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
         $subject = $this->buildSubject($attributes, $sanitized);
-        $stringAttachments = [];
-
-        if (!empty($trustedConfig['attachCsv'])) {
-            try {
-                $columns = $this->buildSubmissionColumns($inputFields, $sanitized);
-                $csvContent = SubmissionCsv::build($columns['headers'], $columns['values']);
-
-                if ($csvContent !== '') {
-                    $stringAttachments[] = [
-                        'content' => $csvContent,
-                        'name' => SubmissionCsv::filename((string) ($attributes['formTitle'] ?? '')),
-                        'mime' => 'text/csv',
-                    ];
-                }
-            } catch (\Throwable) {
-                // CSV must not block form delivery.
-            }
-        }
 
         $sent = Mailer::sendOperatorMail(
             $recipient['email'],
             $subject,
             $mailBody,
             $operatorHeaders,
-            $recipient['name'],
-            $stringAttachments
+            $recipient['name']
         );
 
         if (!$sent) {
             return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
-        }
-
-        $sendConfirmation = !empty($attributes['sendConfirmation']);
-        if ($sendConfirmation && $submitterEmail !== '') {
-            if (!SpamProtection::tryAcquireConfirmationSlot($submitterEmail)) {
-                return $this->error(__('Too many confirmation e-mails. Please try again later.', 'rrze-formular'), 429);
-            }
-
-            $confirmationSent = Mailer::maybeSendConfirmation(
-                true,
-                $submitterEmail,
-                sprintf(__('Confirmation: %s', 'rrze-formular'), $subject),
-                $this->buildConfirmationBody($attributes),
-                $websiteHeaders,
-                $submitterName
-            );
-
-            if (!$confirmationSent) {
-                return $this->error(__('The message could not be sent.', 'rrze-formular'), 500);
-            }
         }
 
         $successMessage = $attributes['successMessage'] !== ''
@@ -171,8 +128,6 @@ class FormHandler
             'recipientEmail' => sanitize_text_field((string) ($trustedConfig['recipientEmail'] ?? '')),
             'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
             'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
-            'sendConfirmation' => !empty($trustedConfig['sendConfirmation']),
-            'attachCsv' => !empty($trustedConfig['attachCsv']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
@@ -274,25 +229,6 @@ class FormHandler
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
     }
 
-    /**
-     * @return array{headers: list<string>, values: list<string>}
-     */
-    private function buildSubmissionColumns(array $fields, array $values): array
-    {
-        $headers = [];
-        $columnValues = [];
-
-        foreach ($fields as $field) {
-            $headers[] = $field['label'] !== '' ? (string) $field['label'] : (string) $field['id'];
-            $columnValues[] = $this->formatFieldValueForMail($field, $values[$field['id']] ?? '');
-        }
-
-        return [
-            'headers' => $headers,
-            'values' => $columnValues,
-        ];
-    }
-
     private function buildMailBody(array $fields, array $values, ?array $ssoData): string
     {
         $lines = [];
@@ -337,32 +273,6 @@ class FormHandler
             $lines[] = SSO::formatCompactLine($ssoData);
         }
 
-        $lines[] = Mailer::formatSiteLinkLine();
-        $lines[] = Mailer::formatMailDateLine();
-
-        return implode("\n", $lines);
-    }
-
-    /**
-     * @param array<string, mixed> $attributes
-     */
-    private function buildConfirmationBody(array $attributes): string
-    {
-        $lines = [
-            __('We received your submission.', 'rrze-formular'),
-            '',
-        ];
-
-        $formTitle = sanitize_text_field((string) ($attributes['formTitle'] ?? ''));
-        if ($formTitle !== '') {
-            $lines[] = sprintf(
-                /* translators: %s: form title */
-                __('Form: %s', 'rrze-formular'),
-                $formTitle
-            );
-        }
-
-        $lines[] = '';
         $lines[] = Mailer::formatSiteLinkLine();
         $lines[] = Mailer::formatMailDateLine();
 

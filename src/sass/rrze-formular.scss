@@ -118,6 +118,10 @@ $rrze-formular-stripe: 3rem;
 	}
 }
 
+form.rrze-formular__form {
+	width: 100%;
+}
+
 .rrze-formular__title {
 	margin: 0 0 0.5rem;
 	color: $rrze-formular-accent;

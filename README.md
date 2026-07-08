@@ -26,7 +26,6 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 - Privacy link on every form (`/datenschutz` on German sites, `/privacy` otherwise)
 - Publishing blocked when the required privacy page is not published
 - Publishing blocked when a block recipient uses a domain that is not allowed
-- Optional confirmation e-mails to the submitter
 - Optional CSV attachment with submitted field values in operator e-mails (per block)
 - Invisible anti-spam measures (honeypot, time token, rate limiting)
 - SSO / logged-in user data via WordPress login or filter hook
@@ -59,15 +58,9 @@ No. The sender always uses the site e-mail address and site name from WordPress.
 
 When **RRZE Settings** is active, allowed domains are managed network-wide for RRZE Formular. Otherwise use **Settings → RRZE Formular**.
 
-### When are confirmation mails sent?
-
-When enabled on the block, the submitter provides a valid e-mail address, and that address uses a domain from the **allowed confirmation domains**. If no domains are configured anywhere, confirmation mails are never sent.
-
-Confirmation mails contain only a short receipt (form title, site link, date) — not submitted field values — and are rate-limited per submitter address.
-
 ### When is a CSV file attached?
 
-When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second. The file is sent only with the operator mail, not with confirmation mails.
+When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second. The file is sent only with the operator mail.
 
 ### Why can I not publish a page with a form?
 
@@ -84,14 +77,21 @@ If a user is logged in, name and e-mail can be appended to the operator mail. Ex
 Protection is enforced server-side in `FormHandler`:
 
 - **Signed form configuration** (`formConfig` + `formConfigSig`) — only fields defined in the block can be submitted
-- **One-time submission token** (`token`) — issued via `POST /wp-json/rrze-formular/v1/token` when the page loads in the browser (not during HTML rendering), HMAC-signed, bound to the form config, atomically consumed before mail delivery
+- **One-time submission token** (`token`) — issued lazily via `POST /wp-json/rrze-formular/v1/token` when a visitor interacts with or submits the form (not during HTML rendering), HMAC-signed, bound to the form config, consumed before mail delivery
 - **Minimum submit delay** — rejects submissions faster than the configured threshold
 - **Honeypot** (`website`) — must stay empty
-- **Rate limiting** — per client IP (and per submitter e-mail for confirmation mails)
-- **Confirmation domain allowlist** — confirmation mails are only sent when allowed domains are configured; submitted content is not included in confirmation mails
+- **Rate limiting** — per client IP
 - **Field validation** — required fields, e-mail format, allowed recipient domains
 
 The REST route validates the request shape (required parameters, `values` object, optional URL/locale) before processing.
+
+### Cache compatibility
+
+Form rendering is designed to be cache-safe. Rendered HTML contains an empty token field plus a signed form configuration, but it does not create or persist submission tokens. This keeps normal page rendering, REST-rendered post output and feed-rendered output free of token writes.
+
+Full-page caches may cache pages that contain forms. The per-submission token is fetched later in the browser via the public token REST endpoint and consumed before mail delivery.
+
+The plugin can require a persistent object cache for public form endpoints so anonymous token and rate-limit state is not written to the database. This package currently sets `$GLOBALS['rrze_formular_require_persistent_object_cache'] = false` in the main plugin file, so database fallback is allowed when infrastructure-level rate limiting protects the public REST routes. Set the global to `true` or use the `rrze_formular_require_persistent_object_cache` filter to make `/wp-json/rrze-formular/v1/token` and `/wp-json/rrze-formular/v1/submit` return HTTP 503 when Redis, Memcached or another persistent object cache is unavailable.
 
 ## Hooks
 
@@ -103,9 +103,8 @@ The REST route validates the request shape (required parameters, `values` object
 | `rrze_formular_resolved_recipient` | Resolved recipient after block/settings/default |
 | `rrze_formular_templates` | Form templates in the block editor |
 | `rrze_formular_token_ttl` | Anti-spam token lifetime |
-| `rrze_formular_allowed_confirmation_email` | Whether a confirmation mail may be sent (after domain check) |
-| `rrze_formular_confirmation_domains` | Allowed domains for confirmation mails |
 | `rrze_formular_privacy_page_reachable` | Override privacy page availability check |
+| `rrze_formular_require_persistent_object_cache` | Require persistent object cache for public form endpoints; overrides the plugin-level global |
 
 ## Links
 
