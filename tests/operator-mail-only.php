@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Ensures submissions never send a second mail to the submitter address.
+ * Ensures submissions send only operator mail, without logged-in user data.
  * Run: php tests/operator-mail-only.php
  */
 
@@ -25,7 +25,7 @@ namespace {
             'allowed_domains' => 'example.org',
             'rate_limit_per_hour' => '10',
             'min_submit_seconds' => '1',
-            'include_sso_by_default' => '',
+            'include_sso_by_default' => '1', // Legacy settings must have no effect.
         ],
         'admin_email' => 'admin@example.org',
     ];
@@ -238,17 +238,25 @@ namespace {
 
     function apply_filters($hook, $value, ...$args)
     {
+        if ($hook === 'rrze_formular_sso_user_data') {
+            throw new \RuntimeException('Removed SSO filter must never run');
+        }
+
         return $value;
     }
 
     function is_user_logged_in(): bool
     {
-        return false;
+        return true;
     }
 
     function wp_get_current_user(): object
     {
-        return (object) ['display_name' => '', 'user_email' => '', 'user_login' => ''];
+        return (object) [
+            'display_name' => 'Account Identity',
+            'user_email' => 'account@example.org',
+            'user_login' => 'account-login',
+        ];
     }
 
     function wp_get_referer()
@@ -392,7 +400,6 @@ namespace RRZE\Formular\Common\Form {
     require_once dirname(__DIR__) . '/includes/Common/Form/FormLocale.php';
     require_once dirname(__DIR__) . '/includes/Common/Form/Mailer.php';
     require_once dirname(__DIR__) . '/includes/Common/Form/SpamProtection.php';
-    require_once dirname(__DIR__) . '/includes/Common/Form/SSO.php';
     require_once dirname(__DIR__) . '/includes/Common/Form/FormHandler.php';
 
     function assert_true(bool $condition, string $message): void
@@ -422,6 +429,7 @@ namespace RRZE\Formular\Common\Form {
         'recipientEmail' => 'team@example.org',
         'recipientName' => 'Team',
         'sendConfirmation' => true,
+        'includeSsoInfo' => true,
         'fields' => [
             ['id' => 'email', 'type' => 'email', 'label' => 'E-mail address', 'required' => true],
             ['id' => 'message', 'type' => 'textarea', 'label' => 'Message', 'required' => true],
@@ -469,5 +477,21 @@ namespace RRZE\Formular\Common\Form {
         'Mailer must not add a second manual To header'
     );
 
-    echo "OK: operator mail only\n";
+    $mail = $GLOBALS['rrze_test_mail_log'][0];
+    assert_true(
+        in_array('Reply-To: victim@outside.example', $mail['headers'], true),
+        'Reply-To must use only the submitted e-mail, without the account name'
+    );
+    assert_true(
+        str_contains($mail['message'], 'Hello') && str_contains($mail['message'], 'victim@outside.example'),
+        'Operator mail must retain submitted field values'
+    );
+    foreach (['SSO:', 'Account Identity', 'account@example.org', 'account-login'] as $identity) {
+        assert_true(
+            !str_contains(wp_json_encode($mail), $identity),
+            'Mail must not include logged-in user identity: ' . $identity
+        );
+    }
+
+    echo "OK: operator mail only, without account data\n";
 }

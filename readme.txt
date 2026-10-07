@@ -27,11 +27,8 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 * Domain validation for recipient addresses
 * Allowed domains from **RRZE Settings** (network) or from plugin settings when RRZE Settings is inactive
 * Privacy link on every form (`/datenschutz` on German sites, `/privacy` otherwise)
-* Publishing blocked when the required privacy page is not published
-* Publishing blocked when a block recipient uses a domain that is not allowed
 * Optional CSV attachment with submitted field values in operator e-mails (per block)
 * Invisible anti-spam measures (honeypot, time token, rate limiting)
-* SSO / logged-in user data via WordPress login or filter hook
 
 == Installation ==
 
@@ -49,7 +46,7 @@ RRZE Formular lets editors create forms directly in the block editor. You define
 2. Choose a template or build your own fields.
 3. Optionally set a recipient e-mail and name on an allowed domain.
 4. Optionally enable **Attach CSV to operator e-mail** in the block settings.
-5. Publish the page (requires a published privacy page and valid recipient configuration).
+5. Publish the page. The plugin does not restrict publishing or change the post status.
 
 == Frequently Asked Questions ==
 
@@ -65,13 +62,9 @@ When **RRZE Settings** is active, allowed domains are managed network-wide for R
 
 When **Attach CSV to operator e-mail** is enabled on the block. The CSV has two rows: field names in the first row, submitted values in the second. The file is sent only with the operator mail.
 
-= Why can I not publish a page with a form? =
+= Does the plugin restrict publishing pages with forms? =
 
-Publishing is blocked when either the required privacy page is missing or not published, or a form block uses a recipient address outside the allowed domains.
-
-= How does SSO integration work? =
-
-If a user is logged in, name and e-mail can be appended to the operator mail. External SSO systems can supply data via the `rrze_formular_sso_user_data` filter.
+No. Posts and pages can be saved, published and scheduled regardless of the form recipient configuration or privacy page availability. Recipient domain checks still apply to form submissions, and the block editor shows inline feedback for invalid recipient addresses.
 
 = How is the submit endpoint protected? =
 
@@ -100,11 +93,9 @@ The plugin can require a persistent object cache for public form endpoints so an
 
 * `rrze_formular_defaults` – Plugin settings structure
 * `rrze_formular_allowed_domains` – Allowed recipient domains
-* `rrze_formular_sso_user_data` – SSO user data for operator mails
 * `rrze_formular_resolved_recipient` – Resolved recipient after block/settings/default
 * `rrze_formular_templates` – Form templates in the block editor
 * `rrze_formular_token_ttl` – Anti-spam token lifetime
-* `rrze_formular_privacy_page_reachable` – Override privacy page availability check
 * `rrze_formular_require_persistent_object_cache` – Require persistent object cache for public form endpoints; overrides the plugin-level global
 
 == Links ==

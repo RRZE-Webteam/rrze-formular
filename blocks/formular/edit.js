@@ -17,10 +17,6 @@ import ServerSideRender from '@wordpress/server-side-render';
 import { getTemplates } from './templates';
 import { getRecipientEmailError } from './editor-support';
 
-function getEditorConfig() {
-	return window.RRZEFormularEditor || {};
-}
-
 const getFieldTypes = () => [
 	{ label: __('Text', 'rrze-formular'), value: 'text' },
 	{ label: __('E-mail', 'rrze-formular'), value: 'email' },
@@ -171,7 +167,6 @@ export default function Edit({ attributes, setAttributes }) {
 		recipientName,
 		submitLabel,
 		successMessage,
-		includeSsoInfo,
 		fields,
 	} = attributes;
 
@@ -277,11 +272,6 @@ export default function Edit({ attributes, setAttributes }) {
 						value={successMessage}
 						onChange={(value) => setAttributes({ successMessage: value })}
 					/>
-						<ToggleControl
-							label={__('Include SSO / logged-in user data', 'rrze-formular')}
-							checked={!!includeSsoInfo}
-							onChange={(value) => setAttributes({ includeSsoInfo: value })}
-						/>
 					</PanelBody>
 					<PanelBody title={__('Fields', 'rrze-formular')} initialOpen>
 					{(fields || []).map((field, index) => (

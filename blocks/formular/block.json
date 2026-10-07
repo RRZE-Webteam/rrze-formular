@@ -37,10 +37,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"includeSsoInfo": {
-			"type": "boolean",
-			"default": true
-		},
 		"fields": {
 			"type": "array",
 			"default": [],

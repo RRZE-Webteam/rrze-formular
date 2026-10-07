@@ -6,7 +6,7 @@ use function RRZE\Formular\plugin;
 
 use RRZE\Formular\Common\{
     API\FormAPI,
-    Form\BlockPostSaveValidator,
+    Form\EditorConfig,
     Form\FormLocale,
     Form\SpamProtection,
     Settings\Settings
@@ -28,7 +28,7 @@ class Main
     public function onInit(): void
     {
         $this->formApi = new FormAPI();
-        BlockPostSaveValidator::register();
+        EditorConfig::register();
         $this->registerAssets();
 
         if (is_admin()) {

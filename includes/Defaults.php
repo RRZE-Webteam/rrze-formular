@@ -93,13 +93,6 @@ class Defaults
                 'type' => 'text',
                 'default' => '',
             ],
-            [
-                'name' => 'include_sso_by_default',
-                'label' => __('Include SSO data by default', 'rrze-formular'),
-                'description' => __('When a logged-in user submits a form, include name and email in the operator mail.', 'rrze-formular'),
-                'type' => 'checkbox',
-                'default' => '1',
-            ],
         ];
 
         if (!AllowedDomains::isRrzeSettingsActive()) {

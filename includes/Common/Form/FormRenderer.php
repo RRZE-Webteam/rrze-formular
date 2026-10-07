@@ -83,7 +83,6 @@ class FormRenderer
             'successMessage' => sanitize_text_field((string) ($attributes['successMessage'] ?? __('Thank you. Your message has been sent.', 'rrze-formular'))),
             'recipientEmail' => sanitize_text_field((string) ($attributes['recipientEmail'] ?? '')),
             'recipientName' => sanitize_text_field((string) ($attributes['recipientName'] ?? '')),
-            'includeSsoInfo' => !empty($attributes['includeSsoInfo']),
             'template' => sanitize_key((string) ($attributes['template'] ?? 'blank')),
             'fields' => is_array($attributes['fields'] ?? null) ? $attributes['fields'] : [],
         ];

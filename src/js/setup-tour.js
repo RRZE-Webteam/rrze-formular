@@ -18,17 +18,6 @@ function getSetupSteps() {
 			),
 		},
 		{
-			id: 'sso-default',
-			tab: 'general',
-			target: '[data-rrze-tour="sso-default"]',
-			title: __( 'Include SSO data by default', 'rrze-formular' ),
-			text: __(
-				'When enabled, name and e-mail of logged-in users are appended to operator mails.',
-				'rrze-formular'
-			),
-			optional: true,
-		},
-		{
 			id: 'save-general',
 			tab: 'general',
 			target: '[data-rrze-tour="save-settings"]',

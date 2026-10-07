@@ -166,7 +166,6 @@ abstract class Type
     {
         $map = [
             'mail_subject_prefix' => 'mail-subject-prefix',
-            'include_sso_by_default' => 'sso-default',
             'min_submit_seconds' => 'min-submit-seconds',
             'rate_limit_per_hour' => 'rate-limit',
         ];
