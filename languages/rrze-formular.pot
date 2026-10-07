@@ -219,12 +219,6 @@ msgstr "Falls zutreffend"
 msgid "In person"
 msgstr "Vor Ort"
 
-msgid "Include SSO / logged-in user data"
-msgstr "SSO- / Angemeldete-Benutzer-Daten einbeziehen"
-
-msgid "Include SSO data by default"
-msgstr "SSO-Daten standardmäßig einbeziehen"
-
 msgid "Industry partnership"
 msgstr "Industriepartnerschaft"
 
@@ -447,9 +441,6 @@ msgstr "Öffentlichkeitsarbeit · Alumni-Kontakt"
 msgid "Public relations · Newsletter signup"
 msgstr "Öffentlichkeitsarbeit · Newsletter-Anmeldung"
 
-msgid "Publishing is blocked until all form recipient addresses use an allowed domain."
-msgstr "Die Veröffentlichung ist gesperrt, bis alle Empfänger-Adressen in Formularblöcken eine erlaubte Domain verwenden."
-
 msgid "Purpose"
 msgstr "Zweck"
 
@@ -503,9 +494,6 @@ msgstr "Raumbuchungsanfrage"
 
 msgid "Room type"
 msgstr "Raumtyp"
-
-msgid "SSO"
-msgstr "SSO"
 
 msgid "Section heading"
 msgstr "Abschnittsüberschrift"
@@ -606,12 +594,6 @@ msgstr "Das Formular konnte nicht gesendet werden. Bitte versuchen Sie es späte
 msgid "The message could not be sent."
 msgstr "Die Nachricht konnte nicht gesendet werden."
 
-msgid "The page was saved as a draft because the form recipient address %1$s is not allowed. Allowed domains: %2$s."
-msgstr "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adresse %1$s im Formularblock nicht erlaubt ist. Erlaubte Domains: %2$s."
-
-msgid "The page was saved as a draft because the form recipient addresses %1$s are not allowed. Allowed domains: %2$s."
-msgstr "Die Seite wurde als Entwurf gespeichert, weil die Empfänger-Adressen %1$s in Formularblöcken nicht erlaubt sind. Erlaubte Domains: %2$s."
-
 msgid "The recipient e-mail domain is not allowed."
 msgstr "Die E-Mail-Domain des Empfängers ist nicht erlaubt."
 
@@ -690,12 +672,6 @@ msgstr "Vegetarisch"
 msgid "Website"
 msgstr "Website"
 
-msgid "When a logged-in user submits a form, include name and email in the operator mail."
-msgstr "Name und E-Mail in die Betreiber-Mail aufnehmen, wenn ein angemeldeter Benutzer ein Formular absendet."
-
-msgid "When enabled, name and e-mail of logged-in users are appended to operator mails."
-msgstr "Wenn aktiviert, werden Name und E-Mail angemeldeter Benutzer an Betreiber-Mails angehängt."
-
 msgid "Year of graduation"
 msgstr "Abschlussjahr"
 
@@ -728,6 +704,3 @@ msgstr "Formular"
 
 msgid "mail"
 msgstr "E-Mail"
-
-msgid "none configured"
-msgstr "keine konfiguriert"

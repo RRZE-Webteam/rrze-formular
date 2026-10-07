@@ -60,21 +60,23 @@ namespace RRZE\Formular\Common\Form {
     $attributes = [
         'formTitle' => 'Kontakt',
         'attachCsv' => true,
+        'includeSsoInfo' => true,
         'fields' => [
             ['id' => 'email', 'type' => 'email', 'label' => 'E-mail', 'required' => true, 'options' => []],
         ],
     ];
 
     $trusted = FormConfigAuth::buildTrustedConfig($attributes);
-    if (array_key_exists('attachCsv', $trusted)) {
-        fwrite(STDERR, "FAIL: legacy attachCsv attribute is still trusted\n");
+    if (array_key_exists('attachCsv', $trusted) || array_key_exists('includeSsoInfo', $trusted)) {
+        fwrite(STDERR, "FAIL: legacy attributes are still trusted\n");
         exit(1);
     }
 
-    $signed = FormConfigAuth::sign($trusted);
+    // Previously cached forms may still contain signed legacy attributes.
+    $signed = FormConfigAuth::sign($attributes);
     $verified = FormConfigAuth::verify($signed['payload'], $signed['signature']);
-    if ($verified === null || array_key_exists('attachCsv', $verified)) {
-        fwrite(STDERR, "FAIL: legacy attachCsv survived sign/verify round-trip\n");
+    if ($verified !== $trusted) {
+        fwrite(STDERR, "FAIL: legacy attributes survived signature verification\n");
         exit(1);
     }
 

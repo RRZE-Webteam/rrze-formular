@@ -74,16 +74,10 @@ class FormHandler
             return $this->error(__('Too many submissions. Please try again later.', 'rrze-formular'), 429);
         }
 
-        $options = Mailer::getOptions();
-        $includeSso = array_key_exists('includeSsoInfo', $attributes)
-            ? (bool) $attributes['includeSsoInfo']
-            : !empty($options['include_sso_by_default']);
-
-        $ssoData = $includeSso ? SSO::getUserData() : null;
         $submissionUrl = Mailer::resolveSubmissionUrl((string) ($payload['pageUrl'] ?? ''));
         $websiteHeaders = Mailer::websiteHeaders($submissionUrl);
         $submitterEmail = $this->findSubmitterEmail($inputFields, $sanitized);
-        $submitterName = $this->findSubmitterName($inputFields, $sanitized, $ssoData);
+        $submitterName = $this->findSubmitterName($sanitized);
         $operatorHeaders = $websiteHeaders;
 
         if ($submitterEmail !== '') {
@@ -93,7 +87,7 @@ class FormHandler
             );
         }
 
-        $mailBody = $this->buildMailBody($inputFields, $sanitized, $ssoData);
+        $mailBody = $this->buildMailBody($inputFields, $sanitized);
         $subject = $this->buildSubject($attributes, $sanitized);
 
         $sent = Mailer::sendOperatorMail(
@@ -127,7 +121,6 @@ class FormHandler
             'successMessage' => sanitize_text_field((string) ($trustedConfig['successMessage'] ?? '')),
             'recipientEmail' => sanitize_text_field((string) ($trustedConfig['recipientEmail'] ?? '')),
             'recipientName' => sanitize_text_field((string) ($trustedConfig['recipientName'] ?? '')),
-            'includeSsoInfo' => !empty($trustedConfig['includeSsoInfo']),
             'fields' => is_array($trustedConfig['fields'] ?? null) ? $trustedConfig['fields'] : [],
         ];
     }
@@ -229,7 +222,7 @@ class FormHandler
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
     }
 
-    private function buildMailBody(array $fields, array $values, ?array $ssoData): string
+    private function buildMailBody(array $fields, array $values): string
     {
         $lines = [];
         $messageFieldId = $this->findLeadingMessageFieldId($fields, $values);
@@ -269,10 +262,6 @@ class FormHandler
 
         $lines[] = '';
 
-        if ($ssoData !== null) {
-            $lines[] = SSO::formatCompactLine($ssoData);
-        }
-
         $lines[] = Mailer::formatSiteLinkLine();
         $lines[] = Mailer::formatMailDateLine();
 
@@ -290,7 +279,7 @@ class FormHandler
         return '';
     }
 
-    private function findSubmitterName(array $fields, array $values, ?array $ssoData): string
+    private function findSubmitterName(array $values): string
     {
         $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
         if ($fullName !== '') {
@@ -299,10 +288,6 @@ class FormHandler
 
         if (($values['name'] ?? '') !== '') {
             return sanitize_text_field((string) $values['name']);
-        }
-
-        if ($ssoData !== null && ($ssoData['name'] ?? '') !== '') {
-            return sanitize_text_field((string) $ssoData['name']);
         }
 
         return '';
