@@ -7,32 +7,22 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * Textarea option type for settings.
- *
- * This class represents a textarea input option in the settings section.
- * It extends the Type class and provides a template for rendering the textarea input.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays a multiline text input and preserves line breaks during sanitization.
  */
 class Textarea extends Type
 {
     /**
-     * The template used for rendering the textarea input.
-     *
-     * This property defines the template file that will be used to render
-     * the textarea input in the settings section.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */
     public $template = 'textarea';
 
     /**
-     * Gets the value of the textarea input.
+     * Sanitize multiline text while preserving valid line breaks.
      *
-     * This method retrieves the value from the options and ensures that
-     * it returns a string. If no value is set, it returns an empty string.
-     *
-     * @return string The value of the textarea input.
+     * @param mixed $value Submitted textarea value.
+     * @return string Text sanitized by sanitize_textarea_field().
      */
     public function sanitize($value)
     {

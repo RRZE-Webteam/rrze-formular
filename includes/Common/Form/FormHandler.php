@@ -4,13 +4,36 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Validates a form submission and sends one message to the resolved operator.
+ *
+ * Only fields from the signed configuration are processed. A submission token
+ * is consumed before field validation and delivery, so it cannot be reused
+ * even when later validation fails. Results include an HTTP status for FormAPI.
+ */
 class FormHandler
 {
+    /**
+     * Process a submission using the form locale and restore the previous locale afterwards.
+     *
+     * @param array<string, mixed> $payload Submitted values, signed configuration, token and optional page/locale data.
+     * @return array{success: bool, message: string, status: int, errors?: array<string, string>} Submission result.
+     */
     public function handle(array $payload): array
     {
         return FormLocale::withSiteLocale(fn (): array => $this->processSubmission($payload), $payload);
     }
 
+    /**
+     * Validate anti-spam credentials, fields and recipient before sending operator mail.
+     *
+     * The honeypot and configuration are checked before the token is claimed.
+     * Field and recipient validation run before an hourly submission slot is used.
+     * Delivery failure is returned to the caller; no confirmation mail is sent.
+     *
+     * @param array<string, mixed> $payload Submission payload assembled by FormAPI.
+     * @return array{success: bool, message: string, status: int, errors?: array<string, string>} Submission result.
+     */
     private function processSubmission(array $payload): array
     {
         $honeypot = (string) ($payload['website'] ?? '');
@@ -113,6 +136,12 @@ class FormHandler
         ];
     }
 
+    /**
+     * Extract supported form settings from an authenticated configuration.
+     *
+     * @param array<string, mixed> $trustedConfig Configuration returned by FormConfigAuth::verify().
+     * @return array<string, mixed> Sanitized form and recipient attributes.
+     */
     private function attributesFromTrustedConfig(array $trustedConfig): array
     {
         return [
@@ -125,6 +154,16 @@ class FormHandler
         ];
     }
 
+    /**
+     * Normalize submitted values according to their declared field types.
+     *
+     * Choice fields discard values outside their configured options. Multiselect
+     * fields produce lists; checkbox values become 1 or an empty string.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input fields; headings are excluded.
+     * @param array<string, mixed> $values Raw submitted values keyed by field ID.
+     * @return array<string, string|list<string>> Sanitized values for known fields only.
+     */
     private function sanitizeValues(array $fields, array $values): array
     {
         $sanitized = [];
@@ -185,6 +224,13 @@ class FormHandler
         return $sanitized;
     }
 
+    /**
+     * Check required values and validate non-empty e-mail fields.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input fields.
+     * @param array<string, string|list<string>> $values Sanitized values keyed by field ID.
+     * @return array<string, string> Translated errors keyed by field ID; empty when valid.
+     */
     private function validateValues(array $fields, array $values): array
     {
         $errors = [];
@@ -209,6 +255,13 @@ class FormHandler
         return $errors;
     }
 
+    /**
+     * Use the submitted subject, or fall back to the form title and site name.
+     *
+     * @param array<string, mixed> $attributes Form attributes containing formTitle.
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @return string Mail subject before the configured prefix is added.
+     */
     private function buildSubject(array $attributes, array $values): string
     {
         if (($values['subject'] ?? '') !== '') {
@@ -222,6 +275,13 @@ class FormHandler
         return sprintf(__('Form submission: %s', 'rrze-formular'), $title);
     }
 
+    /**
+     * Compose a plain-text message from submitted fields and site/date metadata.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input fields with localized labels.
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @return string Mail body with the main message first, followed by contact and other fields.
+     */
     private function buildMailBody(array $fields, array $values): string
     {
         $lines = [];
@@ -268,6 +328,13 @@ class FormHandler
         return implode("\n", $lines);
     }
 
+    /**
+     * Find the first non-empty submitted e-mail field for the Reply-To header.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input fields in display order.
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @return string Submitted e-mail address, or an empty string.
+     */
     private function findSubmitterEmail(array $fields, array $values): string
     {
         foreach ($fields as $field) {
@@ -279,6 +346,12 @@ class FormHandler
         return '';
     }
 
+    /**
+     * Read a name from submitted first/last-name fields, then the name field.
+     *
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @return string Submitted display name, or an empty string; no account data is used.
+     */
     private function findSubmitterName(array $values): string
     {
         $fullName = trim(($values['firstname'] ?? '') . ' ' . ($values['lastname'] ?? ''));
@@ -293,6 +366,13 @@ class FormHandler
         return '';
     }
 
+    /**
+     * Select the message field or the first non-empty textarea as the mail opening.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input fields in display order.
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @return string|null ID of the leading message field, or null when none has content.
+     */
     private function findLeadingMessageFieldId(array $fields, array $values): ?string
     {
         foreach ($fields as $field) {
@@ -310,6 +390,14 @@ class FormHandler
         return null;
     }
 
+    /**
+     * Format a submitted value using its field definition when available.
+     *
+     * @param list<array<string, mixed>> $fields Normalized input field definitions.
+     * @param array<string, string|list<string>> $values Sanitized submitted values.
+     * @param string $fieldId Field ID to look up.
+     * @return string Human-readable field value, or an empty string when no value is present.
+     */
     private function valueForFieldId(array $fields, array $values, string $fieldId): string
     {
         if (($values[$fieldId] ?? '') === '') {
@@ -327,6 +415,13 @@ class FormHandler
         return sanitize_text_field((string) $values[$fieldId]);
     }
 
+    /**
+     * Convert a stored field value into readable plain text for an e-mail.
+     *
+     * @param array<string, mixed> $field Normalized field definition with localized choice labels.
+     * @param string|list<string> $value Sanitized field value.
+     * @return string Choice labels, translated Yes/No, or the plain submitted value.
+     */
     private function formatFieldValueForMail(array $field, string|array $value): string
     {
         if ($field['type'] === 'checkbox') {
@@ -356,6 +451,13 @@ class FormHandler
         return is_array($value) ? implode(', ', $value) : (string) $value;
     }
 
+    /**
+     * Build a failed-submission result for the API layer.
+     *
+     * @param string $message Public error message.
+     * @param int $status HTTP status to use for the response.
+     * @return array{success: false, message: string, status: int} Error result.
+     */
     private function error(string $message, int $status): array
     {
         return [

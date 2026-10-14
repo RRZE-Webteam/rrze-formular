@@ -4,8 +4,20 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Provides translated starter form definitions for common university use cases.
+ */
 class Templates
 {
+    /**
+     * Build a field definition for a starter template.
+     *
+     * @param string $id Stable field identifier used in submitted values.
+     * @param string $type Supported field type.
+     * @param string $label Visible field label.
+     * @param array<string, mixed> $options Optional required flag, placeholder and choice options.
+     * @return array<string, mixed> Field definition with template defaults.
+     */
     private static function field(
         string $id,
         string $type,
@@ -22,11 +34,24 @@ class Templates
         ];
     }
 
+    /**
+     * Create a section-heading definition that does not accept input.
+     *
+     * @param string $id Heading identifier.
+     * @param string $label Visible section title.
+     * @return array<string, mixed> Heading field definition.
+     */
     private static function heading(string $id, string $label): array
     {
         return self::field($id, 'heading', $label);
     }
 
+    /**
+     * Build a personal-details section with required name and e-mail fields.
+     *
+     * @param bool $withPhone Whether to append an optional telephone field.
+     * @return list<array<string, mixed>> Heading and personal-detail fields.
+     */
     private static function personalFields(bool $withPhone = false): array
     {
         $fields = [
@@ -43,6 +68,11 @@ class Templates
         return $fields;
     }
 
+    /**
+     * Build optional study-programme and matriculation-number fields.
+     *
+     * @return list<array<string, mixed>> Student-detail fields.
+     */
     private static function studentFields(): array
     {
         return [
@@ -53,6 +83,11 @@ class Templates
         ];
     }
 
+    /**
+     * Return the starter templates after applying the rrze_formular_templates filter.
+     *
+     * @return array<string, array<string, mixed>> Templates keyed by slug, each with label, titles and fields.
+     */
     public static function all(): array
     {
         $templates = [
@@ -343,6 +378,12 @@ class Templates
         return apply_filters('rrze_formular_templates', $templates);
     }
 
+    /**
+     * Look up a starter template by its slug.
+     *
+     * @param string $key Template slug, such as contact or blank.
+     * @return array<string, mixed>|null Template definition, or null when the slug is unknown.
+     */
     public static function get(string $key): ?array
     {
         $all = self::all();

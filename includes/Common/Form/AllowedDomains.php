@@ -4,20 +4,53 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Loads and normalizes the domains allowed for form recipients.
+ *
+ * RRZE Settings takes precedence when active; otherwise plugin settings are used.
+ * Matching accepts both an allowed domain and its subdomains. Results are cached
+ * for the current PHP request.
+ */
 class AllowedDomains
 {
+    /**
+     * Plugin basename used to detect RRZE Settings.
+     *
+     * @var string
+     */
     private const SETTINGS_PLUGIN = 'rrze-settings/rrze-settings.php';
+
+    /**
+     * Option containing the grouped RRZE Settings values.
+     *
+     * @var string
+     */
     private const SETTINGS_OPTION = 'rrze_settings';
+
+    /**
+     * Recipient-domain field within the RRZE Settings plugins group.
+     *
+     * @var string
+     */
     private const SETTINGS_DOMAINS_KEY = 'rrze_formular_allowedDomains';
 
+    /**
+     * Cached activation check; null means the check has not run yet.
+     *
+     * @var bool|null
+     */
     private static ?bool $rrzeSettingsActive = null;
 
     /**
+     * Cached normalized domains; null means they have not been loaded yet.
+     *
      * @var list<string>|null
      */
     private static ?array $allowedDomains = null;
 
     /**
+     * Current and legacy option keys checked when reading stored domains.
+     *
      * @var list<string>
      */
     private const SETTINGS_DOMAIN_OPTION_KEYS = [
@@ -25,6 +58,11 @@ class AllowedDomains
         'rrze-formular_allowedDomains',
     ];
 
+    /**
+     * Detect site or network activation of RRZE Settings, including filter overrides.
+     *
+     * @return bool Whether RRZE Settings is the source of recipient domains.
+     */
     public static function isRrzeSettingsActive(): bool
     {
         if (self::$rrzeSettingsActive !== null) {
@@ -56,7 +94,11 @@ class AllowedDomains
     }
 
     /**
+     * Provide the legacy name for the RRZE Settings activation check.
+     *
+     * @return bool Whether RRZE Settings is active.
      * @deprecated 1.2.0 Use isRrzeSettingsActive().
+     * @see self::isRrzeSettingsActive()
      */
     public static function isRrzeCmsActive(): bool
     {
@@ -64,7 +106,9 @@ class AllowedDomains
     }
 
     /**
-     * @return list<string>
+     * Load, filter and cache the recipient-domain list.
+     *
+     * @return list<string> Unique normalized domains, or an empty list when none are configured.
      */
     public static function getAllowedDomains(): array
     {
@@ -83,7 +127,11 @@ class AllowedDomains
     }
 
     /**
-     * @return list<string>
+     * Read domains from the active settings provider.
+     *
+     * An empty RRZE Settings list does not fall back to the plugin list.
+     *
+     * @return list<string> Parsed domains from RRZE Settings or the plugin options.
      */
     private static function loadPrimaryRecipientDomains(): array
     {
@@ -94,6 +142,11 @@ class AllowedDomains
         return self::parseDomains(self::getPluginRecipientDomainsRaw());
     }
 
+    /**
+     * Read the local allowed_domains option before normalization.
+     *
+     * @return string Stored domain list, or an empty string.
+     */
     private static function getPluginRecipientDomainsRaw(): string
     {
         $options = Mailer::getOptions();
@@ -101,16 +154,33 @@ class AllowedDomains
         return (string) ($options['allowed_domains'] ?? '');
     }
 
+    /**
+     * Check whether at least one valid recipient domain is configured.
+     *
+     * @return bool True when the normalized domain list is not empty.
+     */
     public static function hasConfiguredDomains(): bool
     {
         return self::getAllowedDomains() !== [];
     }
 
+    /**
+     * Check an e-mail address against the configured domains and their subdomains.
+     *
+     * @param string $email Address to check.
+     * @return bool Whether the address is valid and its domain is allowed.
+     */
     public static function isEmailDomainAllowed(string $email): bool
     {
         return self::isEmailInDomains($email, self::getAllowedDomains());
     }
 
+    /**
+     * Validate an optional recipient override from a form block.
+     *
+     * @param string $email Block recipient address; an empty value selects the fallback recipient.
+     * @return bool True for an empty value or a valid address on an allowed domain.
+     */
     public static function isBlockRecipientAllowed(string $email): bool
     {
         $email = trim($email);
@@ -129,6 +199,12 @@ class AllowedDomains
         return self::isEmailDomainAllowed($email);
     }
 
+    /**
+     * Keep an allowed block recipient or clear the override.
+     *
+     * @param string $email Raw block recipient address.
+     * @return string Trimmed allowed address, or an empty string to use recipient fallback.
+     */
     public static function sanitizeAllowedRecipientEmail(string $email): string
     {
         $email = trim($email);
@@ -140,20 +216,32 @@ class AllowedDomains
     }
 
     /**
-     * @return list<string>
+     * Normalize a stored domain list and discard invalid or duplicate entries.
+     *
+     * @param mixed $raw Newline-separated text, an array or an object containing domains.
+     * @return list<string> Valid lowercase domains.
      */
     public static function parseDomains(mixed $raw): array
     {
         return self::normalizeDomains(self::domainLines($raw));
     }
 
+    /**
+     * Prepare a domain list for storage as one normalized domain per line.
+     *
+     * @param mixed $raw Domain values accepted by parseDomains().
+     * @return string Unique valid domains joined with the platform line ending.
+     */
     public static function sanitizeDomainList(mixed $raw): string
     {
         return implode(PHP_EOL, self::parseDomains($raw));
     }
 
     /**
-     * @return list<string>
+     * Collect non-empty domain entries that fail syntax validation.
+     *
+     * @param mixed $raw Domain values accepted by parseDomains().
+     * @return list<string> Unique invalid entries after normalization.
      */
     public static function invalidDomains(mixed $raw): array
     {
@@ -174,7 +262,10 @@ class AllowedDomains
     }
 
     /**
-     * @return list<string>
+     * Extract domain strings from text, lists or keyed settings values.
+     *
+     * @param mixed $raw Newline-separated text, an array or an object.
+     * @return list<string> Raw domain entries; non-numeric keys can supply missing values.
      */
     private static function domainLines(mixed $raw): array
     {
@@ -204,8 +295,10 @@ class AllowedDomains
     }
 
     /**
-     * @param list<string> $lines
-     * @return list<string>
+     * Normalize domain entries, keeping only valid unique values.
+     *
+     * @param list<string> $lines Raw domain entries.
+     * @return list<string> Valid normalized domains in first-seen order.
      */
     private static function normalizeDomains(array $lines): array
     {
@@ -221,6 +314,12 @@ class AllowedDomains
         return array_values(array_unique($domains));
     }
 
+    /**
+     * Trim and lowercase a domain, converting international names when supported.
+     *
+     * @param string $domain Domain text, optionally surrounded by whitespace, dots or an at-sign.
+     * @return string Normalized domain; syntax validation is performed separately.
+     */
     private static function normalizeDomain(string $domain): string
     {
         $domain = strtolower(trim($domain));
@@ -240,6 +339,12 @@ class AllowedDomains
         return $domain;
     }
 
+    /**
+     * Check domain length, labels and allowed characters.
+     *
+     * @param string $domain Normalized ASCII domain to validate.
+     * @return bool True for a dotted domain with valid labels; no DNS lookup is made.
+     */
     private static function isValidDomain(string $domain): bool
     {
         if ($domain === '' || strlen($domain) > 253 || !str_contains($domain, '.')) {
@@ -263,6 +368,14 @@ class AllowedDomains
         return true;
     }
 
+    /**
+     * Read the first populated domain value from RRZE Settings or legacy options.
+     *
+     * The RRZE Settings API is preferred. Standalone option keys and grouped
+     * network/site options provide compatibility with older storage formats.
+     *
+     * @return mixed Stored text, array or object; an empty string when no value is found.
+     */
     private static function getRrzeSettingsDomainsRaw(): mixed
     {
         if (class_exists('\RRZE\Settings\Options')) {
@@ -306,6 +419,12 @@ class AllowedDomains
         return '';
     }
 
+    /**
+     * Check whether a stored value contains any domain entries.
+     *
+     * @param mixed $value Candidate text, array or object.
+     * @return bool Whether the value is non-empty in a supported format.
+     */
     private static function hasDomainValue(mixed $value): bool
     {
         if (is_string($value)) {
@@ -323,6 +442,12 @@ class AllowedDomains
         return false;
     }
 
+    /**
+     * Extract the lowercase domain after the final at-sign.
+     *
+     * @param string $email E-mail address to inspect.
+     * @return string Domain portion, or an empty string if no at-sign exists.
+     */
     private static function emailDomain(string $email): string
     {
         $at = strrchr($email, '@');
@@ -331,7 +456,11 @@ class AllowedDomains
     }
 
     /**
-     * @param list<string> $domains
+     * Match a valid e-mail address against a supplied domain list.
+     *
+     * @param string $email Address to sanitize and validate.
+     * @param list<string> $domains Allowed domains.
+     * @return bool True for an exact domain match or a subdomain match.
      */
     private static function isEmailInDomains(string $email, array $domains): bool
     {

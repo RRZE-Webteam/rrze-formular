@@ -4,13 +4,22 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Signs form definitions and verifies that submitted configuration was issued by this site.
+ *
+ * Only normalized, supported attributes are used when processing a submission.
+ * The configuration signature is separate from the single-use anti-spam token.
+ */
 class FormConfigAuth
 {
     /**
-     * Build the server-trusted form configuration used for signing and processing.
+     * Normalize the supported form attributes used for signing and processing.
      *
-     * @param array<string, mixed> $attributes Raw block attributes.
-     * @return array<string, mixed>
+     * Unknown and retired attributes are discarded. Invalid recipient overrides
+     * are cleared so recipient resolution can use its normal fallback.
+     *
+     * @param array<string, mixed> $attributes Raw block attributes or a verified configuration.
+     * @return array<string, mixed> Sanitized titles, recipient settings, success message and fields.
      */
     public static function buildTrustedConfig(array $attributes): array
     {
@@ -36,7 +45,10 @@ class FormConfigAuth
     }
 
     /**
-     * @param array<string, mixed> $config
+     * Hash the encoded configuration to bind a submission token to its form.
+     *
+     * @param array<string, mixed> $config Normalized form configuration.
+     * @return string SHA-256 hash of the JSON payload.
      */
     public static function configHash(array $config): string
     {
@@ -44,8 +56,10 @@ class FormConfigAuth
     }
 
     /**
-     * @param array<string, mixed> $config
-     * @return array{payload: string, signature: string}
+     * Encode a configuration and sign it with the site-specific configuration salt.
+     *
+     * @param array<string, mixed> $config Form configuration, normally built by buildTrustedConfig().
+     * @return array{payload: string, signature: string} Base64 JSON payload and HMAC-SHA256 signature.
      */
     public static function sign(array $config): array
     {
@@ -58,7 +72,11 @@ class FormConfigAuth
     }
 
     /**
-     * @return array<string, mixed>|null
+     * Authenticate an encoded configuration before normalizing its attributes.
+     *
+     * @param string $payloadBase64 Base64-encoded JSON configuration.
+     * @param string $signature HMAC-SHA256 signature supplied with the payload.
+     * @return array<string, mixed>|null Normalized configuration, or null for invalid encoding or signature.
      */
     public static function verify(string $payloadBase64, string $signature): ?array
     {
@@ -88,7 +106,10 @@ class FormConfigAuth
     }
 
     /**
-     * @param array<string, mixed> $config
+     * Encode configuration as JSON without escaping Unicode or slashes.
+     *
+     * @param array<string, mixed> $config Configuration to encode.
+     * @return string JSON payload, or an empty string if encoding fails.
      */
     private static function encodePayload(array $config): string
     {

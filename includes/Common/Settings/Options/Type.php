@@ -10,12 +10,7 @@ use RRZE\Formular\Common\Settings\{
 defined('ABSPATH') || exit;
 
 /**
- * Abstract class representing a type of option in the settings.
- *
- * This class serves as a base for different types of options, providing common
- * functionality such as rendering, sanitization, and validation.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Base implementation for settings-field rendering, value access and validation.
  */
 abstract class Type
 {
@@ -27,12 +22,9 @@ abstract class Type
     public $section;
 
     /**
-     * Arguments for the option.
+     * Field configuration used by the template and accessor methods.
      *
-     * This array holds various arguments that define the behavior and appearance
-     * of the option, such as label, name, id, synonym, and CSS classes.
-     *
-     * @var array
+     * @var array<string, mixed>
      */
     public $args = [];
 
@@ -47,12 +39,10 @@ abstract class Type
     public $template;
 
     /**
-     * Constructor for the Type class.
+     * Attach a field handler to its section and configuration.
      *
-     * Initializes the option with a section and optional arguments.
-     *
-     * @param Section $section The section this option belongs to.
-     * @param array $args Optional arguments for the option.
+     * @param Section $section Owning settings section.
+     * @param array<string, mixed> $args Field name, label, default and optional display settings.
      */
     public function __construct($section, $args = [])
     {
@@ -61,12 +51,9 @@ abstract class Type
     }
 
     /**
-     * Renders the option using the specified template.
+     * Output the option-type template with this handler as its option variable.
      *
-     * This method includes the template file for rendering the option,
-     * passing the current option instance as a variable to the template.
-     *
-     * @return string The rendered HTML output of the option.
+     * @return void
      */
     public function render()
     {
@@ -74,12 +61,9 @@ abstract class Type
     }
 
     /**
-     * Checks if the option has an error.
+     * Read the validation message recorded for this field.
      *
-     * This method checks if there is an error associated with the option
-     * in the settings errors collection.
-     *
-     * @return bool True if there is an error, false otherwise.
+     * @return string Error message, or an empty string when no error was recorded.
      */
     public function hasError()
     {
@@ -87,13 +71,10 @@ abstract class Type
     }
 
     /**
-     * Sanitizes the input value.
+     * Apply WordPress single-line text sanitization to the submitted value.
      *
-     * This method should be overridden in subclasses to provide specific
-     * sanitization logic for different types of options.
-     *
-     * @param mixed $value The value to sanitize.
-     * @return mixed The sanitized value.
+     * @param mixed $value Submitted field value.
+     * @return string Sanitized text; subclasses may use a different value format.
      */
     public function sanitize($value)
     {
@@ -101,13 +82,10 @@ abstract class Type
     }
 
     /**
-     * Validates the input value.
+     * Accept a value unless a subclass supplies stricter validation.
      *
-     * This method should be overridden in subclasses to provide specific
-     * validation logic for different types of options.
-     *
-     * @param mixed $value The value to validate.
-     * @return bool True if the value is valid, false otherwise.
+     * @param mixed $value Submitted field value; unused by the base implementation.
+     * @return bool Always true in the base implementation.
      */
     public function validate($value)
     {
@@ -115,14 +93,11 @@ abstract class Type
     }
 
     /**
-     * Retrieves an argument value by key.
+     * Read a non-empty field argument, evaluating it if it is callable.
      *
-     * This method checks if the specified key exists in the args array
-     * and returns its value. If the key does not exist, it returns a fallback value.
-     *
-     * @param string $key The key of the argument to retrieve.
-     * @param mixed $fallback The fallback value if the key does not exist.
-     * @return mixed The value of the argument or the fallback value.
+     * @param string $key Argument name.
+     * @param mixed $fallback Value used when the argument is missing or empty.
+     * @return mixed Argument value, callback result or fallback.
      */
     public function getArg($key, $fallback = null)
     {
@@ -162,6 +137,11 @@ abstract class Type
         return $this->getArg('id', sanitize_title(str_replace('[', '_', $this->getNameAttribute())));
     }
 
+    /**
+     * Build the data attribute used to locate this field in the setup tour.
+     *
+     * @return string Escaped data-rrze-tour attribute with a leading space, or an empty string.
+     */
     public function getTourDataAttribute(): string
     {
         $map = [
@@ -264,12 +244,12 @@ abstract class Type
     }
 
     /**
-     * Gets the value of the option.
+     * Read a saved field value, falling back to the configured default when empty.
      *
-     * This method retrieves the value of the option from the WordPress options table.
-     * If the value is not set, it returns the default value specified in the args.
+     * False-like stored values also use the default in this base implementation.
+     * Checkbox handlers override this behavior to preserve their stored state.
      *
-     * @return mixed The value of the option or null if not set.
+     * @return mixed Stored value, configured default or null.
      */
     public function getValueAttribute()
     {

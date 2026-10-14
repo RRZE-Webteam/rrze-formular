@@ -4,8 +4,20 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Renders the public form HTML from block attributes.
+ *
+ * Rendered forms contain signed configuration but no live submission token.
+ * The browser requests that token later, allowing page HTML to be cached.
+ */
 class FormRenderer
 {
+    /**
+     * Render a complete form with fields, signed configuration and a privacy link.
+     *
+     * @param array<string, mixed> $attributes Raw attributes supplied by the form block.
+     * @return string Form HTML; no token or rate-limit state is written.
+     */
     public static function render(array $attributes): string
     {
         $attributes = self::normalizeAttributes($attributes);
@@ -74,6 +86,12 @@ class FormRenderer
         return (string) ob_get_clean();
     }
 
+    /**
+     * Normalize display and recipient attributes before rendering.
+     *
+     * @param array<string, mixed> $attributes Raw block attributes.
+     * @return array<string, mixed> Supported attributes with sanitized text and display defaults.
+     */
     private static function normalizeAttributes(array $attributes): array
     {
         return [
@@ -88,6 +106,13 @@ class FormRenderer
         ];
     }
 
+    /**
+     * Render a heading or an input with its label, required marker and error placeholder.
+     *
+     * @param array<string, mixed> $field Normalized, localized field definition.
+     * @param string $formId Unique form ID used to prefix DOM element IDs.
+     * @return string Escaped HTML for one field.
+     */
     private static function renderField(array $field, string $formId): string
     {
         if ($field['type'] === 'heading') {
@@ -194,6 +219,15 @@ class FormRenderer
         return (string) ob_get_clean();
     }
 
+    /**
+     * Render the custom dropdown used by select and multiselect fields.
+     *
+     * @param array<string, mixed> $field Normalized field with value/label choice pairs.
+     * @param string $fieldId Unique DOM ID for this field.
+     * @param bool $multiple Whether more than one choice can be selected.
+     * @param bool $required Whether the selection is required.
+     * @return string Dropdown markup and the hidden input used to submit its value.
+     */
     private static function renderDropdown(array $field, string $fieldId, bool $multiple, bool $required): string
     {
         $placeholder = __('Please choose…', 'rrze-formular');
@@ -270,6 +304,12 @@ class FormRenderer
         return (string) ob_get_clean();
     }
 
+    /**
+     * Render visual and screen-reader indicators for a required field.
+     *
+     * @param bool $required Whether the field is required.
+     * @return string Required-marker HTML, or an empty string for optional fields.
+     */
     private static function requiredIndicator(bool $required): string
     {
         if (!$required) {

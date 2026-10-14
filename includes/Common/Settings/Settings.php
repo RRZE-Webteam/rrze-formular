@@ -18,113 +18,96 @@ use RRZE\Formular\Common\Settings\{
 defined('ABSPATH') || exit;
 
 /**
- * Class Settings
+ * Builds and renders the plugin settings page and saves its active fields.
  *
- * This class represents a settings page in the WordPress admin area.
- * It allows for the creation and management of settings, tabs, sections, and options.
- * It also handles saving settings, rendering the settings page, and managing errors and flash messages.
- *
- * @package RRZE\Formular\Common\Settings
+ * Tabs contain sections, and sections contain typed options. Saving validates
+ * the request nonce and capability, then validates and sanitizes the fields
+ * shown in the active tab. Other stored settings retain their current values.
  */
 class Settings
 {
     /**
-     * @var string $title The title of the settings page.
-     * 
-     * This property is used to set the main title of the settings page that will be displayed
-     * in the WordPress admin area. It is typically a descriptive name for the settings being managed.
+     * Visible settings-page title.
+     *
+     * @var string
      */
     public $title;
 
     /**
-     * @var string $menuTitle The title for the settings page in the WordPress admin menu.
-     * 
-     * This property is used to set the title that will be displayed in the admin menu.
-     * If not provided, it defaults to the main title of the settings page.
+     * Optional menu label; the page title is used when unset.
+     *
+     * @var string|null
      */
     public $menuTitle;
 
     /**
-     * @var string $slug The slug for the settings page.
-     * 
-     * This property is used to uniquely identify the settings page in the WordPress admin menu.
-     * If not provided, it will be generated from the title of the settings page.
+     * Page identifier used by the admin menu and request URLs.
+     *
+     * @var string
      */
     public $slug;
 
     /**
-     * @var string $parentSlug The slug of the parent menu for this settings page.
-     * 
-     * This property is used to define a parent menu under which this settings page will be added.
-     * If set, the settings page will appear as a submenu under the specified parent menu.
+     * Parent menu slug, or null for a top-level menu.
+     *
+     * @var string|null
      */
     public $parentSlug;
 
     /**
-     * @var string $capability The capability required to access the settings page.
-     * 
-     * This property defines the user capability required to view and modify the settings page.
-     * The default is 'manage_options', which is typically reserved for administrators.
+     * WordPress capability required to access and save this page.
+     *
+     * @var string
      */
     public $capability = 'manage_options';
 
     /**
-     * @var string $menuIcon The icon for the menu in the WordPress admin.
-     * 
-     * This property can be set to a dashicon class or a URL to an image that will be used
-     * as the icon for the settings page in the WordPress admin menu.
+     * Optional Dashicon name or icon URL for a top-level menu.
+     *
+     * @var string|null
      */
     public $menuIcon;
 
     /**
-     * @var int $menuPosition The position of the menu in the WordPress admin.
-     * 
-     * This property determines where the settings page will appear in the admin menu.
-     * It can be set to a specific integer value to control the order of the menu items.
+     * Preferred admin menu position, or null for WordPress ordering.
+     *
+     * @var int|float|null
      */
     public $menuPosition;
 
     /**
-     * @var string $optionName The name of the option used to store settings in the WordPress options table.
-     * 
-     * This property is automatically generated from the title of the settings page,
-     * ensuring a unique identifier for storing and retrieving settings.
+     * WordPress option key containing this page’s field values.
+     *
+     * @var string
      */
     public $optionName;
 
     /**
-     * @var Tab[] $tabs An array of Tab instances for the settings page.
-     * 
-     * This property holds all the tabs defined for the settings page. Each tab can contain multiple sections
-     * and options, allowing for organized and structured settings management.
+     * Settings tabs in display order.
+     *
+     * @var list<Tab>
      */
     public $tabs = [];
 
     /**
-     * @var Error $errors The error handler for the settings page.
-     * 
-     * This property is used to handle errors that occur during the settings process,
-     * such as validation errors or issues with saving settings.
+     * Validation-message helper, initialized by build().
+     *
+     * @var Error|null
      */
     public $errors;
 
     /**
-     * @var Flash $flash The flash message handler for the settings page.
-     * 
-     * This property is used to handle flash messages, which are temporary messages
-     * displayed to the user after performing actions like saving settings.
+     * Request-local feedback helper, initialized by build().
+     *
+     * @var Flash|null
      */
     public $flash;
 
     /**
-     * Constructor for the Settings class.
+     * Set the page title and derive default page and option identifiers.
      *
-     * This method initializes the settings page with a title and an optional slug.
-     * The slug is used to create a unique identifier for the settings page in the WordPress admin.
-     *
-     * @param string $title The title of the settings page.
-     * @param string|null $slug Optional slug for the settings page. If not provided, it will be generated from the title.
-     * @return void
+     * @param string $title Visible settings-page title.
+     * @param string|null $slug Optional page slug; generated from the title when omitted.
      */
     public function __construct($title, $slug = null)
     {
@@ -138,13 +121,10 @@ class Settings
     }
 
     /**
-     * Sets the parent slug for the settings page.
+     * Place the settings page below an existing admin menu.
      *
-     * This method allows you to specify a parent menu under which this settings page will be added.
-     * If set, the settings page will appear as a submenu under the specified parent menu.
-     *
-     * @param string $slug The slug of the parent menu.
-     * @return $this
+     * @param string $slug Parent menu slug, such as options-general.php.
+     * @return self This settings controller for method chaining.
      */
     public function setMenuParentSlug($slug)
     {
@@ -153,13 +133,10 @@ class Settings
     }
 
     /**
-     * Sets the title for the settings page.
+     * Set the label used in the admin menu.
      *
-     * This method allows you to specify a custom title for the settings page.
-     * The title is used in the admin menu and on the settings page itself.
-     *
-     * @param string $title The title of the settings page.
-     * @return $this
+     * @param string $title Menu label.
+     * @return self This settings controller for method chaining.
      */
     public function setMenuTitle($title)
     {
@@ -168,12 +145,9 @@ class Settings
     }
 
     /**
-     * Returns the title for the menu in the WordPress admin.
+     * Return the custom menu label, falling back to the page title.
      *
-     * This method checks if a custom menu title is set. If not, it defaults to the main title.
-     * It is used to display the title of the settings page in the admin menu.
-     *
-     * @return string The title to be displayed in the admin menu.
+     * @return string Admin menu label.
      */
     public function getMenuTitle()
     {
@@ -181,13 +155,10 @@ class Settings
     }
 
     /**
-     * Sets the capability required to access the settings page.
+     * Set the capability required to view and save settings.
      *
-     * This method allows you to specify a custom capability that users must have
-     * in order to view and modify the settings page. The default capability is 'manage_options'.
-     *
-     * @param string $capability The capability required to access the settings page.
-     * @return $this
+     * @param string $capability WordPress capability name.
+     * @return self This settings controller for method chaining.
      */
     public function setCapability($capability)
     {
@@ -196,13 +167,10 @@ class Settings
     }
 
     /**
-     * Sets the option name for the settings.
+     * Set the WordPress option key used to store all field values.
      *
-     * This method allows you to specify a custom option name that will be used
-     * to store the settings in the WordPress options table.
-     *
-     * @param string $name The name of the option to be used for storing settings.
-     * @return $this
+     * @param string $name Option key.
+     * @return self This settings controller for method chaining.
      */
     public function setOptionName($name)
     {
@@ -211,13 +179,10 @@ class Settings
     }
 
     /**
-     * Sets the icon for the menu in the WordPress admin.
+     * Set the icon for a top-level admin menu entry.
      *
-     * This method allows you to specify a custom icon for the settings page menu.
-     * The icon can be a dashicon class or a URL to an image.
-     *
-     * @param string $icon The icon for the menu, either a dashicon class or an image URL.
-     * @return $this
+     * @param string $icon Dashicon name or icon URL accepted by WordPress.
+     * @return self This settings controller for method chaining.
      */
     public function setMenuIcon($icon)
     {
@@ -226,13 +191,10 @@ class Settings
     }
 
     /**
-     * Sets the position of the menu in the WordPress admin.
+     * Set the preferred admin menu position.
      *
-     * This method allows you to specify the position of the settings page in the admin menu.
-     * The position is an integer that determines where the menu will appear.
-     *
-     * @param int $position The position of the menu in the admin menu.
-     * @return $this
+     * @param int|float|null $position Menu position, or null for WordPress ordering.
+     * @return self This settings controller for method chaining.
      */
     public function setMenuPosition($position)
     {
@@ -241,10 +203,7 @@ class Settings
     }
 
     /**
-     * Adds the settings page to the WordPress admin menu.
-     *
-     * This method registers the settings page with WordPress, allowing it to be displayed
-     * in the admin menu. It can either add a top-level menu or a submenu under an existing menu.
+     * Register a submenu or top-level menu page using the configured parent.
      *
      * @return void
      */
@@ -274,10 +233,7 @@ class Settings
     }
 
     /**
-     * Initializes the settings by setting up actions and filters.
-     *
-     * This method is called to set up the necessary hooks for the settings page,
-     * including saving settings, adding to the admin menu, and applying custom styles.
+     * Initialize feedback helpers and register admin settings and tour hooks.
      *
      * @return void
      */
@@ -295,7 +251,10 @@ class Settings
     }
 
     /**
-     * Enqueue the guided tour on the plugin settings screen.
+     * Load guided-tour assets and per-user tour configuration on the settings screen.
+     *
+     * @param string $hook Admin page hook supplied by WordPress; screen detection is used instead.
+     * @return void
      */
     public function enqueueGuidedTour(string $hook): void
     {
@@ -359,6 +318,14 @@ class Settings
         ]);
     }
 
+    /**
+     * Record dismissal of the setup tour for the current user.
+     *
+     * The AJAX handler checks the tour nonce and settings capability, updates user
+     * metadata, then sends a JSON response and terminates the request.
+     *
+     * @return void
+     */
     public function dismissSetupTour(): void
     {
         check_ajax_referer('rrze_formular_setup_tour', 'nonce');
@@ -371,6 +338,14 @@ class Settings
         wp_send_json_success();
     }
 
+    /**
+     * Record dismissal of the introductory tour for the current user.
+     *
+     * The AJAX handler checks the tour nonce and settings capability, updates user
+     * metadata, then sends a JSON response and terminates the request.
+     *
+     * @return void
+     */
     public function dismissGuidedTour(): void
     {
         check_ajax_referer('rrze_formular_guided_tour', 'nonce');
@@ -384,13 +359,9 @@ class Settings
     }
 
     /**
-     * Checks if the current screen is the settings page.
+     * Check whether the current admin screen matches this settings page.
      *
-     * This method retrieves the current screen and checks if its base matches
-     * the settings page slug. It returns true if it is on the settings page,
-     * otherwise false.
-     *
-     * @return bool True if on settings page, false otherwise.
+     * @return bool True for the matching settings_page screen base.
      */
     public function isOnSettingsPage()
     {
@@ -407,10 +378,7 @@ class Settings
     }
 
     /**
-     * Outputs custom styling for the settings page.
-     *
-     * This method checks if the current screen is the settings page and outputs
-     * custom CSS styles to enhance the appearance of error messages.
+     * Output field-error styling only on the plugin settings screen.
      *
      * @return void
      */
@@ -424,13 +392,10 @@ class Settings
     }
 
     /**
-     * Retrieves a tab by its slug.
+     * Find a tab by its exact slug.
      *
-     * This method iterates through the defined tabs and returns the Tab instance
-     * that matches the provided slug. If no matching tab is found, it returns false.
-     *
-     * @param string $slug The slug of the tab to retrieve.
-     * @return Tab|false The Tab instance if found, or false if not found.
+     * @param string $slug Tab slug to look up.
+     * @return Tab|false Matching tab, or false when unknown.
      */
     public function getTabBySlug($slug)
     {
@@ -444,13 +409,9 @@ class Settings
     }
 
     /**
-     * Returns the active tab based on the current request.
+     * Resolve the requested tab, falling back to the first configured tab.
      *
-     * This method checks if a 'tab' parameter is present in the query string.
-     * If it is, it returns the corresponding Tab instance if it exists.
-     * If not, it returns the first tab or false if no tabs are defined.
-     *
-     * @return Tab|false The active Tab instance or false if no tabs are defined.
+     * @return Tab|false Active tab, or false when no tabs exist.
      */
     public function getActiveTab()
     {
@@ -468,14 +429,11 @@ class Settings
     }
 
     /**
-     * Adds a new tab to the settings.
+     * Append a tab to the settings page.
      *
-     * This method creates a new Tab instance and adds it to the settings.
-     * It allows for defining multiple tabs within the settings page.
-     *
-     * @param string $title The title of the tab.
-     * @param string|null $slug Optional slug for the tab. If not provided, it will be generated from the title.
-     * @return Tab The created Tab instance.
+     * @param string $title Visible tab title.
+     * @param string|null $slug Optional slug; generated from the title when omitted.
+     * @return Tab Newly created tab.
      */
     public function addTab($title, $slug = null)
     {
@@ -487,14 +445,11 @@ class Settings
     }
 
     /**
-     * Adds a section to the last tab.
+     * Append a section to the last tab, creating a default tab if needed.
      *
-     * This method allows adding a new section to the currently active tab.
-     * If there are no tabs defined, it creates a new unnamed tab first.
-     *
-     * @param string $title The title of the section.
-     * @param array $args Optional arguments for the section.
-     * @return Section The created Section instance.
+     * @param string $title Visible section title.
+     * @param array<string, mixed>|string $args Section settings, or a legacy string that uses defaults.
+     * @return Section Newly created section.
      */
     public function addSection($title, $args = [])
     {
@@ -508,14 +463,11 @@ class Settings
     }
 
     /**
-     * Adds an option to the last section of the last tab.
+     * Append an option to the last section of the last tab.
      *
-     * This method allows adding a new option to the currently active section of the last tab.
-     * It returns false if there is no active tab or section to add the option to.
-     *
-     * @param string $type The type of the option (e.g., 'text', 'checkbox').
-     * @param array $args Optional arguments for the option, such as label, name, default value, etc.
-     * @return bool|Option Returns the created Option instance or false if it fails.
+     * @param string $type Registered option type, such as text or checkbox.
+     * @param array<string, mixed> $args Field name, label, default and optional callbacks.
+     * @return Option|false New option, or false when no tab or section is available.
      */
     public function addOption($type, $args = [])
     {
@@ -535,12 +487,9 @@ class Settings
     }
 
     /**
-     * Checks if the settings should be displayed as tabs.
+     * Check whether a tab navigation menu is needed.
      *
-     * This method determines whether the settings have more than one tab defined.
-     * If there are multiple tabs, it returns true, indicating that tabs should be displayed.
-     *
-     * @return bool True if there are multiple tabs, false otherwise.
+     * @return bool True when more than one tab is configured.
      */
     public function shouldMakeTabs()
     {
@@ -548,12 +497,9 @@ class Settings
     }
 
     /**
-     * Returns the URL for the settings page.
+     * Build the admin URL for the settings page without tab or section selection.
      *
-     * This method constructs the URL for the settings page based on the slug and parent slug.
-     * If a parent slug is set and it contains '.php', it will use that as the base URL.
-     *
-     * @return string The URL for the settings page.
+     * @return string Settings-page URL.
      */
     public function getUrl()
     {
@@ -565,12 +511,9 @@ class Settings
     }
 
     /**
-     * Returns the full URL for the settings page, including active tab and section.
+     * Add the current tab and selected linked section to the settings-page URL.
      *
-     * This method constructs the URL for the settings page, appending query parameters
-     * for the active tab and section if they are set.
-     *
-     * @return string The full URL for the settings page with active tab and section.
+     * @return string Settings-page URL including active navigation parameters.
      */
     public function getFullUrl()
     {
@@ -588,10 +531,7 @@ class Settings
     }
 
     /**
-     * Renders the tab menu if there are multiple tabs.
-     *
-     * This method checks if there are multiple tabs defined in the settings.
-     * If so, it includes the tab menu template to display the tabs.
+     * Output tab navigation when more than one tab is available.
      *
      * @return void
      */
@@ -605,10 +545,7 @@ class Settings
     }
 
     /**
-     * Renders the active sections of the current tab.
-     *
-     * This method includes the sections template and passes the current settings instance to it.
-     * It is typically called when rendering the settings page to display the sections under the active tab.
+     * Output the active tab sections through the settings template.
      *
      * @return void
      */
@@ -618,10 +555,7 @@ class Settings
     }
 
     /**
-     * Renders the settings page.
-     *
-     * This method initializes the Worker and Builder, enqueues necessary scripts,
-     * and includes the settings page template for rendering.
+     * Initialize the settings builder and output the complete settings-page template.
      *
      * @return void
      */
@@ -635,10 +569,11 @@ class Settings
     }
 
     /**
-     * Saves the settings from the admin page.
+     * Validate and save submitted values for the active settings sections.
      *
-     * This method processes the submitted settings, validates them, and updates the options in the database.
-     * It also handles user permissions and displays success messages upon successful saving.
+     * Requests without a valid nonce are ignored; insufficient capabilities stop
+     * the request. Input is unslashed before validation and sanitization. Invalid
+     * fields keep their previous values and record field-specific errors.
      *
      * @return void
      */
@@ -692,12 +627,9 @@ class Settings
     }
 
     /**
-     * Returns the default options for all settings.
+     * Collect default values from all registered tabs and sections.
      *
-     * This method iterates through all tabs, sections, and options to collect their default values.
-     * It returns an associative array where keys are option names and values are their defaults.
-     *
-     * @return array An associative array of default options.
+     * @return array<string, mixed> Defaults keyed by option name.
      */
     public function defaultOptions()
     {
@@ -714,12 +646,9 @@ class Settings
     }
 
     /**
-     * Retrieves the current options for the settings.
+     * Merge stored values with defaults and discard unknown option keys.
      *
-     * This method fetches the options from the WordPress database, merges them with default values,
-     * and ensures that only valid options are returned.
-     *
-     * @return array An associative array of current options, merged with defaults.
+     * @return array<string, mixed> Values for the currently defined settings fields.
      */
     public function getOptions()
     {
@@ -732,13 +661,10 @@ class Settings
     }
 
     /**
-     * Retrieves a specific option by its name.
+     * Read one setting from the merged option values.
      *
-     * This method fetches the current options and returns the value for the specified option name.
-     * If the option does not exist, it returns null.
-     *
-     * @param string $option The name of the option to retrieve.
-     * @return mixed The value of the option, or null if it does not exist.
+     * @param string $option Field name to look up.
+     * @return mixed Stored/default value, or null for an unknown field.
      */
     public function getOption($option)
     {
@@ -747,12 +673,11 @@ class Settings
     }
 
     /**
-     * Updates the options in the WordPress database.
+     * Persist an option array and notify listeners after the update call.
      *
-     * This method saves the provided options to the WordPress database and triggers an action hook
-     * after the options have been updated. It is typically called after saving settings from the admin page.
+     * This low-level method does not validate fields; normal form saves use save().
      *
-     * @param array $options An associative array of options to update.
+     * @param array<string, mixed> $options Complete option values to store.
      * @return void
      */
     public function updateOptions($options)

@@ -5,38 +5,37 @@ namespace RRZE\Formular\Common\Blocks;
 defined('ABSPATH') || exit;
 
 /**
- * Blocks class
- * 
- * This class is responsible for registering custom blocks for the plugin.
- * 
- * @package RRZE\Formular\Common
- * @since 0.0.2
+ * Registers block metadata directories and connects their editor-script translations.
  */
 class Blocks
 {
     /**
-     * @var array $blocks An array of block names to be registered.
+     * Block directory names, populated when a non-empty list is supplied.
+     *
+     * @var list<string>|null
      */
     private $blocks;
 
     /**
-     * @var string $blockPath The path to the blocks directory.
+     * Validated block parent directory with a trailing slash.
+     *
+     * @var string|null
      */
     private $blockPath;
 
     /**
-     * @var string $pluginPath The path to the plugin directory.
+     * Validated plugin directory with a trailing slash.
+     *
+     * @var string|null
      */
     private $pluginPath;
 
     /**
-     * Constructor for the Blocks class.
-     * This constructor initializes the blocks property with the provided array of block names.
-     * It also sets up the necessary hooks to register the blocks and enqueue their scripts.
-     * @param array $blocks An array of block names to be registered.
-     * @param string $blockPath The path to the blocks directory.
-     * @param string $pluginPath The path to the plugin directory.
-     * @return void
+     * Register block and translation hooks when the block list and directories are valid.
+     *
+     * @param list<string> $blocks Block directory names to register.
+     * @param string $blockPath Absolute parent directory containing the blocks.
+     * @param string $pluginPath Absolute plugin directory containing the languages directory.
      */
     public function __construct(array $blocks = [], string $blockPath = '', string $pluginPath = '')
     {
@@ -72,10 +71,8 @@ class Blocks
     }
 
     /**
-     * Registers custom blocks for the plugin.
-     * 
-     * This method registers both static and dynamic blocks for the plugin.
-     * 
+     * Register each configured block from its metadata directory.
+     *
      * @return void
      */
     public function register()
@@ -86,11 +83,8 @@ class Blocks
     }
 
     /**
-     * Sets script translations for the blocks.
-     * 
-     * This method sets the translations for the block editor scripts,
-     * allowing for localization of the block strings.
-     * 
+     * Connect registered form-editor script handles to the plugin translation directory.
+     *
      * @return void
      */
     public function setBlockScriptTranslations()

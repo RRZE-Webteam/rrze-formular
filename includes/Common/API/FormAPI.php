@@ -23,11 +23,19 @@ defined('ABSPATH') || exit;
  */
 class FormAPI
 {
+    /**
+     * Register the callback that adds the public REST routes.
+     */
     public function __construct()
     {
         add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
+    /**
+     * Register POST routes for token issuance and form submission.
+     *
+     * @return void
+     */
     public function registerRoutes(): void
     {
         register_rest_route('rrze-formular/v1', '/token', [
@@ -46,13 +54,21 @@ class FormAPI
     }
 
     /**
-     * Anonymous and logged-in visitors may submit forms.
+     * Allow anonymous and logged-in visitors to reach the form endpoints.
+     *
+     * @return bool Always true; request validation and anti-spam checks run in the handlers.
      */
     public function allowPublicSubmit(): bool
     {
         return true;
     }
 
+    /**
+     * Issue a token for a signed form configuration after checking storage and rate limits.
+     *
+     * @param WP_REST_Request $request Request containing the signed configuration, form ID and optional post ID.
+     * @return WP_REST_Response Token and issue time on success, or a 400, 429 or 503 error.
+     */
     public function issueToken(WP_REST_Request $request): WP_REST_Response
     {
         if (!SpamProtection::publicEndpointsAvailable()) {
@@ -95,6 +111,12 @@ class FormAPI
         ], 200);
     }
 
+    /**
+     * Pass submitted values to FormHandler and use its status for the REST response.
+     *
+     * @param WP_REST_Request $request Validated request containing field values and anti-spam credentials.
+     * @return WP_REST_Response Submission result without the internal status key.
+     */
     public function submit(WP_REST_Request $request): WP_REST_Response
     {
         if (!SpamProtection::publicEndpointsAvailable()) {
@@ -120,6 +142,11 @@ class FormAPI
         return new WP_REST_Response($result, $status);
     }
 
+    /**
+     * Build the response used when public endpoints require an unavailable object cache.
+     *
+     * @return WP_REST_Response HTTP 503 response with a public error message.
+     */
     private function storageUnavailableResponse(): WP_REST_Response
     {
         return new WP_REST_Response([
@@ -129,6 +156,12 @@ class FormAPI
         ], 503);
     }
 
+    /**
+     * Read the requested form language from the JSON body.
+     *
+     * @param WP_REST_Request $request Incoming submission request.
+     * @return string Sanitized formLocale value, legacy locale value, or an empty string.
+     */
     private function extractFormLocale(WP_REST_Request $request): string
     {
         $json = $request->get_json_params();
@@ -142,7 +175,9 @@ class FormAPI
     }
 
     /**
-     * @return array<string, array<string, mixed>>
+     * Describe required token-request parameters and their validation callbacks.
+     *
+     * @return array<string, array<string, mixed>> WordPress REST argument definitions.
      */
     private function getTokenArgs(): array
     {
@@ -175,7 +210,9 @@ class FormAPI
     }
 
     /**
-     * @return array<string, array<string, mixed>>
+     * Describe submission parameters, defaults and validation callbacks.
+     *
+     * @return array<string, array<string, mixed>> WordPress REST argument definitions.
      */
     private function getSubmitArgs(): array
     {
@@ -220,7 +257,10 @@ class FormAPI
     }
 
     /**
-     * @return array<string, mixed>|null
+     * Verify the signed form configuration supplied with a request.
+     *
+     * @param WP_REST_Request $request Request containing formConfig and formConfigSig.
+     * @return array<string, mixed>|null Normalized configuration, or null if verification fails.
      */
     private function resolveTrustedConfig(WP_REST_Request $request): ?array
     {
@@ -230,6 +270,12 @@ class FormAPI
         );
     }
 
+    /**
+     * Trim a scalar request value without altering its encoded content.
+     *
+     * @param mixed $value Raw parameter value.
+     * @return string Trimmed value, or an empty string for non-scalar input.
+     */
     public function sanitizeStringParam(mixed $value): string
     {
         if (!is_scalar($value)) {
@@ -240,7 +286,12 @@ class FormAPI
     }
 
     /**
-     * @param mixed $value
+     * Check that a required REST parameter is a non-empty string.
+     *
+     * @param mixed $value Parameter value to validate.
+     * @param WP_REST_Request $request Request supplied by WordPress; unused by this validator.
+     * @param string $param Parameter name supplied by WordPress; unused by this validator.
+     * @return bool True for a non-empty string; whitespace is handled by sanitization.
      */
     public function validateNonEmptyString($value, WP_REST_Request $request, string $param): bool
     {
@@ -248,7 +299,12 @@ class FormAPI
     }
 
     /**
-     * @param mixed $value
+     * Check that submitted values form a field-name map with no nested objects.
+     *
+     * @param mixed $value Parameter value to validate.
+     * @param WP_REST_Request $request Request supplied by WordPress; unused by this validator.
+     * @param string $param Parameter name supplied by WordPress; unused by this validator.
+     * @return bool True for string keys and scalar, null or one-level array values.
      */
     public function validateValuesObject($value, WP_REST_Request $request, string $param): bool
     {
@@ -279,7 +335,12 @@ class FormAPI
     }
 
     /**
-     * @param mixed $value
+     * Accept an omitted URL or a syntactically valid URL string.
+     *
+     * @param mixed $value Parameter value to validate.
+     * @param WP_REST_Request $request Request supplied by WordPress; unused by this validator.
+     * @param string $param Parameter name supplied by WordPress; unused by this validator.
+     * @return bool True for an empty value or a valid URL; this does not check the site host.
      */
     public function validateOptionalUrl($value, WP_REST_Request $request, string $param): bool
     {

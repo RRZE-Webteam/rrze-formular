@@ -5,33 +5,22 @@ namespace RRZE\Formular\Common\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Builder class for managing settings options.
- *
- * This class provides methods to add, remove, and enqueue settings options.
- * It is used to build the settings structure for the plugin.
- *
- * @package RRZE\Formular\Common\Settings
+ * Stores named settings callbacks and executes them in insertion order.
  */
 class Builder
 {
     /**
-     * Array to hold enqueued settings options.
+     * Callbacks keyed by handle; adding an existing handle replaces its callback.
      *
-     * This property stores the settings options that have been added
-     * and are ready to be processed or displayed.
-     *
-     * @var array
+     * @var array<string, callable(): void>
      */
     public array $enqueued = [];
 
     /**
-     * Adds a settings option to the builder.
+     * Store or replace a settings callback under its handle.
      *
-     * This method allows you to add a settings option by providing a handle
-     * and a callback function that defines the option's behavior.
-     *
-     * @param string $handle The unique identifier for the settings option.
-     * @param callable $callback The callback function that defines the option.
+     * @param string $handle Unique callback identifier.
+     * @param callable(): void $callback Callback to execute when enqueue() is called.
      * @return void
      */
     public function add($handle, $callback)
@@ -40,11 +29,9 @@ class Builder
     }
 
     /**
-     * Removes a settings option from the builder.
+     * Remove a queued callback if its handle exists.
      *
-     * This method allows you to remove a settings option by its handle.
-     *
-     * @param string $handle The unique identifier for the settings option to be removed.
+     * @param string $handle Callback identifier.
      * @return void
      */
     public function remove($handle)
@@ -53,12 +40,8 @@ class Builder
     }
 
     /**
-     * Enqueues all added settings options.
+     * Execute all stored callbacks in order without clearing the queue.
      *
-     * This method iterates through the enqueued settings options and executes
-     * their associated callback functions, effectively processing or displaying
-     * the settings options as needed.
-     * 
      * @return void
      */
     public function enqueue()

@@ -7,20 +7,12 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * RadioGroup option type for settings.
- *
- * This class represents a group of radio buttons in the settings section.
- * It extends the Type class and provides a template for rendering the radio group.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays radio buttons for selecting one configured choice.
  */
 class RadioGroup extends Type
 {
     /**
-     * The template used for rendering the radio group.
-     *
-     * This property defines the template file that will be used to render
-     * the radio group in the settings section.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */

@@ -7,18 +7,12 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * CheckboxMultiple option type for settings.
- *
- * This class represents a multiple checkbox option in the settings section.
- * It extends the Type class and provides methods to get the value
- * and sanitize the input as an array.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays a group of checkboxes with multiple submitted selections.
  */
 class CheckboxMultiple extends Type
 {
     /**
-     * The template used for rendering the multiple checkboxes.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */
@@ -40,13 +34,9 @@ class CheckboxMultiple extends Type
     }
 
     /**
-     * Gets the value of the multiple checkboxes.
+     * Read saved selections, using a one-element default array when the value is missing.
      *
-     * This method retrieves the value from the options and ensures that
-     * it returns an array. If no value is set, it returns an array with
-     * the default value.
-     *
-     * @return array The value of the multiple checkboxes.
+     * @return mixed Stored selections, normally an array; otherwise an array containing the default.
      */
     public function getValueAttribute()
     {
