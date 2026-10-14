@@ -4,8 +4,16 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Supplies recipient-validation hints to the block editor without restricting post saving.
+ */
 class EditorConfig
 {
+    /**
+     * Register editor settings and script-localization hooks.
+     *
+     * @return void
+     */
     public static function register(): void
     {
         add_filter('block_editor_settings_all', [self::class, 'filterBlockEditorSettings'], 10, 2);
@@ -13,9 +21,11 @@ class EditorConfig
     }
 
     /**
-     * @param array<string, mixed> $settings
-     * @param mixed              $context
-     * @return array<string, mixed>
+     * Add form-specific configuration to the block editor settings.
+     *
+     * @param array<string, mixed> $settings Existing editor settings.
+     * @param \WP_Block_Editor_Context $context Editor context supplied by WordPress; unused.
+     * @return array<string, mixed> Settings with the rrzeFormularEditor entry added.
      */
     public static function filterBlockEditorSettings(array $settings, $context): array
     {
@@ -24,6 +34,11 @@ class EditorConfig
         return $settings;
     }
 
+    /**
+     * Attach form configuration to each registered form-editor script handle.
+     *
+     * @return void
+     */
     public static function enqueueEditorAssets(): void
     {
         if (!function_exists('generate_block_asset_handle')) {
@@ -46,9 +61,9 @@ class EditorConfig
     }
 
     /**
-     * Supplies inline recipient feedback without affecting post saving.
+     * Collect allowed recipient domains and translated inline validation messages.
      *
-     * @return array<string, mixed>
+     * @return array{allowedDomains: list<string>, i18n: array<string, string>} Editor configuration.
      */
     private static function editorConfig(): array
     {

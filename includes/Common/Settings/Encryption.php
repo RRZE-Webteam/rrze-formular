@@ -5,12 +5,10 @@ namespace RRZE\Formular\Common\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Encryption class for secure data handling.
+ * Encodes password-setting values using OpenSSL AES-256-CBC and WordPress secrets.
  *
- * This class provides methods to encrypt and decrypt values using OpenSSL.
- * It uses a cipher method of 'aes-256-cbc' and requires the OpenSSL extension.
- *
- * @package RRZE\Formular\Common\Settings
+ * When OpenSSL is unavailable, values pass through unchanged. Changing AUTH_KEY
+ * or AUTH_SALT prevents previously encrypted values from being recovered.
  */
 class Encryption
 {
@@ -25,12 +23,10 @@ class Encryption
     const CIPHER_METHOD = 'aes-256-cbc';
 
     /**
-     * Encrypts a value.
+     * Encrypt a setting value with a random IV and an appended site salt.
      *
-     * If a user-based key is set, that key is used. Otherwise the default key is used.
-     *
-     * @param string $value Value to encrypt.
-     * @return string|bool Encrypted value, or false on failure.
+     * @param string $value Plain-text setting value.
+     * @return string|false Base64-encoded IV and ciphertext, unchanged input without OpenSSL, or false on failure.
      */
     public static function encrypt($value)
     {
@@ -51,12 +47,10 @@ class Encryption
     }
 
     /**
-     * Decrypts a value.
+     * Decode an encrypted setting and verify its appended site salt.
      *
-     * If a user-based key is set, that key is used. Otherwise the default key is used.
-     *
-     * @param string $rawValue Value to decrypt.
-     * @return string|bool Decrypted value, or false on failure.
+     * @param string $rawValue Stored encrypted value.
+     * @return string|false Plain text, unchanged empty/input value without OpenSSL, or false on failure.
      */
     public static function decrypt($rawValue)
     {
@@ -81,9 +75,9 @@ class Encryption
     }
 
     /**
-     * Gets the encryption key to use.
+     * Read the WordPress authentication key used for settings encryption.
      *
-     * @return string Encryption key.
+     * @return string AUTH_KEY, or the fixed fallback when the constant is missing or empty.
      */
     private static function getKey()
     {
@@ -96,12 +90,9 @@ class Encryption
     }
 
     /**
-     * Gets the salt to use for encryption.
+     * Read the site salt appended to values before encryption.
      *
-     * This method retrieves the salt defined in the AUTH_SALT constant.
-     * If AUTH_SALT is not defined or is empty, a fallback value is returned.
-     *
-     * @return string The salt used for encryption.
+     * @return string AUTH_SALT, or the fixed fallback when the constant is missing or empty.
      */
     private static function getSalt()
     {

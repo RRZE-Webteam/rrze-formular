@@ -7,64 +7,44 @@ use RRZE\Formular\Common\Settings\Section;
 defined('ABSPATH') || exit;
 
 /**
- * Class Tab
- *
- * Represents a settings tab in the plugin settings.
- * Each tab can contain multiple sections, and each section can have various options.
- *
- * @package RRZE\Formular\Common\Settings
+ * Groups settings sections and resolves their selection from the current request.
  */
 class Tab
 {
     /**
-     * The settings associated with this tab.
+     * Settings page that owns this tab.
      *
-     * This property holds the settings object that contains all the settings
-     * for this tab, allowing access to the settings values and methods.
-     *
-     * @var \RRZE\Formular\Common\Settings\Settings
+     * @var Settings
      */
     public $settings;
 
     /**
-     * The title of the tab.
-     *
-     * This property holds the title of the tab, which is displayed in the settings
-     * interface to identify the tab.
+     * Visible tab label.
      *
      * @var string
      */
     public $title;
 
     /**
-     * The slug of the tab.
+     * Tab identifier used in navigation URLs.
      *
-     * This property holds the slug of the tab, which is used in URLs and for
-     * identifying the tab in the settings interface.
-     *
-     * @var string|null
+     * @var string
      */
     public $slug;
 
     /**
-     * The sections contained within this tab.
+     * Sections in display order.
      *
-     * This property holds an array of Section objects that represent the sections
-     * within this tab. Each section can contain various options and settings.
-     *
-     * @var Section[]
+     * @var list<Section>
      */
     public $sections = [];
 
     /**
-     * Tab constructor.
+     * Attach a tab to its settings page and derive its slug when omitted.
      *
-     * Initializes the tab with the given settings, title, and optional slug.
-     *
-     * @param \RRZE\Formular\Common\Settings\Settings $settings The settings object for this tab.
-     * @param string $title The title of the tab.
-     * @param string|null $slug The slug of the tab (optional).
-     * @return void
+     * @param Settings $settings Owning settings page.
+     * @param string $title Visible tab label.
+     * @param string|null $slug Explicit tab slug, or null to derive it from the title.
      */
     public function __construct($settings, $title, $slug = null)
     {
@@ -74,14 +54,11 @@ class Tab
     }
 
     /**
-     * Adds a section to the tab.
+     * Append a section to this tab.
      *
-     * This method creates a new Section object with the given title and optional arguments,
-     * and adds it to the sections array of this tab.
-     *
-     * @param string $title The title of the section.
-     * @param array $args Optional arguments for the section.
-     * @return Section The created Section object.
+     * @param string $title Visible section title.
+     * @param array<string, mixed>|string $args Section settings, or a legacy string that uses defaults.
+     * @return Section Newly created section.
      */
     public function addSection($title, $args = [])
     {
@@ -93,11 +70,9 @@ class Tab
     }
 
     /**
-     * Retrieves all sections in this tab.
+     * Return sections configured for separate navigation.
      *
-     * This method returns an array of all Section objects contained within this tab.
-     *
-     * @return Section[] An array of Section objects.
+     * @return array<int, Section> Linked sections, retaining their original array keys.
      */
     public function getSectionLinks()
     {
@@ -107,13 +82,9 @@ class Tab
     }
 
     /**
-     * Checks if the tab contains only section links.
+     * Check whether every section is configured as a navigation link.
      *
-     * This method determines if all sections in this tab are links (i.e., they have
-     * the `asLink` property set to true). It returns true if all sections are links,
-     * otherwise false.
-     *
-     * @return bool True if all sections are links, false otherwise.
+     * @return bool True when all sections are links, including when no sections exist.
      */
     public function containsOnlySectionLinks()
     {
@@ -121,13 +92,10 @@ class Tab
     }
 
     /**
-     * Retrieves a section by its name (slug).
+     * Find a section by its slug.
      *
-     * This method searches through the sections in this tab and returns the section
-     * that matches the given name (slug). If no matching section is found, it returns false.
-     *
-     * @param string $name The slug of the section to retrieve.
-     * @return Section|false The matching Section object or false if not found.
+     * @param string $name Section slug to look up.
+     * @return Section|false Matching section, or false when no slug matches.
      */
     public function getSectionByName($name)
     {
@@ -141,13 +109,9 @@ class Tab
     }
 
     /**
-     * Retrieves the active section based on the request parameters.
+     * Resolve the requested linked section or the default linked section.
      *
-     * This method checks if a section is specified in the request parameters
-     * and returns the corresponding Section object. If no section is specified,
-     * it returns the first section if all sections are links.
-     *
-     * @return Section|null The active Section object or null if no active section is found.
+     * @return Section|false|null Selected section, false for an unknown requested slug, or null when none is selected.
      */
     public function getActiveSection()
     {
@@ -165,13 +129,11 @@ class Tab
     }
 
     /**
-     * Retrieves the active sections based on the request parameters.
+     * Choose which sections to render for the current request.
      *
-     * This method checks if a section is specified in the request parameters
-     * and returns an array of Section objects that match the specified section.
-     * If no section is specified, it returns all sections that are not links.
+     * The tab is expected to contain at least one section.
      *
-     * @return Section[] An array of active Section objects.
+     * @return array<int, Section> Requested linked section, default linked section or inline sections.
      */
     public function getActiveSections()
     {

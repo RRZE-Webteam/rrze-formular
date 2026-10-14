@@ -5,58 +5,51 @@ namespace RRZE\Formular\Common\Plugin;
 defined('ABSPATH') || exit;
 
 /**
- * Plugin class
- * 
- * This class represents a WordPress plugin and provides methods to retrieve various properties
- * and metadata about the plugin, such as its file path, basename, directory, URL, and other details.
- * It also includes methods for setting and getting plugin data, such as the name, version,
- * required WordPress version, and required PHP version.
- * 
- * @package RRZE\Formular\Common
- * @since 0.0.2x
+ * Reads plugin header metadata and derives filesystem paths and URLs.
+ *
+ * Call loaded() before using accessors that depend on metadata or directory state.
  */
 class Plugin
 {
     /**
-     * The full path and filename of the plugin.
-     * 
+     * Absolute path to the main plugin PHP file.
+     *
      * @var string
      */
     protected $pluginFile;
 
     /**
-     * The basename of the plugin.
-     * 
-     * @var string
+     * Plugin basename relative to the plugins directory, populated by loaded().
+     *
+     * @var string|null
      */
     protected $basename;
 
     /**
-     * The filesystem directory path (with trailing slash) for the plugin.
-     * 
-     * @var string
+     * Plugin filesystem directory with a trailing slash, populated by loaded().
+     *
+     * @var string|null
      */
     protected $directory;
 
     /**
-     * The URL directory path (with trailing slash) for the plugin.
-     * 
-     * @var string
+     * Plugin directory URL with a trailing slash, populated by loaded().
+     *
+     * @var string|null
      */
     protected $url;
 
     /**
-     * The data of the plugin.
-     * 
-     * @var array
+     * Plugin header metadata, populated by loaded().
+     *
+     * @var array<string, mixed>|null
      */
     protected $data;
 
     /**
-     * Constructor.
-     * 
-     * @param string $pluginFile The full path and filename of the plugin.
-     * @return void
+     * Store the main plugin file and load the WordPress plugin-metadata helpers.
+     *
+     * @param string $pluginFile Absolute path to the main plugin PHP file.
      */
     public function __construct(string $pluginFile)
     {
@@ -65,9 +58,8 @@ class Plugin
     }
 
     /**
-     * This method is called when the plugin is loaded.
-     * It sets the basename, directory, URL, and data properties of the plugin.
-     * 
+     * Populate the plugin basename, directory, URL and header metadata.
+     *
      * @return void
      */
     public function loaded()
@@ -79,9 +71,9 @@ class Plugin
     }
 
     /**
-     * Get the full path and filename of the plugin.
-     * 
-     * @return string The full path and filename.
+     * Return the absolute path to the main plugin PHP file.
+     *
+     * @return string Main plugin file path.
      */
     public function getFile(): string
     {
@@ -89,9 +81,9 @@ class Plugin
     }
 
     /**
-     * Get the basename of the plugin.
-     * 
-     * @return string The basename.
+     * Return the initialized plugin basename.
+     *
+     * @return string Path relative to the plugins directory.
      */
     public function getBasename(): string
     {
@@ -99,9 +91,9 @@ class Plugin
     }
 
     /**
-     * Set the basename of the plugin.
-     * 
-     * @return object This Plugin object.
+     * Derive the plugin basename from the main PHP file.
+     *
+     * @return self This metadata object for method chaining.
      */
     public function setBasename(): object
     {
@@ -110,9 +102,9 @@ class Plugin
     }
 
     /**
-     * Get the filesystem directory path (with trailing slash) for the plugin.
-     * 
-     * @return string The filesystem directory path.
+     * Return the initialized plugin filesystem directory.
+     *
+     * @return string Absolute directory path with a trailing slash.
      */
     public function getDirectory(): string
     {
@@ -120,8 +112,9 @@ class Plugin
     }
 
     /**
-     * Set the filesystem directory path (with trailing slash) for the plugin.
-     * @return object This Plugin object.
+     * Resolve the plugin filesystem directory with a trailing slash.
+     *
+     * @return self This metadata object for method chaining.
      */
     public function setDirectory(): object
     {
@@ -130,10 +123,10 @@ class Plugin
     }
 
     /**
-     * Get the filesystem directory path (with trailing slash) for the plugin.
-     * 
-     * @param string $path The path name.
-     * @return string The filesystem directory path.
+     * Build a filesystem directory path below the plugin root.
+     *
+     * @param string $path Optional relative directory path.
+     * @return string Absolute path with a trailing slash; use getFile() for the main PHP file.
      */
     public function getPath(string $path = ''): string
     {
@@ -141,10 +134,10 @@ class Plugin
     }
 
     /**
-     * Get the URL directory path (with trailing slash) for the plugin.
-     * 
-     * @param string $path The path name.
-     * @return string The URL directory path.
+     * Build a directory URL below the plugin root.
+     *
+     * @param string $path Optional relative directory path.
+     * @return string Plugin URL with a trailing slash.
      */
     public function getUrl(string $path = ''): string
     {
@@ -152,9 +145,9 @@ class Plugin
     }
 
     /**
-     * Set the URL directory path (with trailing slash) for the plugin.
-     * 
-     * @return object This Plugin object.
+     * Resolve the plugin directory URL with a trailing slash.
+     *
+     * @return self This metadata object for method chaining.
      */
     public function setUrl(): object
     {
@@ -163,9 +156,9 @@ class Plugin
     }
 
     /**
-     * Get the slug of the plugin.
-     * 
-     * @return string The slug.
+     * Derive a sanitized plugin slug from its basename directory.
+     *
+     * @return string Plugin directory slug.
      */
     public function getSlug(): string
     {
@@ -173,9 +166,9 @@ class Plugin
     }
 
     /**
-     * Set the data of the plugin.
-     * 
-     * @return object This Plugin object.
+     * Read the plugin headers from the main PHP file.
+     *
+     * @return self This metadata object for method chaining.
      */
     public function setData(): object
     {
@@ -184,9 +177,9 @@ class Plugin
     }
 
     /**
-     * Get the data of the plugin.
-     * 
-     * @return array The data.
+     * Return the initialized plugin header metadata.
+     *
+     * @return array<string, mixed> Header values keyed by WordPress metadata names.
      */
     public function getData(): array
     {
@@ -194,9 +187,9 @@ class Plugin
     }
 
     /**
-     * Get the name of the plugin.
-     * 
-     * @return string The name.
+     * Read the display name from the plugin headers.
+     *
+     * @return string Plugin name.
      */
     public function getName(): string
     {
@@ -204,9 +197,9 @@ class Plugin
     }
 
     /**
-     * Get the version of the plugin.
-     * 
-     * @return string The version.
+     * Read the version from the plugin headers.
+     *
+     * @return string Current plugin version.
      */
     public function getVersion(): string
     {
@@ -214,9 +207,9 @@ class Plugin
     }
 
     /**
-     * Get the required WordPress version of the plugin.
-     * 
-     * @return string The required WordPress version.
+     * Read the minimum WordPress version from the plugin headers.
+     *
+     * @return string Required WordPress version.
      */
     public function getRequiresWP(): string
     {
@@ -224,9 +217,9 @@ class Plugin
     }
 
     /**
-     * Get the required PHP version of the plugin.
-     * 
-     * @return string The required PHP version.
+     * Read the minimum PHP version from the plugin headers.
+     *
+     * @return string Required PHP version.
      */
     public function getRequiresPHP(): string
     {
@@ -234,15 +227,14 @@ class Plugin
     }
 
     /**
-     * This method is called when an undefined method is called on the object.
-     * It checks if the method exists in the class and throws an exception if it does not.
-     * This is useful for debugging and ensuring that only defined methods are called.
-     * 
-     * @param string $name The name of the method being called.
-     * @param array $arguments The arguments passed to the method.
-     * @throws \Exception If the method does not exist.
-     * 
+     * Report an unknown method call when WordPress debugging is enabled.
+     *
+     * Unknown method calls are ignored when WP_DEBUG is disabled.
+     *
+     * @param string $name Requested method name.
+     * @param list<mixed> $arguments Supplied arguments; not used.
      * @return void
+     * @throws \Exception When the method does not exist and WP_DEBUG is enabled.
      */
     public function __call(string $name, array $arguments)
     {

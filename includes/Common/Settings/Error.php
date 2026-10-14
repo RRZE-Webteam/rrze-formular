@@ -7,42 +7,28 @@ use RRZE\Formular\Common\Settings\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Error handling for settings.
- *
- * This class manages errors related to settings options.
- * It allows adding, retrieving, and checking for errors in the settings context.
- *
- * @package RRZE\Formular\Common\Settings
+ * Collects field-validation messages for a settings page during the current request.
  */
 class Error
 {
     /**
-     * The settings instance associated with this error handler.
-     *
-     * This property holds the settings instance that this error handler is
-     * associated with, allowing it to manage errors specific to those settings.
+     * Settings controller whose option name identifies this error collection.
      *
      * @var Settings
      */
     public $settings;
 
     /**
-     * The WP_Error instance used to store errors.
-     *
-     * This property holds the WP_Error instance that will be used to manage
-     * errors related to the settings options.
+     * Local collection published to request-global state when an error is added.
      *
      * @var \WP_Error
      */
     public $error;
 
     /**
-     * Constructor for the Error class.
+     * Create an empty error collection for a settings page.
      *
-     * This method initializes the error handler with the provided settings instance.
-     * It also creates a new WP_Error instance to manage errors.
-     *
-     * @param Settings $settings The settings instance to associate with this error handler.
+     * @param Settings $settings Settings controller that owns the fields.
      */
     public function __construct(Settings $settings)
     {
@@ -51,13 +37,9 @@ class Error
     }
 
     /**
-     * Retrieves all errors associated with the settings.
+     * Read the error collection published for this settings page.
      *
-     * This method checks for any errors related to the settings options and
-     * returns them as a WP_Error instance. If no errors are found, it returns
-     * an empty WP_Error instance.
-     *
-     * @return \WP_Error The WP_Error instance containing all errors, or an empty instance if none exist.
+     * @return \WP_Error Recorded errors, or a new empty collection when none has been published.
      */
     public function getAll(): \WP_Error
     {
@@ -71,14 +53,10 @@ class Error
     }
 
     /**
-     * Retrieves a specific error message by key.
+     * Read the first error message recorded under a field key.
      *
-     * This method checks for a specific error message associated with the given key
-     * in the settings errors. If the key exists, it returns the error message; otherwise,
-     * it returns null.
-     *
-     * @param string $key The key of the error message to retrieve.
-     * @return string|null The error message if found, or null if not found.
+     * @param string $key Field name used as the WordPress error code.
+     * @return string First error message, or an empty string when the key has no message.
      */
     public function get(string $key): ?string
     {
@@ -88,13 +66,11 @@ class Error
     }
 
     /**
-     * Adds an error message for a specific key.
+     * Record a field error and publish the updated collection to request-global state.
      *
-     * This method adds an error message associated with the given key to the settings errors.
-     * It also updates the global settings error array to ensure the error is stored correctly.
-     *
-     * @param string $key The key for the error message.
-     * @param string $message The error message to add.
+     * @param string $key Field name used as the WordPress error code.
+     * @param string $message Translated validation feedback.
+     * @return void
      */
     public function add(string $key, string $message): void
     {
@@ -105,12 +81,9 @@ class Error
     }
 
     /**
-     * Checks if there are any errors in the settings.
+     * Check whether the settings page has any recorded validation errors.
      *
-     * This method checks if there are any errors associated with the settings options.
-     * It returns true if there are errors, and false otherwise.
-     *
-     * @return bool True if there are errors, false otherwise.
+     * @return bool True when the published error collection is not empty.
      */
     public function hasErrors(): bool
     {

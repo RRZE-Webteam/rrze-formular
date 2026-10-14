@@ -7,20 +7,14 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * Text option type for settings.
+ * Selects the legacy domain-management table template.
  *
- * This class represents a text input option in the settings section.
- * It extends the Type class and provides a template for rendering the text input.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * The template expects a SyncAPI provider, which is not included in this plugin.
  */
 class DomainsTable extends Type
 {
     /**
-     * The template used for rendering the text input.
-     *
-     * This property defines the template file that will be used to render
-     * the text input in the settings section.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */

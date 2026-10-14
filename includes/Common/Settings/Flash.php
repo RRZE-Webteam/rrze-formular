@@ -5,32 +5,21 @@ namespace RRZE\Formular\Common\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Flash message handler for settings.
- *
- * This class manages flash messages for settings, allowing to set and check
- * the status and message associated with a specific settings option.
- *
- * @package RRZE\Formular\Common\Settings
+ * Stores settings-page feedback in request-local state, grouped by option name.
  */
 class Flash
 {
     /**
-     * The settings instance associated with this flash handler.
-     *
-     * This property holds the settings instance that this flash handler is
-     * associated with, allowing it to manage flash messages specific to those settings.
+     * Settings page whose option name identifies its feedback message.
      *
      * @var Settings
      */
     public $settings;
 
     /**
-     * Constructor for the Flash class.
+     * Attach feedback storage to a settings page.
      *
-     * This method initializes the flash handler with the provided settings instance.
-     * It allows setting and checking flash messages related to the settings options.
-     *
-     * @param Settings $settings The settings instance to associate with this flash handler.
+     * @param Settings $settings Owning settings controller.
      */
     public function __construct($settings)
     {
@@ -38,12 +27,9 @@ class Flash
     }
 
     /**
-     * Checks if a flash message exists for the settings option.
+     * Read the feedback message currently stored for this settings page.
      *
-     * This method checks if there is a flash message set for the specific
-     * settings option associated with this flash handler.
-     *
-     * @return array|null Returns the flash message if it exists, or null if not.
+     * @return array{status: string, message: string}|null Feedback data, or null when none is set.
      */
     public function has()
     {
@@ -53,13 +39,10 @@ class Flash
     }
 
     /**
-     * Sets a flash message for the settings option.
+     * Replace the feedback message for this settings page during the current request.
      *
-     * This method allows setting a flash message with a status and message
-     * for the specific settings option associated with this flash handler.
-     *
-     * @param string $status The status of the flash message (e.g., 'success', 'error').
-     * @param string $message The message to be displayed in the flash.
+     * @param string $status Notice status, such as success or error.
+     * @param string $message Feedback text to display.
      * @return void
      */
     public function set($status, $message)

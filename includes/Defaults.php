@@ -8,15 +8,31 @@ use RRZE\Formular\Common\Form\AllowedDomains;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Defines the settings page, configurable fields and their default values.
+ */
 class Defaults
 {
+    /**
+     * Filtered settings definitions retained for this instance.
+     *
+     * @var array<string, mixed>
+     */
     private readonly array $defaults;
 
+    /**
+     * Load the settings definitions once for this instance.
+     */
     public function __construct()
     {
         $this->defaults = $this->load();
     }
 
+    /**
+     * Build the settings definitions and apply the rrze_formular_defaults filter.
+     *
+     * @return array<string, mixed> Page settings, sections and field definitions.
+     */
     private function load(): array
     {
         $defaults = [
@@ -39,6 +55,13 @@ class Defaults
         return apply_filters('rrze_formular_defaults', $defaults);
     }
 
+    /**
+     * Define recipient, subject-prefix and local domain settings.
+     *
+     * The local domain field is omitted when RRZE Settings manages allowed domains.
+     *
+     * @return list<array<string, mixed>> General settings fields.
+     */
     private function generalFields(): array
     {
         $adminEmail = sanitize_email((string) get_option('admin_email'));
@@ -115,6 +138,11 @@ class Defaults
         return $fields;
     }
 
+    /**
+     * Define the minimum fill time and hourly submission limit.
+     *
+     * @return list<array<string, mixed>> Spam-protection settings fields.
+     */
     private function spamFields(): array
     {
         return [
@@ -135,16 +163,33 @@ class Defaults
         ];
     }
 
+    /**
+     * Read a top-level settings definition.
+     *
+     * @param string $key Definition key, such as settings, sections or fields.
+     * @return mixed The definition, or null when the key is unknown.
+     */
     public function get(string $key): mixed
     {
         return $this->defaults[$key] ?? null;
     }
 
+    /**
+     * Return all settings definitions.
+     *
+     * @return array<string, mixed> Complete settings structure.
+     */
     public function all(): array
     {
         return $this->defaults;
     }
 
+    /**
+     * Prefix a sanitized key with a stable six-character plugin identifier.
+     *
+     * @param string $key Key to append; an empty key returns the prefix and underscore.
+     * @return string Prefixed key starting with a letter.
+     */
     public function withPrefix(string $key = ''): string
     {
         $rawSlug = plugin()->getSlug();

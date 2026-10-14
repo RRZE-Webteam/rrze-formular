@@ -14,17 +14,45 @@ use RRZE\Formular\Common\{
 
 defined('ABSPATH') || exit;
 
+/**
+ * Connects the form API, editor support, assets and admin settings to WordPress.
+ */
 class Main
 {
+    /**
+     * Settings definitions, loaded when the admin settings are initialized.
+     *
+     * @var Defaults|null
+     */
     public ?Defaults $defaults = null;
+
+    /**
+     * Admin settings controller, or null before settings are initialized.
+     *
+     * @var Settings|null
+     */
     public ?Settings $settings = null;
+
+    /**
+     * Public form endpoint controller, created during the init action.
+     *
+     * @var FormAPI
+     */
     private FormAPI $formApi;
 
+    /**
+     * Schedule plugin initialization on the WordPress init action.
+     */
     public function __construct()
     {
         add_action('init', [$this, 'onInit']);
     }
 
+    /**
+     * Register public form services and assets, then initialize admin-only features.
+     *
+     * @return void
+     */
     public function onInit(): void
     {
         $this->formApi = new FormAPI();
@@ -37,6 +65,11 @@ class Main
         }
     }
 
+    /**
+     * Register admin warnings when the required token storage is unavailable.
+     *
+     * @return void
+     */
     private function registerOperationalNotices(): void
     {
         if (SpamProtection::publicEndpointsAvailable()) {
@@ -47,6 +80,11 @@ class Main
         add_action('network_admin_notices', [$this, 'renderObjectCacheNotice']);
     }
 
+    /**
+     * Output the missing object-cache warning to administrators with the required capability.
+     *
+     * @return void
+     */
     public function renderObjectCacheNotice(): void
     {
         $capability = function_exists('is_network_admin') && is_network_admin()
@@ -67,12 +105,22 @@ class Main
         );
     }
 
+    /**
+     * Load the settings definitions and build the admin settings page.
+     *
+     * @return void
+     */
     private function bootstrapSettings(): void
     {
         $this->defaults = new Defaults();
         $this->settings();
     }
 
+    /**
+     * Register frontend CSS and JavaScript with endpoint URLs and translated messages.
+     *
+     * @return void
+     */
     public function registerAssets(): void
     {
         $cssPath = plugin()->getPath() . 'build/css/rrze-formular.css';
@@ -110,6 +158,11 @@ class Main
         ]);
     }
 
+    /**
+     * Build settings tabs and fields from Defaults and register their WordPress hooks.
+     *
+     * @return void
+     */
     public function settings(): void
     {
         if ($this->defaults === null) {

@@ -7,20 +7,12 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * Text option type for settings.
- *
- * This class represents a text input option in the settings section.
- * It extends the Type class and provides a template for rendering the text input.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays a horizontal separator between settings fields.
  */
 class HR extends Type
 {
     /**
-     * The template used for rendering the text input.
-     *
-     * This property defines the template file that will be used to render
-     * the text input in the settings section.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */

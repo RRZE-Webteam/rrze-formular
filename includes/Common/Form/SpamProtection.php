@@ -4,11 +4,34 @@ namespace RRZE\Formular\Common\Form;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Manages signed submission tokens, honeypot checks and per-IP rate limits.
+ *
+ * Token nonces and counters use a persistent object cache when available.
+ * Otherwise they use WordPress transients and options, unless the deployment
+ * requires a persistent cache and disables the public endpoints without one.
+ */
 class SpamProtection
 {
+    /**
+     * Default token lifetime in seconds before the token_ttl filter is applied.
+     *
+     * @var int
+     */
     private const DEFAULT_TOKEN_TTL = 1800;
+
+    /**
+     * Object-cache group shared by token nonces and rate-limit counters.
+     *
+     * @var string
+     */
     private const CACHE_GROUP = 'rrze_formular_spam';
 
+    /**
+     * Check whether token storage satisfies the deployment requirements.
+     *
+     * @return bool False only when a required persistent object cache is unavailable.
+     */
     public static function publicEndpointsAvailable(): bool
     {
         if (!self::requiresPersistentObjectCacheForPublicEndpoints()) {
@@ -18,6 +41,14 @@ class SpamProtection
         return self::usePersistentObjectCache();
     }
 
+    /**
+     * Resolve whether public form endpoints require a persistent object cache.
+     *
+     * Multisite supplies the initial default. The plugin-level global can override
+     * it, and rrze_formular_require_persistent_object_cache is applied last.
+     *
+     * @return bool Effective requirement after the plugin global and filter overrides.
+     */
     public static function requiresPersistentObjectCacheForPublicEndpoints(): bool
     {
         $required = function_exists('is_multisite') && is_multisite();
@@ -35,18 +66,36 @@ class SpamProtection
         return (bool) apply_filters('rrze_formular_require_persistent_object_cache', $required);
     }
 
+    /**
+     * Return the public error shown when submission infrastructure is unavailable.
+     *
+     * @return string Translated message suitable for visitors.
+     */
     public static function publicEndpointUnavailableMessage(): string
     {
         return __('The form could not be sent. Please try again later.', 'rrze-formular');
     }
 
+    /**
+     * Return the detailed storage error shown to administrators.
+     *
+     * @return string Translated explanation of the persistent-cache requirement.
+     */
     public static function persistentObjectCacheRequiredMessage(): string
     {
         return __('Form submissions are currently unavailable because this installation requires a persistent object cache for public form tokens.', 'rrze-formular');
     }
 
     /**
-     * @return array{token: string, issuedAt: int}
+     * Create a signed token and store its unused nonce until expiry.
+     *
+     * Token lifetime is filtered and clamped to 60–7200 seconds. This method writes
+     * nonce state and belongs in the token endpoint, not in cached page rendering.
+     *
+     * @param string $formId Identifier of the rendered form instance.
+     * @param string $configHash Hash of the trusted form configuration.
+     * @param int $postId Optional page/post ID to bind to the token; zero omits that binding.
+     * @return array{token: string, issuedAt: int} Encoded token and Unix issue timestamp.
      */
     public static function createToken(string $formId, string $configHash, int $postId = 0): array
     {
@@ -77,9 +126,15 @@ class SpamProtection
     }
 
     /**
-     * Validate token signature, timing and binding without consuming the nonce.
+     * Validate token signature, time window, minimum fill time and form binding.
      *
-     * @return array<string, mixed>|null
+     * This check neither reads nor consumes nonce state. If the page URL resolves
+     * to a post, its ID must match a nonzero post binding in the token.
+     *
+     * @param string $token Encoded token returned by createToken().
+     * @param string $configHash Expected hash of the trusted form configuration.
+     * @param string $pageUrl Optional submission URL used to check a resolvable post binding.
+     * @return array<string, mixed>|null Decoded token payload, or null when a check fails.
      */
     public static function validateTokenPayload(string $token, string $configHash, string $pageUrl = ''): ?array
     {
@@ -128,7 +183,15 @@ class SpamProtection
     }
 
     /**
-     * @return array<string, mixed>|null Decoded token payload when valid and claimed.
+     * Validate a token and claim its nonce before processing the submission.
+     *
+     * A successfully claimed token cannot be used again, even if later field
+     * validation or mail delivery fails.
+     *
+     * @param string $token Encoded token returned by createToken().
+     * @param string $configHash Expected hash of the trusted form configuration.
+     * @param string $pageUrl Optional submission URL used to check a resolvable post binding.
+     * @return array<string, mixed>|null Payload when valid and claimed, otherwise null.
      */
     public static function claimToken(string $token, string $configHash, string $pageUrl = ''): ?array
     {
@@ -145,8 +208,14 @@ class SpamProtection
     }
 
     /**
-     * @return array<string, mixed>|null Decoded token payload when valid and nonce unused.
+     * Validate a token and check that its nonce is still present without consuming it.
+     *
+     * @param string $token Encoded token returned by createToken().
+     * @param string $configHash Expected hash of the trusted form configuration.
+     * @param string $pageUrl Optional submission URL used to check a resolvable post binding.
+     * @return array<string, mixed>|null Payload when valid and unused, otherwise null.
      * @deprecated Use claimToken() for submission processing.
+     * @see self::claimToken()
      */
     public static function verifyToken(string $token, string $configHash, string $pageUrl = ''): ?array
     {
@@ -159,7 +228,13 @@ class SpamProtection
     }
 
     /**
-     * Atomically consume a one-time nonce before processing a submission.
+     * Consume an unused nonce by deleting its storage entry.
+     *
+     * The delete result determines which request claims the nonce. Call this
+     * before delivery rather than checking and deleting in separate steps.
+     *
+     * @param string $nonce Unique nonce from an authenticated token payload.
+     * @return bool Whether deletion succeeded; false for an empty or missing nonce.
      */
     public static function claimTokenNonce(string $nonce): bool
     {
@@ -177,19 +252,34 @@ class SpamProtection
     }
 
     /**
-     * @param array<string, mixed> $tokenData
+     * Consume the nonce from a previously decoded token without reporting success.
+     *
+     * @param array<string, mixed> $tokenData Decoded payload containing a nonce.
+     * @return void
      * @deprecated Use claimTokenNonce() before mail delivery.
+     * @see self::claimTokenNonce()
      */
     public static function consumeToken(array $tokenData): void
     {
         self::claimTokenNonce((string) ($tokenData['nonce'] ?? ''));
     }
 
+    /**
+     * Accept only an empty hidden honeypot field.
+     *
+     * @param string $value Submitted honeypot value.
+     * @return bool True when the trimmed value is empty.
+     */
     public static function checkHoneypot(string $value): bool
     {
         return trim($value) === '';
     }
 
+    /**
+     * Count a submission attempt against the client IP hourly limit.
+     *
+     * @return bool Whether the incremented count is within the configured limit.
+     */
     public static function tryAcquireSubmissionSlot(): bool
     {
         $options = Mailer::getOptions();
@@ -198,6 +288,13 @@ class SpamProtection
         return self::tryIncrementCounter(self::getRateLimitKey(), HOUR_IN_SECONDS, $limit);
     }
 
+    /**
+     * Count a token request against the client IP minute limit.
+     *
+     * The token-issuance limit defaults to 30 and is clamped to 1–600 per minute.
+     *
+     * @return bool Whether the incremented count is within the filtered limit.
+     */
     public static function tryAcquireTokenIssueSlot(): bool
     {
         $limit = (int) apply_filters('rrze_formular_token_rate_limit_per_minute', 30);
@@ -207,7 +304,10 @@ class SpamProtection
     }
 
     /**
-     * @return array<string, mixed>|null
+     * Decode the token envelope and verify its HMAC before reading the payload.
+     *
+     * @param string $token Base64-encoded JSON payload and signature.
+     * @return array<string, mixed>|null Authenticated JSON payload, or null for an invalid token.
      */
     private static function decodeToken(string $token): ?array
     {
@@ -233,6 +333,13 @@ class SpamProtection
         return is_array($data) ? $data : null;
     }
 
+    /**
+     * Store a nonce as unused in the cache or transient backend.
+     *
+     * @param string $nonce Unique token nonce.
+     * @param int $expiresAt Unix expiry timestamp; storage lasts at least 60 seconds.
+     * @return void
+     */
     private static function storeNonce(string $nonce, int $expiresAt): void
     {
         $ttl = max(60, $expiresAt - time());
@@ -245,6 +352,12 @@ class SpamProtection
         set_transient(self::getNonceKey($nonce), 1, $ttl);
     }
 
+    /**
+     * Check whether nonce storage still contains an unused entry.
+     *
+     * @param string $nonce Token nonce to look up.
+     * @return bool Whether the nonce exists; this does not consume it.
+     */
     private static function isNonceValid(string $nonce): bool
     {
         if (self::usePersistentObjectCache()) {
@@ -254,6 +367,14 @@ class SpamProtection
         return get_transient(self::getNonceKey($nonce)) !== false;
     }
 
+    /**
+     * Increment a rate-limit counter using the available storage backend.
+     *
+     * @param string $storageKey Logical key identifying the client and counter.
+     * @param int $ttl Counter lifetime in seconds.
+     * @param int $limit Maximum accepted count in that window.
+     * @return bool Whether the resulting count is within the limit.
+     */
     private static function tryIncrementCounter(string $storageKey, int $ttl, int $limit): bool
     {
         if (self::usePersistentObjectCache()) {
@@ -263,6 +384,17 @@ class SpamProtection
         return self::tryIncrementOptionCounter($storageKey, $ttl, $limit);
     }
 
+    /**
+     * Create or increment a counter in the persistent object cache.
+     *
+     * An existing counter keeps its expiry. If incrementing fails, the counter is
+     * recreated with a count of one and the supplied lifetime.
+     *
+     * @param string $storageKey Logical key identifying the client and counter.
+     * @param int $ttl Counter lifetime in seconds.
+     * @param int $limit Maximum accepted count in that window.
+     * @return bool Whether the resulting count is within the limit.
+     */
     private static function tryIncrementCacheCounter(string $storageKey, int $ttl, int $limit): bool
     {
         $name = 'rrze_fw_cnt_' . md5($storageKey);
@@ -280,6 +412,17 @@ class SpamProtection
         return (int) $count <= $limit;
     }
 
+    /**
+     * Increment a database-backed counter, resetting its value after expiry.
+     *
+     * The count uses an SQL upsert in the current site options table. A separate
+     * non-autoloaded option stores the expiry timestamp.
+     *
+     * @param string $storageKey Logical key identifying the client and counter.
+     * @param int $ttl Counter lifetime in seconds.
+     * @param int $limit Maximum accepted count in that window.
+     * @return bool Whether the database reports a positive count within the limit.
+     */
     private static function tryIncrementOptionCounter(string $storageKey, int $ttl, int $limit): bool
     {
         global $wpdb;
@@ -308,26 +451,55 @@ class SpamProtection
         return $count > 0 && $count <= $limit;
     }
 
+    /**
+     * Detect whether WordPress uses an external persistent object cache.
+     *
+     * @return bool Whether the object-cache backend is available.
+     */
     private static function usePersistentObjectCache(): bool
     {
         return function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache();
     }
 
+    /**
+     * Hash a nonce to obtain its cache/transient key.
+     *
+     * @param string $nonce Unique token nonce.
+     * @return string Namespaced storage key.
+     */
     private static function getNonceKey(string $nonce): string
     {
         return 'rrze_fw_nonce_' . hash('sha256', $nonce);
     }
 
+    /**
+     * Build the submission-counter key for the current client IP.
+     *
+     * @return string Namespaced key containing the hashed client IP.
+     */
     private static function getRateLimitKey(): string
     {
         return 'rrze_fw_rate_' . md5(self::getClientIp());
     }
 
+    /**
+     * Build the token-issuance counter key for the current client IP.
+     *
+     * @return string Namespaced key containing the hashed client IP.
+     */
     private static function getTokenIssueRateLimitKey(): string
     {
         return 'rrze_fw_token_' . md5(self::getClientIp());
     }
 
+    /**
+     * Read the client address reported by the web server.
+     *
+     * Forwarded headers are not consulted. A trusted proxy setup must provide the
+     * correct REMOTE_ADDR at the server level for per-client rate limiting.
+     *
+     * @return string Sanitized REMOTE_ADDR, or 0.0.0.0 when unavailable.
+     */
     private static function getClientIp(): string
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';

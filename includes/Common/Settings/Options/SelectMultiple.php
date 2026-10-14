@@ -7,20 +7,12 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * SelectMultiple option type for settings.
- *
- * This class represents a multiple select option in the settings section.
- * It extends the Type class and provides methods to get the value and sanitize input.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays a select control that submits an array of selected values.
  */
 class SelectMultiple extends Type
 {
     /**
-     * The template used for rendering the multiple select input.
-     *
-     * This property defines the template file that will be used to render
-     * the multiple select input in the settings section.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */
@@ -42,13 +34,9 @@ class SelectMultiple extends Type
     }
 
     /**
-     * Gets the value of the multiple select input.
+     * Read saved selections, using a one-element default array when the value is missing.
      *
-     * This method retrieves the value from the options and ensures that
-     * it returns an array. If no value is set, it returns an array with
-     * the default value.
-     *
-     * @return array The value of the multiple select input.
+     * @return mixed Stored selections, normally an array; otherwise an array containing the default.
      */
     public function getValueAttribute()
     {

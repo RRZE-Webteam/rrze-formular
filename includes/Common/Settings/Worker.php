@@ -5,31 +5,23 @@ namespace RRZE\Formular\Common\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Worker class for managing settings builders.
+ * Provides access to the shared settings-callback builder.
  *
- * This class provides a static interface to manage settings builders,
- * allowing for the addition, removal, and enqueuing of settings.
- *
- * @package RRZE\Formular\Common\Settings
+ * Set a Builder instance before adding callbacks or executing the queue.
  */
 class Worker
 {
     /**
-     * The builder instance used for managing settings.
-     *
-     * This static property holds the builder instance that is used to
-     * add, remove, and enqueue settings.
+     * Shared builder installed by setBuilder().
      *
      * @var Builder
      */
     protected static Builder $builder;
 
     /**
-     * Initializes the Worker with a Builder instance.
+     * Replace the shared settings builder.
      *
-     * This method sets the static builder property to the provided Builder instance.
-     *
-     * @param Builder $builder The Builder instance to be used.
+     * @param Builder $builder Builder to use for subsequent operations.
      * @return void
      */
     public static function setBuilder($builder)
@@ -38,11 +30,9 @@ class Worker
     }
 
     /**
-     * Retrieves the current Builder instance.
+     * Return the previously installed shared builder.
      *
-     * This static method returns the Builder instance that is currently set.
-     *
-     * @return Builder The current Builder instance.
+     * @return Builder Current settings builder.
      */
     public static function builder()
     {
@@ -50,13 +40,10 @@ class Worker
     }
 
     /**
-     * Adds a settings option to the builder.
+     * Forward a named callback to the shared builder.
      *
-     * This static method allows you to add a settings option by providing a handle
-     * and a callback function that defines the option's behavior.
-     *
-     * @param string $handle The unique identifier for the settings option.
-     * @param callable $callback The callback function that defines the option.
+     * @param string $handle Unique callback identifier.
+     * @param callable(): void $callback Settings callback to queue.
      * @return void
      */
     public static function add($handle, $callback)
@@ -65,11 +52,9 @@ class Worker
     }
 
     /**
-     * Removes a settings option from the builder.
+     * Remove a callback from the shared builder.
      *
-     * This static method allows you to remove a settings option by its handle.
-     *
-     * @param string $handle The unique identifier for the settings option to be removed.
+     * @param string $handle Callback identifier.
      * @return void
      */
     public function remove($handle)
@@ -78,11 +63,7 @@ class Worker
     }
 
     /**
-     * Enqueues all added settings options.
-     *
-     * This static method iterates through the enqueued settings options and executes
-     * their associated callback functions, effectively processing or displaying
-     * the settings options as needed.
+     * Execute the shared builder’s queued callbacks.
      *
      * @return void
      */

@@ -22,6 +22,9 @@ use RRZE\Formular\Common\Settings\Options\{
     Msg
 };
 
+/**
+ * Wraps a typed settings field and its custom rendering, validation and sanitization callbacks.
+ */
 class Option
 {
     /**
@@ -39,27 +42,25 @@ class Option
     public $type;
 
     /**
-     * Arguments for the option.
-     * 
-     * @var array
+     * Field configuration, including its name, label, default and callbacks.
+     *
+     * @var array<string, mixed>
      */
     public $args = [];
 
     /**
-     * The implementation of the option type.
-     * 
-     * @var mixed
+     * Selected option-type handler, or null for an unregistered type.
+     *
+     * @var \RRZE\Formular\Common\Settings\Options\Type|null
      */
     public $implementation;
 
     /**
-     * Constructor for the Option class.
+     * Create the field handler selected by the filtered option-type map.
      *
-     * Initializes the option with a section, type, and optional arguments.
-     *
-     * @param Section $section The section this option belongs to.
-     * @param string $type The type of the option.
-     * @param array $args Optional arguments for the option.
+     * @param Section $section Owning settings section.
+     * @param string $type Option type identifier.
+     * @param array<string, mixed> $args Field configuration and optional callbacks.
      */
     public function __construct(Section $section, string $type, array $args = [])
     {
@@ -105,11 +106,10 @@ class Option
     }
 
     /**
-     * Gets the label for the option.
+     * Sanitize a value with the custom callback or the option-type handler.
      *
-     * This method retrieves the label argument and escapes it for safe output.
-     *
-     * @return string The escaped label of the option.
+     * @param mixed $value Submitted field value after request unslashing.
+     * @return mixed Sanitized value; true when no callback or type handler is available.
      */
     public function sanitize($value)
     {
@@ -121,14 +121,14 @@ class Option
     }
 
     /**
-     * Validates the input value.
+     * Validate a field using configured rules or its option-type handler.
      *
-     * This method checks if the value is valid based on the validation rules defined
-     * in the arguments. It can handle multiple validation callbacks and will add errors
-     * to the settings errors if validation fails.
+     * An array of rules is evaluated in order and records feedback for the first
+     * failed rule. A single callback or the type handler supplies its own result.
+     * Unknown types without a validator are accepted.
      *
-     * @param mixed $value The value to validate.
-     * @return bool True if the value is valid, false otherwise.
+     * @param mixed $value Submitted field value before sanitization.
+     * @return bool Whether validation accepts the value.
      */
     public function validate($value)
     {

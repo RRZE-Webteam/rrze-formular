@@ -6,8 +6,21 @@ use function RRZE\Formular\plugin;
 
 defined('ABSPATH') || exit;
 
+/**
+ * Chooses the language for form processing and reloads plugin translations as needed.
+ */
 class FormLocale
 {
+    /**
+     * Run a callback in the resolved form locale and clean up the locale switch afterwards.
+     *
+     * Cleanup runs in a finally block, including when the callback throws.
+     *
+     * @param callable(): mixed $callback Work to perform while form translations are loaded.
+     * @param array<string, mixed> $payload Optional formLocale or legacy locale hint.
+     * @return mixed The callback result.
+     * @throws \Throwable Any exception raised by the callback is passed to the caller.
+     */
     public static function withSiteLocale(callable $callback, array $payload = [])
     {
         $locale = self::resolveLocale($payload);
@@ -30,6 +43,12 @@ class FormLocale
         }
     }
 
+    /**
+     * Resolve a supported locale from the payload, falling back to the site locale.
+     *
+     * @param array<string, mixed> $payload Optional formLocale or legacy locale hint.
+     * @return string WordPress locale identifier.
+     */
     public static function resolveLocale(array $payload = []): string
     {
         $requested = sanitize_text_field((string) ($payload['formLocale'] ?? $payload['locale'] ?? ''));
@@ -45,6 +64,12 @@ class FormLocale
         return self::getSiteLocale();
     }
 
+    /**
+     * Extract the first language tag and strip Unicode locale extensions.
+     *
+     * @param string $tag Language tag, optionally followed by commas, semicolons or Unicode extensions.
+     * @return string Trimmed base language tag.
+     */
     private static function normalizeLanguageTag(string $tag): string
     {
         $tag = trim($tag);
@@ -61,6 +86,11 @@ class FormLocale
         return trim($tag);
     }
 
+    /**
+     * Read the site language from WPLANG, WordPress locale or the language tag.
+     *
+     * @return string Site locale, with en_US as the final fallback.
+     */
     public static function getSiteLocale(): string
     {
         $locale = get_option('WPLANG', '');
@@ -84,6 +114,12 @@ class FormLocale
         return 'en_US';
     }
 
+    /**
+     * Find a locale candidate for which the plugin has a translation file.
+     *
+     * @param string $tag Language tag such as de or de-DE.
+     * @return string Matching locale identifier, or an empty string if none is found.
+     */
     private static function mapLanguageTagToLocale(string $tag): string
     {
         $tag = str_replace('-', '_', trim($tag));
@@ -110,6 +146,13 @@ class FormLocale
         return '';
     }
 
+    /**
+     * Check for a compiled catalog or script translations for a locale.
+     *
+     * @param string $languagesPath Path prefix for translation files, including the directory separator.
+     * @param string $locale Locale identifier used in the filenames.
+     * @return bool Whether a matching MO or JSON file exists.
+     */
     private static function hasTranslationFile(string $languagesPath, string $locale): bool
     {
         if (is_readable($languagesPath . 'rrze-formular-' . $locale . '.mo')) {
@@ -121,6 +164,15 @@ class FormLocale
         return (glob($pattern) ?: []) !== [];
     }
 
+    /**
+     * Reload plugin translations for the requested locale.
+     *
+     * A readable bundled MO file is preferred; otherwise WordPress handles the
+     * plugin text-domain lookup.
+     *
+     * @param string $locale Locale identifier used to select the compiled catalog.
+     * @return void
+     */
     private static function reloadTextdomain(string $locale): void
     {
         unload_textdomain('rrze-formular');

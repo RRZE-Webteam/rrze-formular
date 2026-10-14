@@ -5,25 +5,19 @@ namespace RRZE\Formular\Common\Settings;
 defined('ABSPATH') || exit;
 
 /**
- * Template class for rendering settings templates.
- *
- * This class provides a method to include templates with variables passed to them.
- * It is used to render the settings pages of the plugin.
- *
- * @package RRZE\Formular\Common\Settings
+ * Outputs settings templates with named variables and a final markup filter.
  */
 class Template
 {
     /**
-     * Includes a template file with the given variables.
+     * Output a settings template with named variables and a final output filter.
      *
-     * This method includes a template file from the templates directory and
-     * passes the provided variables to it. The output is captured and filtered
-     * before being echoed.
+     * Missing files produce no output. The rendered markup is echoed rather than
+     * returned, after the rrze-formular_settings_template_include filter runs.
      *
-     * @param string $fileName The name of the template file to include (without extension).
-     * @param array $vars An associative array of variables to pass to the template.
-     * * @return void
+     * @param string $fileName Template path relative to the templates directory, without .php.
+     * @param array<string, mixed> $vars Variables made available inside the template.
+     * @return void
      */
     public static function include($fileName, $vars = [])
     {

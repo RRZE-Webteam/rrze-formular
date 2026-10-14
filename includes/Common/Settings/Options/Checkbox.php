@@ -7,27 +7,21 @@ use RRZE\Formular\Common\Settings\Options\Type;
 defined('ABSPATH') || exit;
 
 /**
- * Checkbox option type for settings.
- *
- * This class represents a checkbox option in the settings section.
- * It extends the Type class and provides methods to get the value
- * and check if the checkbox is checked.
- *
- * @package RRZE\Formular\Common\Settings\Options
+ * Displays one checkbox and interprets its stored value as a checked state.
  */
 class Checkbox extends Type
 {
     /**
-     * The template used for rendering the checkbox.
+     * Name of the template in Common/Settings/templates/options, without .php.
      *
      * @var string
      */
     public $template = 'checkbox';
 
     /**
-     * The default value for the checkbox.
+     * Read the checkbox value, using its default only when the stored value is false or missing.
      *
-     * @var mixed
+     * @return mixed Stored checkbox value or the configured default.
      */
     public function getValueAttribute()
     {
